@@ -1,0 +1,95 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-darkest: #02030a;
+  --bg-darker: #050608;
+  --accent-teal: #3ecfc5;
+  --accent-gold: #f5a623;
+}
+
+* {
+  border-color: theme('colors.bg.border');
+}
+
+html {
+  background: var(--bg-darkest);
+  color-scheme: dark;
+}
+
+body {
+  background: linear-gradient(170deg, #05080f 0%, #08101c 50%, #050a14 100%);
+  color: theme('colors.fg.primary');
+  font-family: theme('fontFamily.sans');
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Grid background pattern */
+.bg-grid {
+  background-image:
+    linear-gradient(rgba(62, 207, 197, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(62, 207, 197, 0.035) 1px, transparent 1px);
+  background-size: 52px 52px;
+}
+
+/* Radial glow overlays */
+.glow-teal::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 30% 20%, rgba(62, 207, 197, 0.12) 0%, transparent 50%),
+    radial-gradient(circle at 70% 80%, rgba(30, 100, 200, 0.08) 0%, transparent 55%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* REC blinking indicator */
+@keyframes rec-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+
+.rec-dot {
+  animation: rec-pulse 1.8s ease-in-out infinite;
+}
+
+/* Link hover */
+a {
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+/* Scrollbar (webkit) */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-darker);
+}
+
+::-webkit-scrollbar-thumb {
+  background: theme('colors.bg.border');
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: theme('colors.accent.teal-dim');
+}
+
+/* Selection */
+::selection {
+  background: rgba(62, 207, 197, 0.3);
+  color: #fff;
+}
+
+/* Focus ring */
+:focus-visible {
+  outline: 2px solid var(--accent-teal);
+  outline-offset: 2px;
+}

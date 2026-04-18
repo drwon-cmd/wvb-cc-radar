@@ -1,0 +1,2 @@
+# wvb-cc-radar uses Python stdlib only (urllib.request, json, pathlib).
+# No pip install required. Python 3.10+ needed for modern type syntax.
