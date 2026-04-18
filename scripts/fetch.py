@@ -205,29 +205,34 @@ def extract_repo(item: dict) -> dict:
     }
 
 
-def load_yesterday_stars_and_ko() -> tuple[dict[str, int], dict[str, str]]:
-    """Load yesterday's snapshot to carry over star counts (for delta) and
-    translations (for cost savings - don't re-translate unchanged descriptions).
+def load_prior_translations() -> tuple[dict[str, int], dict[str, str]]:
+    """Load translations from today's + yesterday's snapshot.
+
+    - Yesterday JSON: carries over star counts (for 24h delta) AND translations.
+    - Today JSON (if exists): re-uses translations from prior run — lets the
+      script be re-run to fill in items that hit Gemini rate limits earlier,
+      without re-translating what already succeeded.
     """
+    stars: dict[str, int] = {}
+    ko: dict[str, str] = {}
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     yesterday = (datetime.now(timezone.utc) - timedelta(days=1)).strftime("%Y-%m-%d")
-    path = DATA_DIR / f"{yesterday}.json"
-    if not path.exists():
-        return {}, {}
-    try:
-        with open(path, "r", encoding="utf-8") as f:
-            digest = json.load(f)
-        stars: dict[str, int] = {}
-        ko: dict[str, str] = {}
-        for cat in digest.get("categories", []):
-            for item in cat.get("items", []):
-                stars[item["full_name"]] = item.get("stargazers_count", 0)
-                if item.get("description_ko") and item.get("description"):
-                    # Key = (full_name, original_desc) so stale descriptions re-translate
-                    ko[f"{item['full_name']}|{item['description']}"] = item["description_ko"]
-        return stars, ko
-    except Exception as e:
-        print(f"Failed to load yesterday: {e}", file=sys.stderr)
-        return {}, {}
+    for date, is_yesterday in [(yesterday, True), (today, False)]:
+        path = DATA_DIR / f"{date}.json"
+        if not path.exists():
+            continue
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                digest = json.load(f)
+            for cat in digest.get("categories", []):
+                for item in cat.get("items", []):
+                    if is_yesterday:
+                        stars[item["full_name"]] = item.get("stargazers_count", 0)
+                    if item.get("description_ko") and item.get("description"):
+                        ko[f"{item['full_name']}|{item['description']}"] = item["description_ko"]
+        except Exception as e:
+            print(f"[cache] failed to read {date}.json: {e}", file=sys.stderr)
+    return stars, ko
 
 
 def is_new_this_week(created_at: str) -> bool:
@@ -300,17 +305,22 @@ def gemini_translate_batch(descriptions: list[str]) -> list[str | None]:
 def translate_all_descriptions(
     categories_result: list[dict],
     ko_cache: dict[str, str],
-    batch_size: int = 15,
-) -> tuple[int, int]:
+    batch_size: int = 10,
+    inter_batch_sleep: float = 10.0,
+    retry_backoff: float = 30.0,
+) -> tuple[int, int, list[str]]:
     """Mutates items in-place, adding `description_ko` field.
-    Returns (translated_count, cached_count).
+
+    Gemini 2.0 Flash free tier is 15 RPM. We stay well under that:
+    batch_size=10, sleep 10s → 6 req/min, ~40% of quota.
+
+    Returns (translated_count, cached_count, list_of_failed_repo_names).
     """
     if not GEMINI_API_KEY:
         print("[translate] GEMINI_API_KEY not set, skipping translations")
-        return 0, 0
+        return 0, 0, []
 
-    # collect items needing translation
-    todo: list[tuple[dict, str]] = []  # (item_ref, description)
+    todo: list[tuple[dict, str]] = []
     cached = 0
     for cat in categories_result:
         for item in cat["items"]:
@@ -324,22 +334,43 @@ def translate_all_descriptions(
             else:
                 todo.append((item, desc))
 
-    print(f"[translate] {cached} cached, {len(todo)} to translate via Gemini")
+    print(
+        f"[translate] {cached} cached, {len(todo)} to translate "
+        f"(batch={batch_size}, sleep={inter_batch_sleep}s, retry_after={retry_backoff}s)"
+    )
 
     translated = 0
+    failed_repos: list[str] = []
     for i in range(0, len(todo), batch_size):
         batch = todo[i : i + batch_size]
         descriptions = [d for _, d in batch]
+        batch_idx = i // batch_size + 1
+
         results = gemini_translate_batch(descriptions)
+        if all(r is None for r in results):
+            print(
+                f"[translate] batch {batch_idx} all-failed, retry after {retry_backoff}s",
+                file=sys.stderr,
+            )
+            time.sleep(retry_backoff)
+            results = gemini_translate_batch(descriptions)
+
         for (item, _), ko in zip(batch, results):
             if ko:
                 item["description_ko"] = ko
                 translated += 1
-        # Gemini free tier 15 RPM -> 5s between batches
-        if i + batch_size < len(todo):
-            time.sleep(5)
+            else:
+                failed_repos.append(item["full_name"])
 
-    return translated, cached
+        if i + batch_size < len(todo):
+            time.sleep(inter_batch_sleep)
+
+    if failed_repos:
+        print(f"[translate] {len(failed_repos)} still untranslated after retry:", file=sys.stderr)
+        for fn in failed_repos[:20]:
+            print(f"  - {fn}", file=sys.stderr)
+
+    return translated, cached, failed_repos
 
 
 # ============================================================
@@ -356,8 +387,8 @@ def main() -> int:
     gm_mode = "ENABLED" if GEMINI_API_KEY else "disabled"
     print(f"[wvb-cc-radar] start | GitHub={gh_mode} | Gemini={gm_mode}")
 
-    yesterday_stars, ko_cache = load_yesterday_stars_and_ko()
-    print(f"[yesterday] {len(yesterday_stars)} prior stars, {len(ko_cache)} cached translations")
+    yesterday_stars, ko_cache = load_prior_translations()
+    print(f"[cache] {len(yesterday_stars)} prior stars, {len(ko_cache)} cached translations")
 
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     categories_result = []
@@ -412,7 +443,7 @@ def main() -> int:
         print(f"  -> {len(merged)} merged, kept top {len(processed)}")
 
     # Translate descriptions
-    translated, cached = translate_all_descriptions(categories_result, ko_cache)
+    translated, cached, failed = translate_all_descriptions(categories_result, ko_cache)
 
     duration_ms = int((time.time() - start) * 1000)
     digest = {
@@ -426,7 +457,9 @@ def main() -> int:
             "rate_limit_remaining": int(rate_remaining) if rate_remaining else None,
             "translated_kr": translated,
             "translation_cache_hit": cached,
-            "query_mode": "v0.3-8cat-with-kr",
+            "translation_failed": len(failed),
+            "translation_failed_repos": failed if len(failed) <= 30 else failed[:30],
+            "query_mode": "v0.4-rate-safe",
         },
     }
 
@@ -434,9 +467,12 @@ def main() -> int:
     with open(out, "w", encoding="utf-8") as f:
         json.dump(digest, f, ensure_ascii=False, indent=2)
 
-    print(f"[done] {total_repos} repos, {total_new} new, KR {translated} new / {cached} cached, {duration_ms}ms")
+    print(
+        f"[done] {total_repos} repos, {total_new} new | "
+        f"KR: {translated} new + {cached} cached + {len(failed)} failed | {duration_ms}ms"
+    )
     print(f"[done] rate_remaining={rate_remaining}, wrote={out}")
-    return 0
+    return 0 if not failed else 0  # non-zero only on catastrophic error, not partial translation
 
 
 if __name__ == "__main__":
