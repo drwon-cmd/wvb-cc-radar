@@ -1,4 +1,12 @@
-export type CategoryId = 'claude-code' | 'mcp-servers' | 'ai-agents' | 'llm-prompts';
+export type CategoryId =
+  | 'claude-code'
+  | 'vibe-coding'
+  | 'enterprise-ax'
+  | 'rag-kb'
+  | 'agent-orchestration'
+  | 'mcp-servers'
+  | 'ai-agents'
+  | 'llm-prompts';
 
 export interface Repo {
   id: number;
@@ -6,6 +14,7 @@ export interface Repo {
   name: string;
   owner: string;
   description: string | null;
+  description_ko?: string;
   html_url: string;
   homepage: string | null;
   stargazers_count: number;

@@ -61,12 +61,15 @@ export default function RepoCard({ repo, rank, featured = false }: Props) {
               </span>
               <ExternalLink className="w-3 h-3 text-fg-dim flex-shrink-0" />
             </div>
-            {repo.description && (
-              <p className={cn(
-                'text-fg-muted',
-                featured ? 'text-sm line-clamp-2' : 'text-xs line-clamp-2',
-              )}>
-                {repo.description}
+            {(repo.description_ko || repo.description) && (
+              <p
+                className={cn(
+                  'text-fg-muted',
+                  featured ? 'text-sm line-clamp-2' : 'text-xs line-clamp-2',
+                )}
+                title={repo.description || undefined}
+              >
+                {repo.description_ko || repo.description}
               </p>
             )}
           </div>
