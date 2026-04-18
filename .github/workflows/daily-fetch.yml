@@ -1,4 +1,4 @@
-name: Daily Fetch
+name: Daily Fetch & Deploy
 
 on:
   schedule:
@@ -9,7 +9,7 @@ permissions:
   contents: write
 
 jobs:
-  fetch:
+  fetch-deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -27,14 +27,30 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python scripts/fetch.py
 
-      - name: Commit and push
+      - name: Commit and push data
+        id: commit
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/
           if git diff --staged --quiet; then
             echo "No data changes"
+            echo "changed=false" >> $GITHUB_OUTPUT
           else
             git commit -m "data: daily fetch $(date -u +%Y-%m-%d)"
             git push
+            echo "changed=true" >> $GITHUB_OUTPUT
           fi
+
+      - name: Install Railway CLI
+        if: steps.commit.outputs.changed == 'true'
+        run: |
+          curl -fsSL https://railway.com/install.sh | sh
+          echo "$HOME/.railway/bin" >> $GITHUB_PATH
+
+      - name: Redeploy to Railway
+        if: steps.commit.outputs.changed == 'true'
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: |
+          railway up --service ${{ secrets.RAILWAY_SERVICE_ID }} --detach --ci
