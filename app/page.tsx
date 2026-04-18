@@ -1,4 +1,5 @@
 import { getLatestDigest, formatDateKST } from '@/lib/data';
+import { sortByTrendScore } from '@/lib/sort';
 import HeroSection from '@/components/HeroSection';
 import CategorySection from '@/components/CategorySection';
 
@@ -43,20 +44,29 @@ export default async function HomePage() {
         <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-fg-primary mb-2">
           Daily Digest
         </h1>
-        <p className="text-fg-muted max-w-2xl">
+        <p className="text-fg-muted text-sm md:text-base">
           Trending GitHub repositories for{' '}
           <span className="text-accent-teal">Claude Code ecosystem upgrade</span>.
-          Curated by <a href="https://www.wiltvb.com" target="_blank" rel="noopener noreferrer" className="text-accent-gold hover:underline">Wilt Venture Builder</a>.
+          Curated by{' '}
+          <a
+            href="https://www.wiltvb.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-accent-gold hover:underline"
+          >
+            Wilt Venture Builder
+          </a>
+          .
         </p>
         <p className="text-fg-dim text-xs font-mono mt-2">
-          generated {formatDateKST(digest.generated_at)} KST · fetch {digest.meta.fetch_duration_ms}ms
+          sorted by 24h trend score · generated {formatDateKST(digest.generated_at)} KST · fetch {digest.meta.fetch_duration_ms}ms
         </p>
       </div>
 
-      {primary && <HeroSection data={primary} />}
+      {primary && <HeroSection data={sortByTrendScore(primary)} />}
 
       {secondary.map((cat) => (
-        <CategorySection key={cat.category} data={cat} />
+        <CategorySection key={cat.category} data={sortByTrendScore(cat)} />
       ))}
     </div>
   );

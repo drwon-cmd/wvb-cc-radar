@@ -1,16 +1,18 @@
 """
 Daily GitHub Search API fetcher for wvb-cc-radar.
 
+Runs multiple tight queries per category (GitHub Search does not
+reliably support mixed OR of topic: and in:name qualifiers), merges
+results by full_name, dedupes, ranks by stars, keeps top_n.
+
 Usage:
   python scripts/fetch.py
 
 Output: data/YYYY-MM-DD.json
 
 Rate limits:
-  - Anonymous: 10 req/min (Search API)
-  - Authenticated (GITHUB_TOKEN env): 30 req/min, 5000/hour
-
-4 categories × 1 query each = 4 requests per run. Very safe.
+  - Anonymous: 10 req/min
+  - Authenticated (GITHUB_TOKEN): 30 req/min, 5000/hour
 """
 from __future__ import annotations
 
@@ -30,7 +32,6 @@ DATA_DIR.mkdir(exist_ok=True)
 
 GITHUB_API = "https://api.github.com"
 TOKEN = os.environ.get("GITHUB_TOKEN", "").strip()
-
 RECENT_DAYS = 14
 
 
@@ -41,12 +42,17 @@ def recent_date(days: int) -> str:
 
 def categories() -> list[dict]:
     cutoff = recent_date(RECENT_DAYS)
+    suffix = f" pushed:>{cutoff}"
     return [
         {
             "id": "claude-code",
             "title": "Claude Code 생태계",
             "subtitle": "Plugins · Skills · Sub-agents · Hooks · Workflows",
-            "query": f'"claude-code" OR "claude code" OR "bkit" OR "claudecode" in:name,description,readme pushed:>{cutoff}',
+            "queries": [
+                "topic:claude-code" + suffix,
+                '"claude-code" in:name' + suffix,
+                '"bkit" in:name' + suffix,
+            ],
             "top_n": 30,
             "priority": 1,
         },
@@ -54,7 +60,11 @@ def categories() -> list[dict]:
             "id": "mcp-servers",
             "title": "MCP 서버·도구",
             "subtitle": "Model Context Protocol servers & tools (CC-compatible)",
-            "query": f'"model context protocol" OR "mcp-server" OR "mcp server" in:name,description pushed:>{cutoff}',
+            "queries": [
+                "topic:model-context-protocol" + suffix,
+                '"mcp-server" in:name' + suffix,
+                '"mcp-servers" in:name' + suffix,
+            ],
             "top_n": 10,
             "priority": 2,
         },
@@ -62,7 +72,12 @@ def categories() -> list[dict]:
             "id": "ai-agents",
             "title": "AI 에이전트 프레임워크",
             "subtitle": "LangGraph · CrewAI · AutoGen · multi-agent patterns",
-            "query": f'langgraph OR crewai OR autogen OR "multi-agent framework" in:name,description pushed:>{cutoff}',
+            "queries": [
+                "topic:ai-agents" + suffix,
+                '"langgraph" in:name' + suffix,
+                '"crewai" in:name' + suffix,
+                '"autogen" in:name' + suffix,
+            ],
             "top_n": 10,
             "priority": 3,
         },
@@ -70,7 +85,11 @@ def categories() -> list[dict]:
             "id": "llm-prompts",
             "title": "LLM 프롬프트·워크플로우",
             "subtitle": "Prompt engineering · agentic workflows · LLM-native dev",
-            "query": f'"prompt engineering" OR "agentic workflow" OR "llm workflow" OR "prompt library" in:name,description pushed:>{cutoff}',
+            "queries": [
+                "topic:prompt-engineering" + suffix,
+                "topic:agentic-workflow" + suffix,
+                '"prompt-engineering" in:name' + suffix,
+            ],
             "top_n": 10,
             "priority": 4,
         },
@@ -80,7 +99,7 @@ def categories() -> list[dict]:
 def gh_request(url: str) -> tuple[dict, dict]:
     headers = {
         "Accept": "application/vnd.github+json",
-        "User-Agent": "wvb-cc-radar/0.1",
+        "User-Agent": "wvb-cc-radar/0.2",
         "X-GitHub-Api-Version": "2022-11-28",
     }
     if TOKEN:
@@ -98,7 +117,10 @@ def gh_request(url: str) -> tuple[dict, dict]:
 
 def search_repos(query: str, per_page: int) -> tuple[list[dict], dict]:
     encoded = quote_plus(query)
-    url = f"{GITHUB_API}/search/repositories?q={encoded}&sort=stars&order=desc&per_page={per_page}"
+    url = (
+        f"{GITHUB_API}/search/repositories"
+        f"?q={encoded}&sort=stars&order=desc&per_page={per_page}"
+    )
     data, hdrs = gh_request(url)
     return data.get("items", []), hdrs
 
@@ -150,10 +172,15 @@ def is_new_this_week(created_at: str) -> bool:
         return False
 
 
+def sleep_between() -> None:
+    # 30 req/min authenticated = 2s between; 10/min anon = 7s.
+    time.sleep(2 if TOKEN else 7)
+
+
 def main() -> int:
     start = time.time()
-    auth_status = "authenticated" if TOKEN else "ANONYMOUS"
-    print(f"[wvb-cc-radar] fetch start, mode={auth_status}")
+    mode = "authenticated" if TOKEN else "ANONYMOUS"
+    print(f"[wvb-cc-radar] fetch start, mode={mode}")
 
     yesterday_stars = load_yesterday_stars()
     print(f"[yesterday] loaded {len(yesterday_stars)} prior repos for delta")
@@ -165,16 +192,32 @@ def main() -> int:
     rate_remaining = None
 
     for cat in categories():
-        print(f"[fetch] {cat['id']}: {cat['query'][:90]}...")
-        try:
-            items, hdrs = search_repos(cat["query"], per_page=cat["top_n"])
-            rate_remaining = hdrs.get("X-RateLimit-Remaining", rate_remaining)
-        except Exception as e:
-            print(f"  FAIL: {e}", file=sys.stderr)
-            items = []
+        per_query = max(cat["top_n"], 30)  # pull 30 each then cut after merge
+        merged: dict[str, dict] = {}
+        print(f"[fetch] {cat['id']} ({len(cat['queries'])} queries)")
+        for q in cat["queries"]:
+            print(f"  query: {q[:90]}")
+            try:
+                items, hdrs = search_repos(q, per_page=per_query)
+                rate_remaining = hdrs.get("X-RateLimit-Remaining", rate_remaining)
+            except Exception as e:
+                print(f"    FAIL: {e}", file=sys.stderr)
+                items = []
+            for item in items:
+                fn = item["full_name"]
+                if fn not in merged or item["stargazers_count"] > merged[fn]["stargazers_count"]:
+                    merged[fn] = item
+            sleep_between()
+
+        # sort merged by stars desc, take top_n
+        ranked = sorted(
+            merged.values(),
+            key=lambda i: i.get("stargazers_count", 0),
+            reverse=True,
+        )[: cat["top_n"]]
 
         processed = []
-        for item in items:
+        for item in ranked:
             repo = extract_repo(item)
             prev = yesterday_stars.get(repo["full_name"])
             if prev is not None:
@@ -189,15 +232,12 @@ def main() -> int:
             "title": cat["title"],
             "subtitle": cat["subtitle"],
             "fetched_at": datetime.now(timezone.utc).isoformat(),
-            "query": cat["query"],
+            "queries": cat["queries"],
             "total_count": len(processed),
             "items": processed,
         })
         total_repos += len(processed)
-        print(f"  -> {len(processed)} repos")
-
-        # Pace requests: anonymous 10/min = sleep 7s, authenticated 30/min = sleep 2s
-        time.sleep(2 if TOKEN else 7)
+        print(f"  -> {len(merged)} merged, kept top {len(processed)}")
 
     duration_ms = int((time.time() - start) * 1000)
     digest = {
@@ -209,6 +249,7 @@ def main() -> int:
             "total_new": total_new,
             "fetch_duration_ms": duration_ms,
             "rate_limit_remaining": int(rate_remaining) if rate_remaining else None,
+            "query_mode": "v0.2-tight-merge",
         },
     }
 

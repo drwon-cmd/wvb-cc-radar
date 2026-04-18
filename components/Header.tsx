@@ -12,6 +12,18 @@ export default function Header() {
         </Link>
         <nav className="flex items-center gap-5 text-sm font-mono">
           <Link
+            href="/"
+            className="text-fg-muted hover:text-accent-teal uppercase tracking-wider text-xs"
+          >
+            Daily
+          </Link>
+          <Link
+            href="/top"
+            className="text-fg-muted hover:text-accent-gold uppercase tracking-wider text-xs"
+          >
+            All-time
+          </Link>
+          <Link
             href="/archive"
             className="text-fg-muted hover:text-accent-teal uppercase tracking-wider text-xs"
           >
