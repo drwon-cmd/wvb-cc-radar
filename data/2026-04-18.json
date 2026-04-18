@@ -1,12 +1,12 @@
 {
   "date": "2026-04-18",
-  "generated_at": "2026-04-18T11:39:32.387099+00:00",
+  "generated_at": "2026-04-18T11:42:00.880233+00:00",
   "categories": [
     {
       "category": "claude-code",
       "title": "Claude Code 생태계",
       "subtitle": "Plugins · Skills · Sub-agents · Hooks · Workflows",
-      "fetched_at": "2026-04-18T11:39:23.182496+00:00",
+      "fetched_at": "2026-04-18T11:41:51.679673+00:00",
       "query": "\"claude-code\" OR \"claude code\" OR \"bkit\" OR \"claudecode\" in:name,description,readme pushed:>2026-04-04",
       "total_count": 30,
       "items": [
@@ -84,7 +84,7 @@
           ],
           "pushed_at": "2026-04-18T06:17:12Z",
           "created_at": "2014-07-06T13:42:15Z",
-          "updated_at": "2026-04-18T11:36:22Z",
+          "updated_at": "2026-04-18T11:41:38Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/avelino/awesome-go"
         },
         {
@@ -128,8 +128,8 @@
           "description": "The agent harness performance optimization system. Skills, instincts, memory, security, and research-first development for Claude Code, Codex, Opencode, Cursor and beyond.",
           "html_url": "https://github.com/affaan-m/everything-claude-code",
           "homepage": "https://ecc.tools",
-          "stargazers_count": 160022,
-          "forks_count": 24875,
+          "stargazers_count": 160023,
+          "forks_count": 24876,
           "language": "JavaScript",
           "topics": [
             "ai-agents",
@@ -143,7 +143,7 @@
           ],
           "pushed_at": "2026-04-16T03:07:05Z",
           "created_at": "2026-01-18T00:51:51Z",
-          "updated_at": "2026-04-18T11:39:18Z",
+          "updated_at": "2026-04-18T11:40:24Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/affaan-m/everything-claude-code"
         },
         {
@@ -190,13 +190,13 @@
           "description": "An agentic skills framework & software development methodology that works.",
           "html_url": "https://github.com/obra/superpowers",
           "homepage": "",
-          "stargazers_count": 158353,
+          "stargazers_count": 158354,
           "forks_count": 13783,
           "language": "Shell",
           "topics": [],
           "pushed_at": "2026-04-16T19:50:46Z",
           "created_at": "2025-10-09T19:45:18Z",
-          "updated_at": "2026-04-18T11:39:10Z",
+          "updated_at": "2026-04-18T11:40:50Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/obra/superpowers"
         },
         {
@@ -207,13 +207,13 @@
           "description": "The open source coding agent.",
           "html_url": "https://github.com/anomalyco/opencode",
           "homepage": "https://opencode.ai",
-          "stargazers_count": 145272,
+          "stargazers_count": 145273,
           "forks_count": 16467,
           "language": "TypeScript",
           "topics": [],
           "pushed_at": "2026-04-18T09:44:43Z",
           "created_at": "2025-04-30T20:08:00Z",
-          "updated_at": "2026-04-18T11:39:04Z",
+          "updated_at": "2026-04-18T11:41:31Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/anomalyco/opencode"
         },
         {
@@ -262,7 +262,7 @@
           "description": "Public repository for Agent Skills",
           "html_url": "https://github.com/anthropics/skills",
           "homepage": "",
-          "stargazers_count": 119831,
+          "stargazers_count": 119833,
           "forks_count": 13871,
           "language": "Python",
           "topics": [
@@ -270,7 +270,7 @@
           ],
           "pushed_at": "2026-04-16T19:12:59Z",
           "created_at": "2025-09-22T15:53:31Z",
-          "updated_at": "2026-04-18T11:37:04Z",
+          "updated_at": "2026-04-18T11:40:33Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/anthropics/skills"
         },
         {
@@ -298,7 +298,7 @@
           "description": "🔥 The API to search, scrape, and interact with the web for AI",
           "html_url": "https://github.com/firecrawl/firecrawl",
           "homepage": "https://firecrawl.dev",
-          "stargazers_count": 110486,
+          "stargazers_count": 110487,
           "forks_count": 7050,
           "language": "TypeScript",
           "topics": [
@@ -324,7 +324,7 @@
           ],
           "pushed_at": "2026-04-18T06:33:32Z",
           "created_at": "2024-04-15T21:02:29Z",
-          "updated_at": "2026-04-18T11:31:41Z",
+          "updated_at": "2026-04-18T11:41:00Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/firecrawl/firecrawl"
         },
         {
@@ -372,7 +372,7 @@
           "description": "💫 Toolkit to help you get started with Spec-Driven Development",
           "html_url": "https://github.com/github/spec-kit",
           "homepage": "https://github.github.com/spec-kit/",
-          "stargazers_count": 89062,
+          "stargazers_count": 89063,
           "forks_count": 7666,
           "language": "Python",
           "topics": [
@@ -386,7 +386,7 @@
           ],
           "pushed_at": "2026-04-17T19:33:42Z",
           "created_at": "2025-08-21T22:54:31Z",
-          "updated_at": "2026-04-18T11:33:19Z",
+          "updated_at": "2026-04-18T11:41:37Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/github/spec-kit"
         },
         {
@@ -513,13 +513,13 @@
           "description": "Use Garry Tan's exact Claude Code setup: 23 opinionated tools that serve as CEO, Designer, Eng Manager, Release Manager, Doc Engineer, and QA",
           "html_url": "https://github.com/garrytan/gstack",
           "homepage": "",
-          "stargazers_count": 75533,
+          "stargazers_count": 75536,
           "forks_count": 10710,
           "language": "TypeScript",
           "topics": [],
           "pushed_at": "2026-04-18T10:18:01Z",
           "created_at": "2026-03-11T21:22:45Z",
-          "updated_at": "2026-04-18T11:38:35Z",
+          "updated_at": "2026-04-18T11:41:40Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/garrytan/gstack"
         },
         {
@@ -644,8 +644,8 @@
           "description": "A Claude Code plugin that automatically captures everything Claude does during your coding sessions, compresses it with AI (using Claude's agent-sdk), and injects relevant context back into future sessions.",
           "html_url": "https://github.com/thedotmack/claude-mem",
           "homepage": "https://claude-mem.ai",
-          "stargazers_count": 61903,
-          "forks_count": 5149,
+          "stargazers_count": 61904,
+          "forks_count": 5150,
           "language": "TypeScript",
           "topics": [
             "ai",
@@ -671,7 +671,7 @@
           ],
           "pushed_at": "2026-04-18T06:56:24Z",
           "created_at": "2025-08-31T20:50:03Z",
-          "updated_at": "2026-04-18T11:37:48Z",
+          "updated_at": "2026-04-18T11:39:50Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/thedotmack/claude-mem"
         },
         {
@@ -702,13 +702,13 @@
           "description": "A single CLAUDE.md file to improve Claude Code behavior, derived from Andrej Karpathy's observations on LLM coding pitfalls.",
           "html_url": "https://github.com/multica-ai/andrej-karpathy-skills",
           "homepage": "",
-          "stargazers_count": 56169,
-          "forks_count": 4773,
+          "stargazers_count": 56172,
+          "forks_count": 4774,
           "language": null,
           "topics": [],
           "pushed_at": "2026-04-15T17:47:20Z",
           "created_at": "2026-01-27T03:53:13Z",
-          "updated_at": "2026-04-18T11:38:37Z",
+          "updated_at": "2026-04-18T11:41:49Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/multica-ai/andrej-karpathy-skills"
         },
         {
@@ -719,13 +719,13 @@
           "description": "Open-source orchestration for zero-human companies",
           "html_url": "https://github.com/paperclipai/paperclip",
           "homepage": "https://paperclip.ing",
-          "stargazers_count": 55548,
+          "stargazers_count": 55549,
           "forks_count": 9394,
           "language": "TypeScript",
           "topics": [],
           "pushed_at": "2026-04-18T00:34:25Z",
           "created_at": "2026-03-02T15:01:51Z",
-          "updated_at": "2026-04-18T11:37:05Z",
+          "updated_at": "2026-04-18T11:40:14Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/paperclipai/paperclip"
         },
         {
@@ -756,7 +756,7 @@
       "category": "mcp-servers",
       "title": "MCP 서버·도구",
       "subtitle": "Model Context Protocol servers & tools (CC-compatible)",
-      "fetched_at": "2026-04-18T11:39:25.562649+00:00",
+      "fetched_at": "2026-04-18T11:41:54.057443+00:00",
       "query": "\"model context protocol\" OR \"mcp-server\" OR \"mcp server\" in:name,description pushed:>2026-04-04",
       "total_count": 10,
       "items": [
@@ -1012,7 +1012,7 @@
       "category": "ai-agents",
       "title": "AI 에이전트 프레임워크",
       "subtitle": "LangGraph · CrewAI · AutoGen · multi-agent patterns",
-      "fetched_at": "2026-04-18T11:39:28.004081+00:00",
+      "fetched_at": "2026-04-18T11:41:56.436272+00:00",
       "query": "langgraph OR crewai OR autogen OR \"multi-agent framework\" in:name,description pushed:>2026-04-04",
       "total_count": 10,
       "items": [
@@ -1112,7 +1112,7 @@
           "html_url": "https://github.com/langchain-ai/deepagents",
           "homepage": "https://docs.langchain.com/deepagents",
           "stargazers_count": 21152,
-          "forks_count": 2953,
+          "forks_count": 2954,
           "language": "Python",
           "topics": [
             "ai",
@@ -1278,7 +1278,7 @@
       "category": "llm-prompts",
       "title": "LLM 프롬프트·워크플로우",
       "subtitle": "Prompt engineering · agentic workflows · LLM-native dev",
-      "fetched_at": "2026-04-18T11:39:30.386897+00:00",
+      "fetched_at": "2026-04-18T11:41:58.880069+00:00",
       "query": "\"prompt engineering\" OR \"agentic workflow\" OR \"llm workflow\" OR \"prompt library\" in:name,description pushed:>2026-04-04",
       "total_count": 10,
       "items": [
@@ -1400,8 +1400,8 @@
           "description": "A lightweight, powerful framework for multi-agent workflows",
           "html_url": "https://github.com/openai/openai-agents-python",
           "homepage": "https://openai.github.io/openai-agents-python/",
-          "stargazers_count": 22032,
-          "forks_count": 3514,
+          "stargazers_count": 22033,
+          "forks_count": 3515,
           "language": "Python",
           "topics": [
             "agents",
@@ -1413,7 +1413,7 @@
           ],
           "pushed_at": "2026-04-18T00:15:25Z",
           "created_at": "2025-03-11T03:42:36Z",
-          "updated_at": "2026-04-18T11:38:41Z",
+          "updated_at": "2026-04-18T11:41:15Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/openai/openai-agents-python"
         },
         {
@@ -1600,7 +1600,7 @@
   "meta": {
     "total_repos": 60,
     "total_new": 0,
-    "fetch_duration_ms": 10008,
+    "fetch_duration_ms": 10066,
     "rate_limit_remaining": 26
   }
 }
