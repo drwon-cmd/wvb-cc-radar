@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write
+  issues: write
 
 jobs:
   fetch-deploy:
@@ -54,3 +55,36 @@ jobs:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
         run: |
           railway up --service ${{ secrets.RAILWAY_SERVICE_ID }} --detach --ci
+
+      - name: Check Railway usage
+        id: usage
+        continue-on-error: true
+        env:
+          RAILWAY_ACCOUNT_TOKEN: ${{ secrets.RAILWAY_ACCOUNT_TOKEN }}
+          RAILWAY_PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID }}
+          USAGE_ALERT_USD: '2.00'
+        run: python scripts/check_usage.py
+
+      - name: Alert on cost threshold
+        if: steps.usage.outcome == 'failure'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh label create cost-alert --repo drwon-cmd/wvb-cc-radar --color d93f0b --description "Railway cost threshold exceeded" 2>/dev/null || true
+          existing=$(gh issue list --repo drwon-cmd/wvb-cc-radar --label cost-alert --state open --json number --jq length)
+          if [ "$existing" -eq "0" ]; then
+            gh issue create \
+              --repo drwon-cmd/wvb-cc-radar \
+              --title "[cost-alert] Railway monthly estimate exceeded \$${USAGE_ALERT_USD:-2.00}" \
+              --label cost-alert \
+              --body "Railway estimated monthly cost for wvb-cc-radar crossed the threshold.
+
+          - Workflow run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}
+          - Railway dashboard: https://railway.com/project/50f4f05e-f8f8-44f1-aa90-1bd0496a8e4c/usage
+
+          Review the usage table in the workflow logs for the measurement breakdown.
+          Close this issue manually once addressed; new alerts are suppressed while an open cost-alert issue exists."
+            echo "Created cost-alert issue"
+          else
+            echo "Existing cost-alert issue open (#$(gh issue list --repo drwon-cmd/wvb-cc-radar --label cost-alert --state open --json number --jq '.[0].number')), skipping"
+          fi
