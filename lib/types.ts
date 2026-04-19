@@ -6,7 +6,8 @@ export type CategoryId =
   | 'agent-orchestration'
   | 'mcp-servers'
   | 'ai-agents'
-  | 'llm-prompts';
+  | 'llm-prompts'
+  | 'korean-opensource';
 
 export interface Repo {
   id: number;

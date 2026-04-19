@@ -65,6 +65,13 @@ export const CATEGORIES: CategoryConfig[] = [
     top_n: 10,
     priority: 8,
   },
+  {
+    id: 'korean-opensource',
+    title: '한국 오픈소스',
+    subtitle: 'Claude Code·MCP·RAG·Agent·Vibe Coding — 한국인이 한국 시장·사용자 대상으로 만든 프로젝트 (description에 한글 포함 시 확실)',
+    top_n: 10,
+    priority: 9,
+  },
 ];
 
 export function getCategoryById(id: CategoryId): CategoryConfig | undefined {

@@ -148,6 +148,43 @@ def categories() -> list[dict]:
             "top_n": 10,
             "priority": 8,
         },
+        {
+            "id": "korean-opensource",
+            "title": "한국 오픈소스",
+            "subtitle": "Claude Code·MCP·RAG·Agent·Vibe Coding — 한국인이 한국 시장·사용자 대상으로 만든 프로젝트",
+            # Strategy: cover ALL 8 existing category topics × Korean signals.
+            # Korean signals: "korean" in name/description, "한국" in description, topic:korean.
+            # Examples: NomaDamas/k-skill, kimlawtech/korean-privacy-terms.
+            "queries": [
+                # (1) Claude Code × Korean
+                'topic:claude-code "korean" in:name,description' + suffix,
+                '"한국" in:description topic:claude-code' + suffix,
+                # (2) Vibe Coding × Korean
+                'topic:ai-coding "korean" in:name,description' + suffix,
+                # (3) Enterprise AX × Korean
+                'topic:enterprise-ai "korean" in:name,description' + suffix,
+                # (4) RAG × Korean
+                'topic:rag "korean" in:name,description' + suffix,
+                # (5) Agent Orchestration × Korean
+                'topic:multi-agent "korean" in:name,description' + suffix,
+                # (6) MCP × Korean (both topic variants)
+                'topic:mcp "korean" in:name,description' + suffix,
+                'topic:model-context-protocol "korean" in:name,description' + suffix,
+                # (7) AI Agents × Korean
+                'topic:ai-agents "korean" in:name,description' + suffix,
+                # (8) LLM / Prompt × Korean
+                'topic:llm "korean" in:name,description' + suffix,
+                'topic:prompt-engineering "korean" in:name,description' + suffix,
+                # Korean topic direct
+                'topic:korean topic:llm' + suffix,
+                'topic:korean topic:ai-agents' + suffix,
+                # Hangul description catch-all
+                '"한국" in:description topic:llm' + suffix,
+                '"한국어" in:description topic:llm' + suffix,
+            ],
+            "top_n": 10,
+            "priority": 9,
+        },
     ]
 
 
