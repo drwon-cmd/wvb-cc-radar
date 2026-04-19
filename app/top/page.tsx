@@ -4,7 +4,7 @@ import HeroSection from '@/components/HeroSection';
 import CategorySection from '@/components/CategorySection';
 
 export const dynamic = 'force-static';
-export const revalidate = 3600;
+export const revalidate = 300;
 
 export default async function TopPage() {
   const digest = await getLatestDigest();
