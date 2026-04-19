@@ -1,12 +1,12 @@
 {
   "date": "2026-04-19",
-  "generated_at": "2026-04-19T01:21:43.929909+00:00",
+  "generated_at": "2026-04-19T11:12:33.572197+00:00",
   "categories": [
     {
       "category": "claude-code",
       "title": "Claude Code 생태계",
       "subtitle": "Plugins · Skills · Sub-agents · Hooks · Workflows",
-      "fetched_at": "2026-04-19T01:20:40.184701+00:00",
+      "fetched_at": "2026-04-19T11:10:52.806329+00:00",
       "queries": [
         "topic:claude-code pushed:>2026-04-05",
         "\"claude-code\" in:name pushed:>2026-04-05",
@@ -22,8 +22,8 @@
           "description": "The agent harness performance optimization system. Skills, instincts, memory, security, and research-first development for Claude Code, Codex, Opencode, Cursor and beyond.",
           "html_url": "https://github.com/affaan-m/everything-claude-code",
           "homepage": "https://ecc.tools",
-          "stargazers_count": 160449,
-          "forks_count": 24959,
+          "stargazers_count": 160771,
+          "forks_count": 25007,
           "language": "JavaScript",
           "topics": [
             "ai-agents",
@@ -35,11 +35,11 @@
             "mcp",
             "productivity"
           ],
-          "pushed_at": "2026-04-16T03:07:05Z",
+          "pushed_at": "2026-04-19T04:53:41Z",
           "created_at": "2026-01-18T00:51:51Z",
-          "updated_at": "2026-04-19T01:20:18Z",
+          "updated_at": "2026-04-19T11:10:25Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/affaan-m/everything-claude-code",
-          "stars_delta_24h": 350,
+          "stars_delta_24h": 672,
           "description_ko": "에이전트 하네스 성능 최적화 시스템, Claude Code, Codex, Opencode, Cursor 등을 위한 연구 우선 개발"
         },
         {
@@ -50,15 +50,15 @@
           "description": "Claude Code is an agentic coding tool that lives in your terminal, understands your codebase, and helps you code faster by executing routine tasks, explaining complex code, and handling git workflows - all through natural language commands.",
           "html_url": "https://github.com/anthropics/claude-code",
           "homepage": "https://code.claude.com/docs/en/overview",
-          "stargazers_count": 115587,
-          "forks_count": 19286,
+          "stargazers_count": 115714,
+          "forks_count": 19297,
           "language": "Shell",
           "topics": [],
           "pushed_at": "2026-04-18T01:34:30Z",
           "created_at": "2025-02-22T17:41:21Z",
-          "updated_at": "2026-04-19T01:18:31Z",
+          "updated_at": "2026-04-19T11:04:49Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/anthropics/claude-code",
-          "stars_delta_24h": 145,
+          "stars_delta_24h": 272,
           "description_ko": "Claude Code는 자연어 명령으로 코딩을 돕는 에이전트 코딩 도구입니다"
         },
         {
@@ -69,8 +69,8 @@
           "description": "The agent that grows with you",
           "html_url": "https://github.com/NousResearch/hermes-agent",
           "homepage": "https://hermes-agent.nousresearch.com",
-          "stargazers_count": 99502,
-          "forks_count": 14082,
+          "stargazers_count": 100676,
+          "forks_count": 14311,
           "language": "Python",
           "topics": [
             "ai",
@@ -90,11 +90,11 @@
             "openai",
             "openclaw"
           ],
-          "pushed_at": "2026-04-19T01:18:03Z",
+          "pushed_at": "2026-04-19T10:30:37Z",
           "created_at": "2025-07-22T22:22:28Z",
-          "updated_at": "2026-04-19T01:18:51Z",
+          "updated_at": "2026-04-19T11:10:38Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/NousResearch/hermes-agent",
-          "stars_delta_24h": 1141,
+          "stars_delta_24h": 2315,
           "description_ko": "당신과 함께 성장하는 에이전트"
         },
         {
@@ -105,8 +105,8 @@
           "description": "A Claude Code plugin that automatically captures everything Claude does during your coding sessions, compresses it with AI (using Claude's agent-sdk), and injects relevant context back into future sessions.",
           "html_url": "https://github.com/thedotmack/claude-mem",
           "homepage": "https://claude-mem.ai",
-          "stargazers_count": 62492,
-          "forks_count": 5217,
+          "stargazers_count": 62841,
+          "forks_count": 5258,
           "language": "TypeScript",
           "topics": [
             "ai",
@@ -130,11 +130,11 @@
             "sqlite",
             "supermemory"
           ],
-          "pushed_at": "2026-04-18T21:42:16Z",
+          "pushed_at": "2026-04-19T08:40:17Z",
           "created_at": "2025-08-31T20:50:03Z",
-          "updated_at": "2026-04-19T01:18:13Z",
+          "updated_at": "2026-04-19T11:09:48Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/thedotmack/claude-mem",
-          "stars_delta_24h": 502,
+          "stars_delta_24h": 851,
           "description_ko": "Claude Code 플러그인, 코딩 세션 동안 Claude의 모든 작업을 캡처하여 압축 후 관련 맥락을 주입"
         },
         {
@@ -145,8 +145,8 @@
           "description": "A light-weight and powerful meta-prompting, context engineering and spec-driven development system for Claude Code by TÂCHES.",
           "html_url": "https://github.com/gsd-build/get-shit-done",
           "homepage": "",
-          "stargazers_count": 54697,
-          "forks_count": 4595,
+          "stargazers_count": 54802,
+          "forks_count": 4601,
           "language": "JavaScript",
           "topics": [
             "claude-code",
@@ -154,11 +154,11 @@
             "meta-prompting",
             "spec-driven-development"
           ],
-          "pushed_at": "2026-04-18T19:02:47Z",
+          "pushed_at": "2026-04-19T02:04:14Z",
           "created_at": "2025-12-14T14:17:12Z",
-          "updated_at": "2026-04-19T01:16:50Z",
+          "updated_at": "2026-04-19T11:10:22Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/gsd-build/get-shit-done",
-          "stars_delta_24h": 110,
+          "stars_delta_24h": 215,
           "description_ko": "TÂCHES의 Claude Code용 메타 프롬프팅, 컨텍스트 엔지니어링 시스템"
         },
         {
@@ -169,8 +169,8 @@
           "description": "Bash is all you need -  A nano claude code–like 「agent harness」, built from 0 to 1",
           "html_url": "https://github.com/shareAI-lab/learn-claude-code",
           "homepage": "https://learn.shareai.run",
-          "stargazers_count": 54635,
-          "forks_count": 8985,
+          "stargazers_count": 54727,
+          "forks_count": 9007,
           "language": "TypeScript",
           "topics": [
             "agent",
@@ -186,9 +186,9 @@
           ],
           "pushed_at": "2026-04-14T16:58:21Z",
           "created_at": "2025-06-29T15:34:15Z",
-          "updated_at": "2026-04-19T01:11:19Z",
+          "updated_at": "2026-04-19T11:02:15Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/shareAI-lab/learn-claude-code",
-          "stars_delta_24h": 69,
+          "stars_delta_24h": 161,
           "description_ko": "Bash로 만든 nano Claude Code 유사 '에이전트 하니스'"
         },
         {
@@ -199,8 +199,8 @@
           "description": "omo; the best agent harness - previously oh-my-opencode",
           "html_url": "https://github.com/code-yeongyu/oh-my-openagent",
           "homepage": "https://ohmyopenagent.com/",
-          "stargazers_count": 52591,
-          "forks_count": 4235,
+          "stargazers_count": 52694,
+          "forks_count": 4240,
           "language": "TypeScript",
           "topics": [
             "ai",
@@ -220,11 +220,11 @@
             "tui",
             "typescript"
           ],
-          "pushed_at": "2026-04-18T17:38:20Z",
+          "pushed_at": "2026-04-19T08:41:22Z",
           "created_at": "2025-12-03T01:40:05Z",
-          "updated_at": "2026-04-19T01:14:41Z",
+          "updated_at": "2026-04-19T11:10:37Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/code-yeongyu/oh-my-openagent",
-          "stars_delta_24h": 74,
+          "stars_delta_24h": 177,
           "description_ko": "최고의 에이전트 하니스 omo(구 oh-my-opencode)"
         },
         {
@@ -235,8 +235,8 @@
           "description": "A cross-platform desktop All-in-One assistant tool for Claude Code, Codex, OpenCode, openclaw & Gemini CLI.",
           "html_url": "https://github.com/farion1231/cc-switch",
           "homepage": "https://github.com/farion1231/cc-switch",
-          "stargazers_count": 46876,
-          "forks_count": 2994,
+          "stargazers_count": 47065,
+          "forks_count": 3009,
           "language": "Rust",
           "topics": [
             "ai-tools",
@@ -258,11 +258,11 @@
             "typescript",
             "wsl-support"
           ],
-          "pushed_at": "2026-04-18T09:48:58Z",
+          "pushed_at": "2026-04-19T07:25:26Z",
           "created_at": "2025-08-04T14:16:16Z",
-          "updated_at": "2026-04-19T01:17:10Z",
+          "updated_at": "2026-04-19T11:06:54Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/farion1231/cc-switch",
-          "stars_delta_24h": 104,
+          "stars_delta_24h": 293,
           "description_ko": "Claude Code, Codex, OpenCode, Gemini CLI용 올인원 데스크톱 도구"
         },
         {
@@ -272,16 +272,20 @@
           "owner": "shanraisshan",
           "description": "from vibe coding to agentic engineering - practice makes claude perfect",
           "html_url": "https://github.com/shanraisshan/claude-code-best-practice",
-          "homepage": "",
-          "stargazers_count": 46242,
-          "forks_count": 4523,
+          "homepage": "https://linkedin.com/in/shanraisshan",
+          "stargazers_count": 46406,
+          "forks_count": 4546,
           "language": "HTML",
           "topics": [
+            "agentic-ai",
+            "agentic-coding",
             "agentic-engineering",
+            "agentic-workflow",
+            "ai",
+            "ai-agents",
             "anthropic",
             "best-practices",
             "boris",
-            "boris-cherny",
             "claude",
             "claude-ai",
             "claude-code",
@@ -289,13 +293,16 @@
             "claude-code-best-practices",
             "claude-code-commands",
             "claude-code-skills",
+            "context-engineering",
+            "pakistan",
+            "pakistani-developer",
             "vibe-coding"
           ],
-          "pushed_at": "2026-04-18T16:59:00Z",
+          "pushed_at": "2026-04-19T08:37:26Z",
           "created_at": "2025-10-31T14:15:28Z",
-          "updated_at": "2026-04-19T01:19:11Z",
+          "updated_at": "2026-04-19T11:09:52Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/shanraisshan/claude-code-best-practice",
-          "stars_delta_24h": 113,
+          "stars_delta_24h": 277,
           "description_ko": "vibe 코딩에서 에이전트 엔지니어링으로 - 연습만이 Claude를 완벽하게"
         },
         {
@@ -306,8 +313,8 @@
           "description": "AI productivity studio with smart chat, autonomous agents, and 300+ assistants. Unified access to frontier LLMs",
           "html_url": "https://github.com/CherryHQ/cherry-studio",
           "homepage": "https://cherry-ai.com",
-          "stargazers_count": 43792,
-          "forks_count": 4125,
+          "stargazers_count": 43819,
+          "forks_count": 4127,
           "language": "TypeScript",
           "topics": [
             "agency-agents",
@@ -321,11 +328,11 @@
             "superpowers",
             "vibe-coding"
           ],
-          "pushed_at": "2026-04-18T22:51:45Z",
+          "pushed_at": "2026-04-19T11:05:35Z",
           "created_at": "2024-05-24T01:56:26Z",
-          "updated_at": "2026-04-19T01:12:52Z",
+          "updated_at": "2026-04-19T11:10:41Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/CherryHQ/cherry-studio",
-          "stars_delta_24h": 36,
+          "stars_delta_24h": 63,
           "description_ko": "스마트 채팅, 자율 에이전트, 300+ 어시스턴트를 갖춘 AI 생산성 스튜디오"
         },
         {
@@ -336,8 +343,8 @@
           "description": "\"🐈 nanobot: The Ultra-Lightweight Personal AI Agent\"",
           "html_url": "https://github.com/HKUDS/nanobot",
           "homepage": "https://nanobot.wiki",
-          "stargazers_count": 40009,
-          "forks_count": 7043,
+          "stargazers_count": 40058,
+          "forks_count": 7044,
           "language": "Python",
           "topics": [
             "ai",
@@ -353,11 +360,11 @@
             "openai",
             "openclaw"
           ],
-          "pushed_at": "2026-04-18T20:20:00Z",
+          "pushed_at": "2026-04-19T09:53:40Z",
           "created_at": "2026-02-01T07:16:15Z",
-          "updated_at": "2026-04-19T00:53:29Z",
+          "updated_at": "2026-04-19T11:05:07Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/HKUDS/nanobot",
-          "stars_delta_24h": 43,
+          "stars_delta_24h": 92,
           "description_ko": "🐈 nanobot: 초경량 개인 AI 에이전트"
         },
         {
@@ -368,8 +375,8 @@
           "description": "A curated list of awesome skills, hooks, slash-commands, agent orchestrators, applications, and plugins for Claude Code by Anthropic",
           "html_url": "https://github.com/hesreallyhim/awesome-claude-code",
           "homepage": "",
-          "stargazers_count": 39595,
-          "forks_count": 3271,
+          "stargazers_count": 39664,
+          "forks_count": 3280,
           "language": "Python",
           "topics": [
             "agent-skills",
@@ -392,11 +399,11 @@
             "coding-assistants",
             "llm"
           ],
-          "pushed_at": "2026-04-19T01:00:09Z",
+          "pushed_at": "2026-04-19T09:24:16Z",
           "created_at": "2025-04-19T20:55:59Z",
-          "updated_at": "2026-04-19T01:17:35Z",
+          "updated_at": "2026-04-19T11:09:04Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/hesreallyhim/awesome-claude-code",
-          "stars_delta_24h": 99,
+          "stars_delta_24h": 168,
           "description_ko": "Anthropic의 Claude Code용 스킬, 훅, 슬래시-명령어 모음"
         },
         {
@@ -407,8 +414,8 @@
           "description": "Extracted system prompts from ChatGPT (GPT-5.4, GPT-5.3, Codex), Claude (Opus 4.6, Sonnet 4.6, Claude Code), Gemini (3.1 Pro, 3 Flash, CLI), Grok (4.2, 4), Perplexity, and more. Updated regularly.",
           "html_url": "https://github.com/asgeirtj/system_prompts_leaks",
           "homepage": "",
-          "stargazers_count": 38554,
-          "forks_count": 6344,
+          "stargazers_count": 38576,
+          "forks_count": 6347,
           "language": null,
           "topics": [
             "ai",
@@ -432,9 +439,9 @@
           ],
           "pushed_at": "2026-04-18T12:59:33Z",
           "created_at": "2025-05-03T02:43:56Z",
-          "updated_at": "2026-04-19T00:43:51Z",
+          "updated_at": "2026-04-19T10:41:56Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/asgeirtj/system_prompts_leaks",
-          "stars_delta_24h": 26,
+          "stars_delta_24h": 48,
           "description_ko": "ChatGPT, Claude, Gemini, Grok 등의 시스템 프롬프트를 추출했습니다"
         },
         {
@@ -445,8 +452,8 @@
           "description": "🪨 why use many token when few token do trick — Claude Code skill that cuts 65% of tokens by talking like caveman",
           "html_url": "https://github.com/JuliusBrussee/caveman",
           "homepage": "https://juliusbrussee.github.io/caveman/",
-          "stargazers_count": 37905,
-          "forks_count": 1855,
+          "stargazers_count": 38285,
+          "forks_count": 1893,
           "language": "Python",
           "topics": [
             "ai",
@@ -462,9 +469,9 @@
           ],
           "pushed_at": "2026-04-18T10:11:39Z",
           "created_at": "2026-04-04T10:03:00Z",
-          "updated_at": "2026-04-19T01:17:08Z",
+          "updated_at": "2026-04-19T11:10:14Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/JuliusBrussee/caveman",
-          "stars_delta_24h": 548,
+          "stars_delta_24h": 928,
           "description_ko": "🪨 적은 토큰으로도 충분하다면 많은 토큰을 왜 사용할까요? — Claude Code skill"
         },
         {
@@ -475,8 +482,8 @@
           "description": "AI-powered job search system built on Claude Code. 14 skill modes, Go dashboard, PDF generation, batch processing.",
           "html_url": "https://github.com/santifer/career-ops",
           "homepage": null,
-          "stargazers_count": 36049,
-          "forks_count": 7255,
+          "stargazers_count": 36238,
+          "forks_count": 7306,
           "language": "JavaScript",
           "topics": [
             "ai-agent",
@@ -492,11 +499,11 @@
             "open-source",
             "resume"
           ],
-          "pushed_at": "2026-04-17T18:39:19Z",
+          "pushed_at": "2026-04-19T10:51:54Z",
           "created_at": "2026-04-04T18:21:18Z",
-          "updated_at": "2026-04-19T01:15:28Z",
+          "updated_at": "2026-04-19T11:08:00Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/santifer/career-ops",
-          "stars_delta_24h": 222,
+          "stars_delta_24h": 411,
           "description_ko": "Claude Code 기반 AI 채용 검색 시스템(14가지 스킬 모드, Go 대시보드)"
         },
         {
@@ -507,8 +514,8 @@
           "description": "Installable GitHub library of 1,400+ agentic skills for Claude Code, Cursor, Codex CLI, Gemini CLI, Antigravity, and more. Includes installer CLI, bundles, workflows, and official/community skill collections.",
           "html_url": "https://github.com/sickn33/antigravity-awesome-skills",
           "homepage": "https://sickn33.github.io/antigravity-awesome-skills/",
-          "stargazers_count": 33851,
-          "forks_count": 5609,
+          "stargazers_count": 33914,
+          "forks_count": 5615,
           "language": "Python",
           "topics": [
             "agent-skills",
@@ -532,11 +539,11 @@
             "mcp",
             "skill-library"
           ],
-          "pushed_at": "2026-04-18T06:28:10Z",
+          "pushed_at": "2026-04-19T07:25:10Z",
           "created_at": "2026-01-14T17:48:09Z",
-          "updated_at": "2026-04-19T01:00:48Z",
+          "updated_at": "2026-04-19T11:08:46Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/sickn33/antigravity-awesome-skills",
-          "stars_delta_24h": 91,
+          "stars_delta_24h": 154,
           "description_ko": "Claude Code, Cursor 등을 위한 1400개 이상의 agentic 스킬 GitHub 라이브러리입니다"
         },
         {
@@ -547,8 +554,8 @@
           "description": "Intelligent automation and multi-agent orchestration for Claude Code",
           "html_url": "https://github.com/wshobson/agents",
           "homepage": "https://sethhobson.com",
-          "stargazers_count": 33846,
-          "forks_count": 3675,
+          "stargazers_count": 33872,
+          "forks_count": 3676,
           "language": "Python",
           "topics": [
             "agents",
@@ -574,9 +581,9 @@
           ],
           "pushed_at": "2026-04-18T18:30:34Z",
           "created_at": "2025-07-24T23:28:14Z",
-          "updated_at": "2026-04-19T00:24:14Z",
+          "updated_at": "2026-04-19T10:57:57Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/wshobson/agents",
-          "stars_delta_24h": 27,
+          "stars_delta_24h": 53,
           "description_ko": "Claude Code를 위한 지능형 자동화 및 멀티 에이전트 오케스트레이션"
         },
         {
@@ -587,8 +594,8 @@
           "description": "🌊 The leading agent orchestration platform for Claude. Deploy intelligent multi-agent swarms, coordinate autonomous workflows, and build conversational AI systems. Features    enterprise-grade architecture, distributed swarm intelligence, RAG integration, and native Claude Code / Codex Integration",
           "html_url": "https://github.com/ruvnet/ruflo",
           "homepage": "https://Cognitum.One",
-          "stargazers_count": 32332,
-          "forks_count": 3635,
+          "stargazers_count": 32376,
+          "forks_count": 3643,
           "language": "TypeScript",
           "topics": [
             "agentic-ai",
@@ -614,9 +621,9 @@
           ],
           "pushed_at": "2026-04-11T16:20:19Z",
           "created_at": "2025-06-02T21:24:20Z",
-          "updated_at": "2026-04-19T01:04:01Z",
+          "updated_at": "2026-04-19T11:10:28Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/ruvnet/ruflo",
-          "stars_delta_24h": 76,
+          "stars_delta_24h": 120,
           "description_ko": "🌊 Claude를 위한 Agent 오케스트레이션 플랫폼으로, 지능형 멀티 Agent를 배포합니다"
         },
         {
@@ -627,8 +634,8 @@
           "description": "AI coding assistant skill (Claude Code, Codex, OpenCode, Cursor, Gemini CLI, GitHub Copilot CLI, OpenClaw, Factory Droid, Trae, Google Antigravity). Turn any folder of code, docs, papers, images, or videos into a queryable knowledge graph",
           "html_url": "https://github.com/safishamsi/graphify",
           "homepage": "https://safishamsi.github.io/penpax.ai",
-          "stargazers_count": 29921,
-          "forks_count": 3286,
+          "stargazers_count": 30236,
+          "forks_count": 3329,
           "language": "Python",
           "topics": [
             "antigravity",
@@ -642,9 +649,9 @@
           ],
           "pushed_at": "2026-04-18T15:52:37Z",
           "created_at": "2026-04-03T15:49:07Z",
-          "updated_at": "2026-04-19T01:19:27Z",
+          "updated_at": "2026-04-19T11:10:33Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/safishamsi/graphify",
-          "stars_delta_24h": 370,
+          "stars_delta_24h": 685,
           "description_ko": "AI 코딩 어시스턴트 스킬 (Claude Code, Codex, Gemini CLI 등)"
         },
         {
@@ -655,8 +662,8 @@
           "description": "Teams-first Multi-agent orchestration for Claude Code",
           "html_url": "https://github.com/Yeachan-Heo/oh-my-claudecode",
           "homepage": "https://oh-my-claudecode.dev",
-          "stargazers_count": 29845,
-          "forks_count": 2756,
+          "stargazers_count": 29932,
+          "forks_count": 2771,
           "language": "TypeScript",
           "topics": [
             "agentic-coding",
@@ -670,11 +677,11 @@
             "parallel-execution",
             "vibe-coding"
           ],
-          "pushed_at": "2026-04-18T16:55:36Z",
+          "pushed_at": "2026-04-19T09:15:54Z",
           "created_at": "2026-01-09T03:36:29Z",
-          "updated_at": "2026-04-19T01:17:40Z",
+          "updated_at": "2026-04-19T11:10:27Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/Yeachan-Heo/oh-my-claudecode",
-          "stars_delta_24h": 83,
+          "stars_delta_24h": 170,
           "description_ko": "Claude Code를 위한 팀 우선 멀티 에이전트 오케스트레이션"
         },
         {
@@ -685,8 +692,8 @@
           "description": "CLI proxy that reduces LLM token consumption by 60-90% on common dev commands. Single Rust binary, zero dependencies",
           "html_url": "https://github.com/rtk-ai/rtk",
           "homepage": "https://www.rtk-ai.app",
-          "stargazers_count": 29214,
-          "forks_count": 1705,
+          "stargazers_count": 29562,
+          "forks_count": 1726,
           "language": "Rust",
           "topics": [
             "agentic-coding",
@@ -705,9 +712,9 @@
           ],
           "pushed_at": "2026-04-18T16:41:51Z",
           "created_at": "2026-01-22T16:54:16Z",
-          "updated_at": "2026-04-19T01:13:00Z",
+          "updated_at": "2026-04-19T11:08:06Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/rtk-ai/rtk",
-          "stars_delta_24h": 383,
+          "stars_delta_24h": 731,
           "description_ko": "일반적인 개발 명령에서 LLM 토큰 소비를 60-90% 줄이는 CLI 프록시, Rust 바이너리"
         },
         {
@@ -718,8 +725,8 @@
           "description": "A visual, example-driven guide to Claude Code — from basic concepts to advanced agents, with copy-paste templates that bring immediate value.",
           "html_url": "https://github.com/luongnv89/claude-howto",
           "homepage": "",
-          "stargazers_count": 27513,
-          "forks_count": 3358,
+          "stargazers_count": 27576,
+          "forks_count": 3367,
           "language": "Python",
           "topics": [
             "claude-code",
@@ -728,9 +735,9 @@
           ],
           "pushed_at": "2026-04-16T21:21:10Z",
           "created_at": "2025-11-07T22:59:34Z",
-          "updated_at": "2026-04-19T01:08:10Z",
+          "updated_at": "2026-04-19T10:50:02Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/luongnv89/claude-howto",
-          "stars_delta_24h": 79,
+          "stars_delta_24h": 142,
           "description_ko": "Claude Code에 대한 시각적 가이드 및 즉시 사용 가능한 템플릿"
         },
         {
@@ -741,8 +748,8 @@
           "description": "A lightweight alternative to OpenClaw that runs in containers for security. Connects to WhatsApp, Telegram, Slack, Discord, Gmail and other messaging apps,, has memory, scheduled jobs, and runs directly on Anthropic's Agents SDK",
           "html_url": "https://github.com/qwibitai/nanoclaw",
           "homepage": "https://nanoclaw.dev",
-          "stargazers_count": 27488,
-          "forks_count": 12304,
+          "stargazers_count": 27512,
+          "forks_count": 12341,
           "language": "TypeScript",
           "topics": [
             "ai-agents",
@@ -751,11 +758,11 @@
             "claude-skills",
             "openclaw"
           ],
-          "pushed_at": "2026-04-18T19:14:14Z",
+          "pushed_at": "2026-04-19T11:05:58Z",
           "created_at": "2026-01-31T15:47:22Z",
-          "updated_at": "2026-04-19T01:05:24Z",
+          "updated_at": "2026-04-19T11:04:27Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/qwibitai/nanoclaw",
-          "stars_delta_24h": 15,
+          "stars_delta_24h": 39,
           "description_ko": "보안을 위해 컨테이너에서 실행되는 OpenClaw의 경량 대안"
         },
         {
@@ -766,8 +773,8 @@
           "description": "Wrap Gemini CLI, Antigravity, ChatGPT Codex, Claude Code as an OpenAI/Gemini/Claude/Codex compatible API service, allowing you to enjoy the free Gemini 2.5 Pro, GPT 5, Claude model through API",
           "html_url": "https://github.com/router-for-me/CLIProxyAPI",
           "homepage": "",
-          "stargazers_count": 27094,
-          "forks_count": 4488,
+          "stargazers_count": 27182,
+          "forks_count": 4499,
           "language": "Go",
           "topics": [
             "antigravity",
@@ -777,11 +784,11 @@
             "gemini",
             "openai"
           ],
-          "pushed_at": "2026-04-18T19:22:07Z",
+          "pushed_at": "2026-04-19T03:46:22Z",
           "created_at": "2025-07-01T19:43:27Z",
-          "updated_at": "2026-04-19T01:05:37Z",
+          "updated_at": "2026-04-19T11:08:40Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/router-for-me/CLIProxyAPI",
-          "stars_delta_24h": 65,
+          "stars_delta_24h": 153,
           "description_ko": "Gemini CLI, Claude Code를 OpenAI 호환 API 서비스로 래핑"
         },
         {
@@ -792,8 +799,8 @@
           "description": "CLI tool for configuring and monitoring Claude Code",
           "html_url": "https://github.com/davila7/claude-code-templates",
           "homepage": "https://aitmpl.com",
-          "stargazers_count": 24716,
-          "forks_count": 2445,
+          "stargazers_count": 24727,
+          "forks_count": 2449,
           "language": "Python",
           "topics": [
             "anthropic",
@@ -801,11 +808,11 @@
             "claude",
             "claude-code"
           ],
-          "pushed_at": "2026-04-19T00:45:41Z",
+          "pushed_at": "2026-04-19T04:07:27Z",
           "created_at": "2025-07-04T01:26:26Z",
-          "updated_at": "2026-04-19T00:06:35Z",
+          "updated_at": "2026-04-19T09:57:23Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/davila7/claude-code-templates",
-          "stars_delta_24h": 16,
+          "stars_delta_24h": 27,
           "description_ko": "Claude Code 구성 및 모니터링을 위한 CLI 도구"
         },
         {
@@ -816,8 +823,8 @@
           "description": "A powerful MCP toolkit for coding, providing semantic retrieval and editing capabilities  - the IDE for your agent",
           "html_url": "https://github.com/oraios/serena",
           "homepage": "https://oraios.github.io/serena",
-          "stargazers_count": 23119,
-          "forks_count": 1553,
+          "stargazers_count": 23133,
+          "forks_count": 1554,
           "language": "Python",
           "topics": [
             "agent",
@@ -833,11 +840,11 @@
             "programming",
             "vibe-coding"
           ],
-          "pushed_at": "2026-04-18T18:48:54Z",
+          "pushed_at": "2026-04-19T10:52:26Z",
           "created_at": "2025-03-23T22:35:24Z",
-          "updated_at": "2026-04-19T01:14:32Z",
+          "updated_at": "2026-04-19T11:08:16Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/oraios/serena",
-          "stars_delta_24h": 15,
+          "stars_delta_24h": 29,
           "description_ko": "시맨틱 검색 및 편집 기능을 제공하는 강력한 코딩용 MCP 툴킷입니다"
         },
         {
@@ -848,8 +855,8 @@
           "description": "AI agent skill that researches any topic across Reddit, X, YouTube, HN, Polymarket, and the web - then synthesizes a grounded summary",
           "html_url": "https://github.com/mvanhorn/last30days-skill",
           "homepage": null,
-          "stargazers_count": 22609,
-          "forks_count": 1856,
+          "stargazers_count": 22658,
+          "forks_count": 1862,
           "language": "Python",
           "topics": [
             "ai-prompts",
@@ -875,9 +882,9 @@
           ],
           "pushed_at": "2026-04-18T21:12:47Z",
           "created_at": "2026-01-23T20:37:37Z",
-          "updated_at": "2026-04-19T01:18:33Z",
+          "updated_at": "2026-04-19T10:59:43Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/mvanhorn/last30days-skill",
-          "stars_delta_24h": 77,
+          "stars_delta_24h": 126,
           "description_ko": "Reddit, X 등에서 주제를 조사하여 요약하는 AI 에이전트 스킬"
         },
         {
@@ -888,8 +895,8 @@
           "description": "Free, local, open-source 24/7 Cowork app and OpenClaw for Gemini CLI, Claude Code, Codex, OpenCode, Qwen Code, Goose CLI, Auggie, and more | 🌟 Star if you like it!",
           "html_url": "https://github.com/iOfficeAI/AionUi",
           "homepage": "https://www.aionui.com",
-          "stargazers_count": 22137,
-          "forks_count": 1865,
+          "stargazers_count": 22162,
+          "forks_count": 1869,
           "language": "TypeScript",
           "topics": [
             "acp",
@@ -912,11 +919,11 @@
             "skills",
             "webui"
           ],
-          "pushed_at": "2026-04-19T01:00:00Z",
+          "pushed_at": "2026-04-19T07:07:24Z",
           "created_at": "2025-08-07T10:29:51Z",
-          "updated_at": "2026-04-19T01:15:34Z",
+          "updated_at": "2026-04-19T10:59:49Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/iOfficeAI/AionUi",
-          "stars_delta_24h": 17,
+          "stars_delta_24h": 42,
           "description_ko": "Gemini CLI, Claude Code 등을 위한 무료 오픈소스 Cowork 앱 및 OpenClaw"
         },
         {
@@ -927,7 +934,7 @@
           "description": "Beads - A memory upgrade for your coding agent",
           "html_url": "https://github.com/gastownhall/beads",
           "homepage": "",
-          "stargazers_count": 20903,
+          "stargazers_count": 20909,
           "forks_count": 1402,
           "language": "Go",
           "topics": [
@@ -937,9 +944,9 @@
           ],
           "pushed_at": "2026-04-19T00:10:12Z",
           "created_at": "2025-10-12T03:09:46Z",
-          "updated_at": "2026-04-19T00:08:53Z",
+          "updated_at": "2026-04-19T08:39:34Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/gastownhall/beads",
-          "stars_delta_24h": 14,
+          "stars_delta_24h": 20,
           "description_ko": "Beads - 코딩 에이전트를 위한 메모리 업그레이드"
         },
         {
@@ -950,8 +957,8 @@
           "description": "A Claude Code plugin that shows what's happening - context usage, active tools, running agents, and todo progress",
           "html_url": "https://github.com/jarrodwatts/claude-hud",
           "homepage": null,
-          "stargazers_count": 19898,
-          "forks_count": 885,
+          "stargazers_count": 19951,
+          "forks_count": 887,
           "language": "JavaScript",
           "topics": [
             "anthropic",
@@ -964,9 +971,9 @@
           ],
           "pushed_at": "2026-04-18T21:32:38Z",
           "created_at": "2026-01-02T01:35:07Z",
-          "updated_at": "2026-04-19T00:48:27Z",
+          "updated_at": "2026-04-19T11:05:02Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/jarrodwatts/claude-hud",
-          "stars_delta_24h": 33,
+          "stars_delta_24h": 86,
           "description_ko": "Claude Code 플러그인으로 컨텍스트 사용, 활성 도구, 에이전트 실행, 할 일 진행 상황을 표시합니다"
         }
       ]
@@ -975,7 +982,7 @@
       "category": "vibe-coding",
       "title": "Vibe Coding 도구",
       "subtitle": "Cursor·Bolt·Lovable·v0 계열 대안, AI IDE, 비개발자 코딩",
-      "fetched_at": "2026-04-19T01:20:48.583511+00:00",
+      "fetched_at": "2026-04-19T11:11:01.228009+00:00",
       "queries": [
         "topic:ai-coding pushed:>2026-04-05",
         "topic:ai-ide pushed:>2026-04-05",
@@ -991,8 +998,8 @@
           "description": "Installable GitHub library of 1,400+ agentic skills for Claude Code, Cursor, Codex CLI, Gemini CLI, Antigravity, and more. Includes installer CLI, bundles, workflows, and official/community skill collections.",
           "html_url": "https://github.com/sickn33/antigravity-awesome-skills",
           "homepage": "https://sickn33.github.io/antigravity-awesome-skills/",
-          "stargazers_count": 33851,
-          "forks_count": 5609,
+          "stargazers_count": 33914,
+          "forks_count": 5615,
           "language": "Python",
           "topics": [
             "agent-skills",
@@ -1016,11 +1023,11 @@
             "mcp",
             "skill-library"
           ],
-          "pushed_at": "2026-04-18T06:28:10Z",
+          "pushed_at": "2026-04-19T07:25:10Z",
           "created_at": "2026-01-14T17:48:09Z",
-          "updated_at": "2026-04-19T01:00:48Z",
+          "updated_at": "2026-04-19T11:08:46Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/sickn33/antigravity-awesome-skills",
-          "stars_delta_24h": 91,
+          "stars_delta_24h": 154,
           "description_ko": "Claude Code, Cursor 등을 위한 1400개 이상의 agentic 스킬 GitHub 라이브러리입니다"
         },
         {
@@ -1031,8 +1038,8 @@
           "description": "CLI proxy that reduces LLM token consumption by 60-90% on common dev commands. Single Rust binary, zero dependencies",
           "html_url": "https://github.com/rtk-ai/rtk",
           "homepage": "https://www.rtk-ai.app",
-          "stargazers_count": 29214,
-          "forks_count": 1705,
+          "stargazers_count": 29562,
+          "forks_count": 1726,
           "language": "Rust",
           "topics": [
             "agentic-coding",
@@ -1051,9 +1058,9 @@
           ],
           "pushed_at": "2026-04-18T16:41:51Z",
           "created_at": "2026-01-22T16:54:16Z",
-          "updated_at": "2026-04-19T01:13:00Z",
+          "updated_at": "2026-04-19T11:08:06Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/rtk-ai/rtk",
-          "stars_delta_24h": 383,
+          "stars_delta_24h": 731,
           "description_ko": "일반적인 개발 명령에서 LLM 토큰 소비를 60-90% 줄이는 CLI 프록시, Rust 바이너리"
         },
         {
@@ -1064,8 +1071,8 @@
           "description": "A powerful MCP toolkit for coding, providing semantic retrieval and editing capabilities  - the IDE for your agent",
           "html_url": "https://github.com/oraios/serena",
           "homepage": "https://oraios.github.io/serena",
-          "stargazers_count": 23119,
-          "forks_count": 1553,
+          "stargazers_count": 23133,
+          "forks_count": 1554,
           "language": "Python",
           "topics": [
             "agent",
@@ -1081,11 +1088,11 @@
             "programming",
             "vibe-coding"
           ],
-          "pushed_at": "2026-04-18T18:48:54Z",
+          "pushed_at": "2026-04-19T10:52:26Z",
           "created_at": "2025-03-23T22:35:24Z",
-          "updated_at": "2026-04-19T01:14:32Z",
+          "updated_at": "2026-04-19T11:08:16Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/oraios/serena",
-          "stars_delta_24h": 15,
+          "stars_delta_24h": 29,
           "description_ko": "시맨틱 검색 및 편집 기능을 제공하는 강력한 코딩용 MCP 툴킷입니다"
         },
         {
@@ -1096,8 +1103,8 @@
           "description": "Kilo is the all-in-one agentic engineering platform. Build, ship, and iterate faster with the most popular open source coding agent. #1 coding agent on OpenRouter. 1.5M+ Kilo Coders. 25T+ tokens processed",
           "html_url": "https://github.com/Kilo-Org/kilocode",
           "homepage": "https://kilo.ai/",
-          "stargazers_count": 18278,
-          "forks_count": 2408,
+          "stargazers_count": 18297,
+          "forks_count": 2411,
           "language": "TypeScript",
           "topics": [
             "ai",
@@ -1113,11 +1120,11 @@
             "vscode",
             "vscode-extension"
           ],
-          "pushed_at": "2026-04-19T00:59:46Z",
+          "pushed_at": "2026-04-19T03:48:20Z",
           "created_at": "2025-03-10T15:34:26Z",
-          "updated_at": "2026-04-19T00:18:11Z",
+          "updated_at": "2026-04-19T10:40:48Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/Kilo-Org/kilocode",
-          "stars_delta_24h": 11,
+          "stars_delta_24h": 30,
           "description_ko": "Kilo는 올인원 agentic 엔지니어링 플랫폼이며 OpenRouter의 #1 코딩 에이전트입니다"
         },
         {
@@ -1128,8 +1135,8 @@
           "description": "Local knowledge graph for Claude Code. Builds a persistent map of your codebase so Claude reads only what matters — 6.8× fewer tokens on reviews and up to 49× on daily coding tasks.",
           "html_url": "https://github.com/tirth8205/code-review-graph",
           "homepage": "https://code-review-graph.com",
-          "stargazers_count": 11093,
-          "forks_count": 1235,
+          "stargazers_count": 11218,
+          "forks_count": 1240,
           "language": "Python",
           "topics": [
             "ai-coding",
@@ -1147,9 +1154,9 @@
           ],
           "pushed_at": "2026-04-18T23:18:07Z",
           "created_at": "2026-02-26T17:25:13Z",
-          "updated_at": "2026-04-19T01:14:32Z",
+          "updated_at": "2026-04-19T11:08:59Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/tirth8205/code-review-graph",
-          "stars_delta_24h": 197,
+          "stars_delta_24h": 322,
           "description_ko": "Claude Code용 로컬 지식 그래프로 코드베이스의 지속적인 맵을 구축합니다"
         },
         {
@@ -1160,7 +1167,7 @@
           "description": "Code search MCP for Claude Code. Make entire codebase the context for any coding agent.",
           "html_url": "https://github.com/zilliztech/claude-context",
           "homepage": "https://github.com/zilliztech/claude-context/tree/master/docs",
-          "stargazers_count": 5965,
+          "stargazers_count": 5979,
           "forks_count": 528,
           "language": "TypeScript",
           "topics": [
@@ -1187,9 +1194,9 @@
           ],
           "pushed_at": "2026-04-17T06:38:08Z",
           "created_at": "2025-06-06T02:12:47Z",
-          "updated_at": "2026-04-19T00:18:42Z",
+          "updated_at": "2026-04-19T11:07:19Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/zilliztech/claude-context",
-          "stars_delta_24h": 12,
+          "stars_delta_24h": 26,
           "description_ko": "Claude Code용 코드 검색 MCP로 전체 코드베이스를 코딩 에이전트의 컨텍스트로 만드세요"
         },
         {
@@ -1200,8 +1207,8 @@
           "description": "🎃 A fast, out-of-the-box terminal built for AI coding.",
           "html_url": "https://github.com/tw93/Kaku",
           "homepage": "https://x.com/hitw93/status/2040587400582443362?s=46",
-          "stargazers_count": 4336,
-          "forks_count": 220,
+          "stargazers_count": 4405,
+          "forks_count": 223,
           "language": "Rust",
           "topics": [
             "ai-coding",
@@ -1213,11 +1220,11 @@
             "terminal-emulator",
             "vibe-coding"
           ],
-          "pushed_at": "2026-04-19T00:30:28Z",
+          "pushed_at": "2026-04-19T02:29:28Z",
           "created_at": "2026-02-07T13:00:49Z",
-          "updated_at": "2026-04-19T01:16:43Z",
+          "updated_at": "2026-04-19T11:03:13Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/tw93/Kaku",
-          "stars_delta_24h": 160,
+          "stars_delta_24h": 229,
           "description_ko": "AI 코딩을 위해 구축된 빠르고 즉시 사용 가능한 터미널입니다"
         },
         {
@@ -1228,8 +1235,8 @@
           "description": "A tremendous feat of documentation, this guide covers Claude Code from beginner to power user, with production-ready templates for Claude Code features, guides on agentic workflows, and a lot of great learning materials, including quizzes and a handy \"cheatsheet\". Whether it's the \"ultimate\" guide to Claude Code will be up to the reader :)",
           "html_url": "https://github.com/FlorianBruniaux/claude-code-ultimate-guide",
           "homepage": "https://cc.bruniaux.com/",
-          "stargazers_count": 3645,
-          "forks_count": 499,
+          "stargazers_count": 3672,
+          "forks_count": 502,
           "language": "TypeScript",
           "topics": [
             "agentic-coding",
@@ -1255,9 +1262,9 @@
           ],
           "pushed_at": "2026-04-18T16:12:17Z",
           "created_at": "2026-01-09T13:42:10Z",
-          "updated_at": "2026-04-19T01:11:28Z",
+          "updated_at": "2026-04-19T10:27:15Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/FlorianBruniaux/claude-code-ultimate-guide",
-          "stars_delta_24h": 19,
+          "stars_delta_24h": 46,
           "description_ko": "Claude Code 기능, agentic 워크플로우 가이드 등 훌륭한 학습 자료를 제공합니다"
         },
         {
@@ -1268,8 +1275,8 @@
           "description": "See where your AI coding tokens go. Interactive TUI dashboard for Claude Code, Codex, and Cursor cost observability.",
           "html_url": "https://github.com/getagentseal/codeburn",
           "homepage": null,
-          "stargazers_count": 2717,
-          "forks_count": 190,
+          "stargazers_count": 2758,
+          "forks_count": 200,
           "language": "TypeScript",
           "topics": [
             "ai-coding",
@@ -1283,9 +1290,9 @@
             "terminal-ui",
             "token-usage"
           ],
-          "pushed_at": "2026-04-18T22:56:34Z",
+          "pushed_at": "2026-04-19T10:39:31Z",
           "created_at": "2026-04-13T22:11:53Z",
-          "updated_at": "2026-04-19T00:55:34Z",
+          "updated_at": "2026-04-19T10:49:04Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/getagentseal/codeburn",
           "is_new_this_week": true,
           "description_ko": "Claude Code, Codex, Cursor 비용 관찰을 위한 인터랙티브 TUI 대시보드"
@@ -1298,8 +1305,8 @@
           "description": "企业级 AI 编程助手，专为 研发协作 和 研发管理 场景而设计。",
           "html_url": "https://github.com/chaitin/MonkeyCode",
           "homepage": "https://monkeycode-ai.com/",
-          "stargazers_count": 2512,
-          "forks_count": 292,
+          "stargazers_count": 2515,
+          "forks_count": 293,
           "language": "TypeScript",
           "topics": [
             "ai",
@@ -1312,9 +1319,9 @@
           ],
           "pushed_at": "2026-04-17T14:10:05Z",
           "created_at": "2025-06-25T06:35:32Z",
-          "updated_at": "2026-04-18T22:16:57Z",
+          "updated_at": "2026-04-19T08:29:35Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/chaitin/MonkeyCode",
-          "stars_delta_24h": 3,
+          "stars_delta_24h": 6,
           "description_ko": "企业级 AI 编程助手，专为 研发协作 和 研发管理 场景而设计。"
         }
       ]
@@ -1323,7 +1330,7 @@
       "category": "enterprise-ax",
       "title": "Enterprise AX · FDE",
       "subtitle": "Forward Deployed Engineer 모델, 기업 AI 전환 프레임워크",
-      "fetched_at": "2026-04-19T01:20:56.864129+00:00",
+      "fetched_at": "2026-04-19T11:11:09.697613+00:00",
       "queries": [
         "topic:enterprise-ai pushed:>2026-04-05",
         "topic:digital-transformation pushed:>2026-04-05",
@@ -1358,7 +1365,7 @@
           "description": "Config-driven engine that turns JSON into production-grade AI agents. Multi-agent orchestration, 12+ LLM providers, MCP/A2A protocols, RAG, persistent memory, and enterprise compliance (EU AI Act, GDPR, HIPAA). Built on Quarkus.",
           "html_url": "https://github.com/labsai/EDDI",
           "homepage": "https://eddi.labs.ai",
-          "stargazers_count": 308,
+          "stargazers_count": 309,
           "forks_count": 104,
           "language": "Java",
           "topics": [
@@ -1383,9 +1390,9 @@
           ],
           "pushed_at": "2026-04-19T00:35:27Z",
           "created_at": "2016-10-13T13:29:22Z",
-          "updated_at": "2026-04-18T14:44:28Z",
+          "updated_at": "2026-04-19T05:55:26Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/labsai/EDDI",
-          "stars_delta_24h": 1,
+          "stars_delta_24h": 2,
           "description_ko": "JSON을 프로덕션급 AI 에이전트로 변환하는 엔진, 다중 에이전트, 12+ LLM, MCP/A2A, RAG 지원"
         },
         {
@@ -1421,9 +1428,9 @@
             "question-answering",
             "rag"
           ],
-          "pushed_at": "2026-04-16T05:34:18Z",
+          "pushed_at": "2026-04-19T06:17:29Z",
           "created_at": "2025-09-06T08:10:17Z",
-          "updated_at": "2026-04-16T05:34:22Z",
+          "updated_at": "2026-04-19T06:17:33Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/bibinprathap/VeritasGraph",
           "stars_delta_24h": 0,
           "description_ko": "VeritasGraph: 검증 가능한 속성을 갖춘 안전한 온프레미스 AI를 위한 엔터프라이즈급 Graph RAG"
@@ -1501,7 +1508,7 @@
           "description": "👾 下一代透明智能体架构 | Next-Gen Transparent Agent Architecture 🔍 全行为审计 | 🛡️ 两段式安全调用 | 🧠 双水位记忆 | ⏰ 心跳任务 📊 P0 级事故率降低 80% | 兼容 OpenClaw + Claude Code 技能生态",
           "html_url": "https://github.com/ttguy0707/CyberClaw",
           "homepage": "",
-          "stargazers_count": 110,
+          "stargazers_count": 115,
           "forks_count": 12,
           "language": "Python",
           "topics": [
@@ -1522,9 +1529,9 @@
           ],
           "pushed_at": "2026-04-10T13:08:26Z",
           "created_at": "2026-04-07T04:07:04Z",
-          "updated_at": "2026-04-18T07:24:33Z",
+          "updated_at": "2026-04-19T03:33:53Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/ttguy0707/CyberClaw",
-          "stars_delta_24h": 0,
+          "stars_delta_24h": 5,
           "description_ko": "👾 차세대 투명 에이전트 아키텍처 | 전체 행위 감사 | 🛡️ 2단계 보안 호출 | 🧠 이중 수위 기억 | ⏰ 심박수 작업 📊 P0급 사고율 80% 감소 | OpenClaw + Claude Code 기술 생태계와 호환"
         },
         {
@@ -1566,7 +1573,7 @@
           "description": "Enterprise-ready self-hosted AI assistant runtime with sandboxed execution, secure credentials, approvals, and memory",
           "html_url": "https://github.com/HybridAIOne/hybridclaw",
           "homepage": "https://www.hybridclaw.io/",
-          "stargazers_count": 74,
+          "stargazers_count": 75,
           "forks_count": 6,
           "language": "TypeScript",
           "topics": [
@@ -1589,11 +1596,11 @@
             "proactive-agent",
             "rag"
           ],
-          "pushed_at": "2026-04-19T00:47:02Z",
+          "pushed_at": "2026-04-19T10:48:39Z",
           "created_at": "2026-02-24T22:48:52Z",
-          "updated_at": "2026-04-18T21:46:32Z",
+          "updated_at": "2026-04-19T10:31:11Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/HybridAIOne/hybridclaw",
-          "stars_delta_24h": 0,
+          "stars_delta_24h": 1,
           "description_ko": "샌드박스 실행, 보안 자격 증명, 승인 및 메모리를 갖춘 엔터프라이즈 AI 어시스턴트 런타임"
         },
         {
@@ -1629,9 +1636,9 @@
             "sympy",
             "z3-prover"
           ],
-          "pushed_at": "2026-04-19T00:11:49Z",
+          "pushed_at": "2026-04-19T10:46:50Z",
           "created_at": "2025-12-13T06:07:56Z",
-          "updated_at": "2026-04-19T00:11:52Z",
+          "updated_at": "2026-04-19T10:27:33Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/QWED-AI/qwed-verification",
           "stars_delta_24h": 0,
           "description_ko": "AI 시스템의 결정적 검증을 위한 AISecOps(AI 보안 운영) 프레임워크"
@@ -1677,7 +1684,7 @@
       "category": "rag-kb",
       "title": "RAG · 지식 베이스",
       "subtitle": "LLM knowledge base, retrieval-augmented generation, wiki 자동화",
-      "fetched_at": "2026-04-19T01:21:05.450373+00:00",
+      "fetched_at": "2026-04-19T11:11:18.208253+00:00",
       "queries": [
         "topic:rag pushed:>2026-04-05",
         "topic:retrieval-augmented-generation pushed:>2026-04-05",
@@ -1693,8 +1700,8 @@
           "description": "Production-ready platform for agentic workflow development.",
           "html_url": "https://github.com/langgenius/dify",
           "homepage": "https://dify.ai",
-          "stargazers_count": 138263,
-          "forks_count": 21670,
+          "stargazers_count": 138285,
+          "forks_count": 21679,
           "language": "TypeScript",
           "topics": [
             "agent",
@@ -1718,11 +1725,11 @@
             "rag",
             "workflow"
           ],
-          "pushed_at": "2026-04-18T14:44:40Z",
+          "pushed_at": "2026-04-19T10:14:44Z",
           "created_at": "2023-04-12T07:40:24Z",
-          "updated_at": "2026-04-19T01:11:27Z",
+          "updated_at": "2026-04-19T11:00:16Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/langgenius/dify",
-          "stars_delta_24h": 34,
+          "stars_delta_24h": 56,
           "description_ko": "Agentic 워크플로우 개발을 위한 Production-ready 플랫폼입니다"
         },
         {
@@ -1733,8 +1740,8 @@
           "description": "The agent engineering platform",
           "html_url": "https://github.com/langchain-ai/langchain",
           "homepage": "https://docs.langchain.com/langchain/",
-          "stargazers_count": 133982,
-          "forks_count": 22139,
+          "stargazers_count": 134026,
+          "forks_count": 22146,
           "language": "Python",
           "topics": [
             "agents",
@@ -1757,11 +1764,11 @@
             "python",
             "rag"
           ],
-          "pushed_at": "2026-04-19T01:17:04Z",
+          "pushed_at": "2026-04-19T07:26:03Z",
           "created_at": "2022-10-17T02:58:36Z",
-          "updated_at": "2026-04-19T00:51:36Z",
+          "updated_at": "2026-04-19T10:47:53Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/langchain-ai/langchain",
-          "stars_delta_24h": 38,
+          "stars_delta_24h": 82,
           "description_ko": "에이전트 엔지니어링 플랫폼"
         },
         {
@@ -1772,8 +1779,8 @@
           "description": "User-friendly AI Interface (Supports Ollama, OpenAI API, ...)",
           "html_url": "https://github.com/open-webui/open-webui",
           "homepage": "https://openwebui.com",
-          "stargazers_count": 132565,
-          "forks_count": 18815,
+          "stargazers_count": 132612,
+          "forks_count": 18823,
           "language": "Python",
           "topics": [
             "ai",
@@ -1792,11 +1799,11 @@
             "ui",
             "webui"
           ],
-          "pushed_at": "2026-04-17T21:23:52Z",
+          "pushed_at": "2026-04-19T10:15:07Z",
           "created_at": "2023-10-06T22:08:27Z",
-          "updated_at": "2026-04-19T00:58:24Z",
+          "updated_at": "2026-04-19T11:07:47Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/open-webui/open-webui",
-          "stars_delta_24h": 58,
+          "stars_delta_24h": 105,
           "description_ko": "사용자 친화적인 AI 인터페이스 (Ollama, OpenAI API 지원)"
         },
         {
@@ -1807,8 +1814,8 @@
           "description": "100+ AI Agent & RAG apps you can actually run — clone, customize, ship.",
           "html_url": "https://github.com/Shubhamsaboo/awesome-llm-apps",
           "homepage": "https://www.theunwindai.com",
-          "stargazers_count": 106294,
-          "forks_count": 15579,
+          "stargazers_count": 106354,
+          "forks_count": 15589,
           "language": "Python",
           "topics": [
             "agents",
@@ -1816,11 +1823,11 @@
             "python",
             "rag"
           ],
-          "pushed_at": "2026-04-16T05:50:40Z",
+          "pushed_at": "2026-04-19T06:07:13Z",
           "created_at": "2024-04-29T05:30:25Z",
-          "updated_at": "2026-04-19T01:11:44Z",
+          "updated_at": "2026-04-19T11:06:26Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/Shubhamsaboo/awesome-llm-apps",
-          "stars_delta_24h": 77,
+          "stars_delta_24h": 137,
           "description_ko": "실제로 실행 가능한 100개 이상의 AI 에이전트 및 RAG 앱 - 복제, 사용자 정의, 배포"
         },
         {
@@ -1831,8 +1838,8 @@
           "description": "RAGFlow is a leading open-source Retrieval-Augmented Generation (RAG) engine that fuses cutting-edge RAG with Agent capabilities to create a superior context layer for LLMs",
           "html_url": "https://github.com/infiniflow/ragflow",
           "homepage": "https://ragflow.io",
-          "stargazers_count": 78441,
-          "forks_count": 8852,
+          "stargazers_count": 78460,
+          "forks_count": 8857,
           "language": "Python",
           "topics": [
             "agent",
@@ -1858,9 +1865,9 @@
           ],
           "pushed_at": "2026-04-18T13:30:30Z",
           "created_at": "2023-12-12T06:13:13Z",
-          "updated_at": "2026-04-19T01:10:29Z",
+          "updated_at": "2026-04-19T10:42:55Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/infiniflow/ragflow",
-          "stars_delta_24h": 22,
+          "stars_delta_24h": 41,
           "description_ko": "RAGFlow는 최첨단 RAG와 Agent 기능을 융합한 오픈 소스 RAG 엔진입니다"
         },
         {
@@ -1871,8 +1878,8 @@
           "description": "Turn any PDF or image document into structured data for your AI. A powerful, lightweight OCR toolkit that bridges the gap between images/PDFs and LLMs. Supports 100+ languages.",
           "html_url": "https://github.com/PaddlePaddle/PaddleOCR",
           "homepage": "https://www.paddleocr.com",
-          "stargazers_count": 75900,
-          "forks_count": 10254,
+          "stargazers_count": 75916,
+          "forks_count": 10257,
           "language": "Python",
           "topics": [
             "ai4science",
@@ -1891,9 +1898,9 @@
           ],
           "pushed_at": "2026-04-16T02:40:42Z",
           "created_at": "2020-05-08T10:38:16Z",
-          "updated_at": "2026-04-19T01:13:12Z",
+          "updated_at": "2026-04-19T10:54:02Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/PaddlePaddle/PaddleOCR",
-          "stars_delta_24h": 25,
+          "stars_delta_24h": 41,
           "description_ko": "모든 PDF 또는 이미지 문서를 AI를 위한 구조화된 데이터로 변환합니다"
         },
         {
@@ -1904,8 +1911,8 @@
           "description": "A Claude Code plugin that automatically captures everything Claude does during your coding sessions, compresses it with AI (using Claude's agent-sdk), and injects relevant context back into future sessions.",
           "html_url": "https://github.com/thedotmack/claude-mem",
           "homepage": "https://claude-mem.ai",
-          "stargazers_count": 62492,
-          "forks_count": 5217,
+          "stargazers_count": 62841,
+          "forks_count": 5258,
           "language": "TypeScript",
           "topics": [
             "ai",
@@ -1929,11 +1936,11 @@
             "sqlite",
             "supermemory"
           ],
-          "pushed_at": "2026-04-18T21:42:16Z",
+          "pushed_at": "2026-04-19T08:40:17Z",
           "created_at": "2025-08-31T20:50:03Z",
-          "updated_at": "2026-04-19T01:18:13Z",
+          "updated_at": "2026-04-19T11:09:48Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/thedotmack/claude-mem",
-          "stars_delta_24h": 502,
+          "stars_delta_24h": 851,
           "description_ko": "Claude Code 플러그인, 코딩 세션 동안 Claude의 모든 작업을 캡처하여 압축 후 관련 맥락을 주입"
         },
         {
@@ -1944,8 +1951,8 @@
           "description": "The all-in-one AI productivity accelerator. On device and privacy first with no annoying setup or configuration.",
           "html_url": "https://github.com/Mintplex-Labs/anything-llm",
           "homepage": "https://anythingllm.com",
-          "stargazers_count": 58556,
-          "forks_count": 6336,
+          "stargazers_count": 58574,
+          "forks_count": 6339,
           "language": "JavaScript",
           "topics": [
             "ai-agents",
@@ -1970,9 +1977,9 @@
           ],
           "pushed_at": "2026-04-17T23:49:09Z",
           "created_at": "2023-06-04T02:29:14Z",
-          "updated_at": "2026-04-19T01:06:28Z",
+          "updated_at": "2026-04-19T10:44:08Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/Mintplex-Labs/anything-llm",
-          "stars_delta_24h": 16,
+          "stars_delta_24h": 34,
           "description_ko": "올인원 AI 생산성 가속기, 장치 우선 및 개인 정보 보호, 번거로운 설정이나 구성 불필요"
         },
         {
@@ -1983,8 +1990,8 @@
           "description": "Universal memory layer for AI Agents",
           "html_url": "https://github.com/mem0ai/mem0",
           "homepage": "https://mem0.ai",
-          "stargazers_count": 53444,
-          "forks_count": 5990,
+          "stargazers_count": 53488,
+          "forks_count": 5994,
           "language": "Python",
           "topics": [
             "agents",
@@ -2004,9 +2011,9 @@
           ],
           "pushed_at": "2026-04-19T00:09:28Z",
           "created_at": "2023-06-20T08:58:36Z",
-          "updated_at": "2026-04-19T01:17:32Z",
+          "updated_at": "2026-04-19T10:45:18Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/mem0ai/mem0",
-          "stars_delta_24h": 34,
+          "stars_delta_24h": 78,
           "description_ko": "AI 에이전트를 위한 유니버설 메모리 레이어"
         },
         {
@@ -2017,8 +2024,8 @@
           "description": "Build AI Agents, Visually",
           "html_url": "https://github.com/FlowiseAI/Flowise",
           "homepage": "https://flowiseai.com",
-          "stargazers_count": 52045,
-          "forks_count": 24170,
+          "stargazers_count": 52052,
+          "forks_count": 24172,
           "language": "TypeScript",
           "topics": [
             "agentic-ai",
@@ -2041,9 +2048,9 @@
           ],
           "pushed_at": "2026-04-19T00:33:43Z",
           "created_at": "2023-03-31T12:23:09Z",
-          "updated_at": "2026-04-19T00:21:41Z",
+          "updated_at": "2026-04-19T07:41:56Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/FlowiseAI/Flowise",
-          "stars_delta_24h": 10,
+          "stars_delta_24h": 17,
           "description_ko": "AI Agent를 시각적으로 구축하세요"
         }
       ]
@@ -2052,7 +2059,7 @@
       "category": "agent-orchestration",
       "title": "Agent Orchestration · Router",
       "subtitle": "Multi-agent coordinator, handoff patterns, agent routing",
-      "fetched_at": "2026-04-19T01:21:14.080554+00:00",
+      "fetched_at": "2026-04-19T11:11:26.808955+00:00",
       "queries": [
         "topic:multi-agent pushed:>2026-04-05",
         "topic:agent-orchestration pushed:>2026-04-05",
@@ -2068,8 +2075,8 @@
           "description": "An open-source long-horizon SuperAgent harness that researches, codes, and creates. With the help of sandboxes, memories, tools, skill, subagents and message gateway, it handles different levels of tasks that could take minutes to hours.",
           "html_url": "https://github.com/bytedance/deer-flow",
           "homepage": "https://deerflow.tech",
-          "stargazers_count": 62571,
-          "forks_count": 8096,
+          "stargazers_count": 62638,
+          "forks_count": 8107,
           "language": "Python",
           "topics": [
             "agent",
@@ -2091,11 +2098,11 @@
             "superagent",
             "typescript"
           ],
-          "pushed_at": "2026-04-18T14:47:42Z",
+          "pushed_at": "2026-04-19T02:23:10Z",
           "created_at": "2025-05-07T02:50:19Z",
-          "updated_at": "2026-04-19T01:15:58Z",
+          "updated_at": "2026-04-19T11:10:29Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/bytedance/deer-flow",
-          "stars_delta_24h": 107,
+          "stars_delta_24h": 174,
           "description_ko": "연구, 코딩, 생성을 수행하는 오픈 소스 SuperAgent harness입니다"
         },
         {
@@ -2106,8 +2113,8 @@
           "description": "CowAgent (chatgpt-on-wechat) 是基于大模型的超级AI助理，能主动思考和任务规划、访问操作系统和外部资源、创造和执行Skills、通过长期记忆和知识库不断成长，比OpenClaw更轻量和便捷。同时支持微信、飞书、钉钉、企微、QQ、公众号、网页等接入，可选择OpenAI/Claude/Gemini/DeepSeek/ Qwen/GLM/Kimi/LinkAI，能处理文本、语音、图片和文件，可快速搭建个人AI助理和企业数字员工。",
           "html_url": "https://github.com/zhayujie/CowAgent",
           "homepage": "https://cowagent.ai",
-          "stargazers_count": 43471,
-          "forks_count": 9950,
+          "stargazers_count": 43498,
+          "forks_count": 9954,
           "language": "Python",
           "topics": [
             "ai",
@@ -2131,11 +2138,11 @@
             "wechat",
             "weixin"
           ],
-          "pushed_at": "2026-04-18T15:09:10Z",
+          "pushed_at": "2026-04-19T11:05:59Z",
           "created_at": "2022-08-07T08:33:41Z",
-          "updated_at": "2026-04-18T23:41:43Z",
+          "updated_at": "2026-04-19T11:06:05Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/zhayujie/CowAgent",
-          "stars_delta_24h": 22,
+          "stars_delta_24h": 49,
           "description_ko": "CowAgent(chatgpt-on-wechat)는 대형 모델 기반 AI 비서로, OpenClaw보다 가볍고 편리합니다"
         },
         {
@@ -2146,8 +2153,8 @@
           "description": "🌊 The leading agent orchestration platform for Claude. Deploy intelligent multi-agent swarms, coordinate autonomous workflows, and build conversational AI systems. Features    enterprise-grade architecture, distributed swarm intelligence, RAG integration, and native Claude Code / Codex Integration",
           "html_url": "https://github.com/ruvnet/ruflo",
           "homepage": "https://Cognitum.One",
-          "stargazers_count": 32332,
-          "forks_count": 3635,
+          "stargazers_count": 32376,
+          "forks_count": 3643,
           "language": "TypeScript",
           "topics": [
             "agentic-ai",
@@ -2173,9 +2180,9 @@
           ],
           "pushed_at": "2026-04-11T16:20:19Z",
           "created_at": "2025-06-02T21:24:20Z",
-          "updated_at": "2026-04-19T01:04:01Z",
+          "updated_at": "2026-04-19T11:10:28Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/ruvnet/ruflo",
-          "stars_delta_24h": 76,
+          "stars_delta_24h": 120,
           "description_ko": "🌊 Claude를 위한 Agent 오케스트레이션 플랫폼으로, 지능형 멀티 Agent를 배포합니다"
         },
         {
@@ -2186,8 +2193,8 @@
           "description": "Build and run agents you can see, understand and trust.",
           "html_url": "https://github.com/agentscope-ai/agentscope",
           "homepage": "https://doc.agentscope.io/",
-          "stargazers_count": 23996,
-          "forks_count": 2564,
+          "stargazers_count": 24019,
+          "forks_count": 2566,
           "language": "Python",
           "topics": [
             "agent",
@@ -2202,9 +2209,9 @@
           ],
           "pushed_at": "2026-04-16T14:11:36Z",
           "created_at": "2024-01-12T03:41:59Z",
-          "updated_at": "2026-04-19T01:07:01Z",
+          "updated_at": "2026-04-19T10:40:00Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/agentscope-ai/agentscope",
-          "stars_delta_24h": 15,
+          "stars_delta_24h": 38,
           "description_ko": "보고, 이해하고, 신뢰할 수 있는 에이전트를 구축하고 실행합니다"
         },
         {
@@ -2215,8 +2222,8 @@
           "description": "50+ tutorials and implementations for Generative AI Agent techniques, from basic conversational bots to complex multi-agent systems.",
           "html_url": "https://github.com/NirDiamant/GenAI_Agents",
           "homepage": "",
-          "stargazers_count": 21351,
-          "forks_count": 3562,
+          "stargazers_count": 21359,
+          "forks_count": 3565,
           "language": "Jupyter Notebook",
           "topics": [
             "agents",
@@ -2235,9 +2242,9 @@
           ],
           "pushed_at": "2026-04-15T15:30:29Z",
           "created_at": "2024-09-09T20:10:19Z",
-          "updated_at": "2026-04-19T01:02:06Z",
+          "updated_at": "2026-04-19T10:55:42Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/NirDiamant/GenAI_Agents",
-          "stars_delta_24h": 10,
+          "stars_delta_24h": 18,
           "description_ko": "기본 챗봇부터 복잡한 멀티 에이전트 시스템까지 50개 이상의 튜토리얼과 구현이 있습니다"
         },
         {
@@ -2248,8 +2255,8 @@
           "description": "An open-source, code-first Python toolkit for building, evaluating, and deploying sophisticated AI agents with flexibility and control.",
           "html_url": "https://github.com/google/adk-python",
           "homepage": "https://google.github.io/adk-docs/",
-          "stargazers_count": 19099,
-          "forks_count": 3252,
+          "stargazers_count": 19106,
+          "forks_count": 3256,
           "language": "Python",
           "topics": [
             "agent",
@@ -2269,11 +2276,11 @@
             "multi-agents",
             "multi-agents-collaboration"
           ],
-          "pushed_at": "2026-04-18T01:37:20Z",
+          "pushed_at": "2026-04-19T02:22:42Z",
           "created_at": "2025-04-01T20:44:40Z",
-          "updated_at": "2026-04-19T01:12:49Z",
+          "updated_at": "2026-04-19T09:56:27Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/google/adk-python",
-          "stars_delta_24h": 10,
+          "stars_delta_24h": 17,
           "description_ko": "유연하고 제어 가능한 정교한 AI 에이전트 구축, 평가, 배포를 위한 오픈 소스 Python 툴킷입니다"
         },
         {
@@ -2284,8 +2291,8 @@
           "description": "🏛️ 三省六部制 · OpenClaw Multi-Agent Orchestration System — 9 specialized AI agents with real-time dashboard, model config, and full audit trails",
           "html_url": "https://github.com/cft0808/edict",
           "homepage": "https://openclaw.ai",
-          "stargazers_count": 15277,
-          "forks_count": 1606,
+          "stargazers_count": 15286,
+          "forks_count": 1607,
           "language": "Python",
           "topics": [
             "ai-agents",
@@ -2304,9 +2311,9 @@
           ],
           "pushed_at": "2026-04-14T15:06:59Z",
           "created_at": "2026-02-23T14:35:04Z",
-          "updated_at": "2026-04-18T21:15:04Z",
+          "updated_at": "2026-04-19T10:40:18Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/cft0808/edict",
-          "stars_delta_24h": 6,
+          "stars_delta_24h": 15,
           "description_ko": "🏛️ 삼省六部制 · OpenClaw 멀티 에이전트 오케스트레이션 시스템 — 실시간 대시보드, 모델 설정, 감사 추적 제공"
         },
         {
@@ -2317,8 +2324,8 @@
           "description": "A framework for building, orchestrating and deploying AI agents and multi-agent workflows with support for Python and .NET.",
           "html_url": "https://github.com/microsoft/agent-framework",
           "homepage": "https://aka.ms/agent-framework",
-          "stargazers_count": 9573,
-          "forks_count": 1572,
+          "stargazers_count": 9585,
+          "forks_count": 1571,
           "language": "Python",
           "topics": [
             "agent-framework",
@@ -2332,11 +2339,11 @@
             "sdk",
             "workflows"
           ],
-          "pushed_at": "2026-04-18T00:03:49Z",
+          "pushed_at": "2026-04-19T08:35:48Z",
           "created_at": "2025-04-28T19:40:42Z",
-          "updated_at": "2026-04-19T00:57:40Z",
+          "updated_at": "2026-04-19T09:51:30Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/microsoft/agent-framework",
-          "stars_delta_24h": 10,
+          "stars_delta_24h": 22,
           "description_ko": "Python 및 .NET 지원으로 AI 에이전트 및 멀티 에이전트 워크플로우를 구축, 오케스트레이션, 배포하는 프레임워크입니다"
         },
         {
@@ -2347,7 +2354,7 @@
           "description": "Enterprise-grade, commercial-friendly agentic workflow platform for building next-generation SuperAgents.",
           "html_url": "https://github.com/iflytek/astron-agent",
           "homepage": "http://astron.ai/",
-          "stargazers_count": 9441,
+          "stargazers_count": 9444,
           "forks_count": 964,
           "language": "Java",
           "topics": [
@@ -2368,9 +2375,9 @@
           ],
           "pushed_at": "2026-04-17T06:36:18Z",
           "created_at": "2025-09-19T08:46:01Z",
-          "updated_at": "2026-04-19T01:16:58Z",
+          "updated_at": "2026-04-19T09:46:23Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/iflytek/astron-agent",
-          "stars_delta_24h": 8,
+          "stars_delta_24h": 11,
           "description_ko": "차세대 SuperAgent 구축을 위한 엔터프라이즈급 상업용 에이전트 워크플로우 플랫폼입니다"
         },
         {
@@ -2381,7 +2388,7 @@
           "description": "Agentic AI Framework for Java Developers",
           "html_url": "https://github.com/alibaba/spring-ai-alibaba",
           "homepage": "https://java2ai.com",
-          "stargazers_count": 9296,
+          "stargazers_count": 9306,
           "forks_count": 2063,
           "language": "Java",
           "topics": [
@@ -2397,9 +2404,9 @@
           ],
           "pushed_at": "2026-04-07T13:28:29Z",
           "created_at": "2024-09-09T01:35:50Z",
-          "updated_at": "2026-04-18T19:56:44Z",
+          "updated_at": "2026-04-19T10:14:39Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/alibaba/spring-ai-alibaba",
-          "stars_delta_24h": 2,
+          "stars_delta_24h": 12,
           "description_ko": "Java 개발자를 위한 Agentic AI 프레임워크"
         }
       ]
@@ -2408,7 +2415,7 @@
       "category": "mcp-servers",
       "title": "MCP 서버·도구",
       "subtitle": "Model Context Protocol servers & tools (CC-compatible)",
-      "fetched_at": "2026-04-19T01:21:22.714600+00:00",
+      "fetched_at": "2026-04-19T11:11:35.454742+00:00",
       "queries": [
         "topic:model-context-protocol pushed:>2026-04-05",
         "\"mcp-server\" in:name pushed:>2026-04-05",
@@ -2424,8 +2431,8 @@
           "description": "A collection of MCP servers.",
           "html_url": "https://github.com/punkpeye/awesome-mcp-servers",
           "homepage": "https://glama.ai/mcp/servers",
-          "stargazers_count": 85036,
-          "forks_count": 9251,
+          "stargazers_count": 85053,
+          "forks_count": 9260,
           "language": null,
           "topics": [
             "ai",
@@ -2433,9 +2440,9 @@
           ],
           "pushed_at": "2026-04-15T13:10:49Z",
           "created_at": "2024-11-30T04:49:10Z",
-          "updated_at": "2026-04-19T01:02:19Z",
+          "updated_at": "2026-04-19T11:07:03Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/punkpeye/awesome-mcp-servers",
-          "stars_delta_24h": 27,
+          "stars_delta_24h": 44,
           "description_ko": "MCP 서버 모음입니다"
         },
         {
@@ -2446,8 +2453,8 @@
           "description": "🌊 The leading agent orchestration platform for Claude. Deploy intelligent multi-agent swarms, coordinate autonomous workflows, and build conversational AI systems. Features    enterprise-grade architecture, distributed swarm intelligence, RAG integration, and native Claude Code / Codex Integration",
           "html_url": "https://github.com/ruvnet/ruflo",
           "homepage": "https://Cognitum.One",
-          "stargazers_count": 32332,
-          "forks_count": 3635,
+          "stargazers_count": 32376,
+          "forks_count": 3643,
           "language": "TypeScript",
           "topics": [
             "agentic-ai",
@@ -2473,9 +2480,9 @@
           ],
           "pushed_at": "2026-04-11T16:20:19Z",
           "created_at": "2025-06-02T21:24:20Z",
-          "updated_at": "2026-04-19T01:04:01Z",
+          "updated_at": "2026-04-19T11:10:28Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/ruvnet/ruflo",
-          "stars_delta_24h": 76,
+          "stars_delta_24h": 120,
           "description_ko": "🌊 Claude를 위한 Agent 오케스트레이션 플랫폼으로, 지능형 멀티 Agent를 배포합니다"
         },
         {
@@ -2486,8 +2493,8 @@
           "description": "GitHub's official MCP Server",
           "html_url": "https://github.com/github/github-mcp-server",
           "homepage": "",
-          "stargazers_count": 29044,
-          "forks_count": 4005,
+          "stargazers_count": 29059,
+          "forks_count": 4014,
           "language": "Go",
           "topics": [
             "github",
@@ -2496,9 +2503,9 @@
           ],
           "pushed_at": "2026-04-16T16:22:50Z",
           "created_at": "2025-03-04T16:42:04Z",
-          "updated_at": "2026-04-18T23:47:14Z",
+          "updated_at": "2026-04-19T11:01:34Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/github/github-mcp-server",
-          "stars_delta_24h": 40,
+          "stars_delta_24h": 55,
           "description_ko": "GitHub 공식 MCP 서버"
         },
         {
@@ -2509,8 +2516,8 @@
           "description": "🚀 The fast, Pythonic way to build MCP servers and clients.",
           "html_url": "https://github.com/PrefectHQ/fastmcp",
           "homepage": "https://gofastmcp.com",
-          "stargazers_count": 24636,
-          "forks_count": 1931,
+          "stargazers_count": 24641,
+          "forks_count": 1933,
           "language": "Python",
           "topics": [
             "agents",
@@ -2525,9 +2532,9 @@
           ],
           "pushed_at": "2026-04-19T00:25:34Z",
           "created_at": "2024-11-30T01:47:40Z",
-          "updated_at": "2026-04-19T01:21:12Z",
+          "updated_at": "2026-04-19T10:19:31Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/PrefectHQ/fastmcp",
-          "stars_delta_24h": 7,
+          "stars_delta_24h": 12,
           "description_ko": "🚀 MCP 서버 및 클라이언트를 구축하는 빠르고 Pythonic한 방법입니다"
         },
         {
@@ -2538,8 +2545,8 @@
           "description": "This open-source curriculum introduces the fundamentals of Model Context Protocol (MCP) through real-world, cross-language examples in .NET, Java, TypeScript, JavaScript, Rust and Python. Designed for developers, it focuses on practical techniques for building modular, scalable, and secure AI workflows from session setup to service orchestration.",
           "html_url": "https://github.com/microsoft/mcp-for-beginners",
           "homepage": "",
-          "stargazers_count": 15896,
-          "forks_count": 5184,
+          "stargazers_count": 15898,
+          "forks_count": 5187,
           "language": "Jupyter Notebook",
           "topics": [
             "csharp",
@@ -2559,9 +2566,9 @@
           ],
           "pushed_at": "2026-04-17T16:15:17Z",
           "created_at": "2025-04-04T20:46:17Z",
-          "updated_at": "2026-04-18T22:47:34Z",
+          "updated_at": "2026-04-19T10:50:59Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/microsoft/mcp-for-beginners",
-          "stars_delta_24h": 3,
+          "stars_delta_24h": 5,
           "description_ko": ".NET, Java 등으로 MCP 기본 사항을 소개하는 오픈 소스 커리큘럼입니다"
         },
         {
@@ -2572,7 +2579,7 @@
           "description": "The fullstack MCP framework to develop MCP Apps for ChatGPT / Claude & MCP Servers for AI Agents.",
           "html_url": "https://github.com/mcp-use/mcp-use",
           "homepage": "https://manufact.com",
-          "stargazers_count": 9786,
+          "stargazers_count": 9787,
           "forks_count": 1244,
           "language": "TypeScript",
           "topics": [
@@ -2599,9 +2606,9 @@
           ],
           "pushed_at": "2026-04-17T22:58:46Z",
           "created_at": "2025-03-28T10:06:31Z",
-          "updated_at": "2026-04-18T13:37:44Z",
+          "updated_at": "2026-04-19T10:42:06Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/mcp-use/mcp-use",
-          "stars_delta_24h": 1,
+          "stars_delta_24h": 2,
           "description_ko": "ChatGPT/Claude용 MCP 앱 및 AI 에이전트용 MCP 서버 개발을 위한 풀스택 MCP 프레임워크"
         },
         {
@@ -2612,8 +2619,8 @@
           "description": "Unity MCP acts as a bridge, allowing AI assistants (like Claude, Cursor) to interact directly with your Unity Editor via a local MCP (Model Context Protocol) Client. Give your LLM tools to manage assets, control scenes, edit scripts, and automate tasks within Unity.",
           "html_url": "https://github.com/CoplayDev/unity-mcp",
           "homepage": "https://www.coplay.dev",
-          "stargazers_count": 8640,
-          "forks_count": 990,
+          "stargazers_count": 8648,
+          "forks_count": 992,
           "language": "C#",
           "topics": [
             "ai",
@@ -2635,9 +2642,9 @@
           ],
           "pushed_at": "2026-04-15T19:03:35Z",
           "created_at": "2025-03-18T11:01:58Z",
-          "updated_at": "2026-04-19T01:05:44Z",
+          "updated_at": "2026-04-19T10:19:03Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/CoplayDev/unity-mcp",
-          "stars_delta_24h": 12,
+          "stars_delta_24h": 20,
           "description_ko": "Unity MCP는 Claude, Cursor와 같은 AI 어시스턴트가 로컬 MCP 클라이언트를 통해 Unity Editor와 직접 상호 작용하도록 지원"
         },
         {
@@ -2648,7 +2655,7 @@
           "description": "Build autonomous AI agents in Python.",
           "html_url": "https://github.com/Upsonic/Upsonic",
           "homepage": "https://docs.upsonic.ai",
-          "stargazers_count": 7831,
+          "stargazers_count": 7829,
           "forks_count": 728,
           "language": "Python",
           "topics": [
@@ -2670,9 +2677,9 @@
           ],
           "pushed_at": "2026-04-17T14:18:28Z",
           "created_at": "2024-05-26T16:23:38Z",
-          "updated_at": "2026-04-18T10:06:06Z",
+          "updated_at": "2026-04-19T08:13:37Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/Upsonic/Upsonic",
-          "stars_delta_24h": 0,
+          "stars_delta_24h": -2,
           "description_ko": "Python으로 자율적인 AI 에이전트를 구축"
         },
         {
@@ -2683,8 +2690,8 @@
           "description": "🔥 Official Firecrawl MCP Server - Adds powerful web scraping and search to Cursor, Claude and any other LLM clients.",
           "html_url": "https://github.com/firecrawl/firecrawl-mcp-server",
           "homepage": "https://firecrawl.dev",
-          "stargazers_count": 6088,
-          "forks_count": 681,
+          "stargazers_count": 6092,
+          "forks_count": 682,
           "language": "JavaScript",
           "topics": [
             "batch-processing",
@@ -2704,9 +2711,9 @@
           ],
           "pushed_at": "2026-04-15T00:27:29Z",
           "created_at": "2024-12-06T07:50:27Z",
-          "updated_at": "2026-04-19T01:04:58Z",
+          "updated_at": "2026-04-19T09:36:43Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/firecrawl/firecrawl-mcp-server",
-          "stars_delta_24h": 4,
+          "stars_delta_24h": 8,
           "description_ko": "🔥 공식 Firecrawl MCP 서버 - Cursor, Claude 및 다른 LLM 클라이언트에 강력한 웹 스크래핑 및 검색 기능 추가"
         },
         {
@@ -2717,8 +2724,8 @@
           "description": "A Model Context Protocol (MCP) server and CLI that provides tools for agent use when working on iOS and macOS projects.",
           "html_url": "https://github.com/getsentry/XcodeBuildMCP",
           "homepage": "https://www.xcodebuildmcp.com",
-          "stargazers_count": 5247,
-          "forks_count": 246,
+          "stargazers_count": 5253,
+          "forks_count": 247,
           "language": "TypeScript",
           "topics": [
             "mcp",
@@ -2731,9 +2738,9 @@
           ],
           "pushed_at": "2026-04-16T01:59:14Z",
           "created_at": "2025-03-09T17:31:18Z",
-          "updated_at": "2026-04-19T00:17:32Z",
+          "updated_at": "2026-04-19T10:50:14Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/getsentry/XcodeBuildMCP",
-          "stars_delta_24h": 6,
+          "stars_delta_24h": 12,
           "description_ko": "iOS 및 macOS 프로젝트 작업 시 에이전트 사용을 위한 도구를 제공하는 MCP 서버 및 CLI"
         }
       ]
@@ -2742,7 +2749,7 @@
       "category": "ai-agents",
       "title": "AI 에이전트 프레임워크",
       "subtitle": "LangGraph · CrewAI · AutoGen · multi-agent framework",
-      "fetched_at": "2026-04-19T01:21:34.567517+00:00",
+      "fetched_at": "2026-04-19T11:11:47.105268+00:00",
       "queries": [
         "topic:ai-agents pushed:>2026-04-05",
         "\"langgraph\" in:name pushed:>2026-04-05",
@@ -2759,8 +2766,8 @@
           "description": "The agent harness performance optimization system. Skills, instincts, memory, security, and research-first development for Claude Code, Codex, Opencode, Cursor and beyond.",
           "html_url": "https://github.com/affaan-m/everything-claude-code",
           "homepage": "https://ecc.tools",
-          "stargazers_count": 160449,
-          "forks_count": 24959,
+          "stargazers_count": 160772,
+          "forks_count": 25007,
           "language": "JavaScript",
           "topics": [
             "ai-agents",
@@ -2772,11 +2779,11 @@
             "mcp",
             "productivity"
           ],
-          "pushed_at": "2026-04-16T03:07:05Z",
+          "pushed_at": "2026-04-19T04:53:41Z",
           "created_at": "2026-01-18T00:51:51Z",
-          "updated_at": "2026-04-19T01:20:18Z",
+          "updated_at": "2026-04-19T11:11:19Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/affaan-m/everything-claude-code",
-          "stars_delta_24h": 350,
+          "stars_delta_24h": 673,
           "description_ko": "에이전트 하네스 성능 최적화 시스템, Claude Code, Codex, Opencode, Cursor 등을 위한 연구 우선 개발"
         },
         {
@@ -2787,8 +2794,8 @@
           "description": "The agent engineering platform",
           "html_url": "https://github.com/langchain-ai/langchain",
           "homepage": "https://docs.langchain.com/langchain/",
-          "stargazers_count": 133982,
-          "forks_count": 22139,
+          "stargazers_count": 134026,
+          "forks_count": 22146,
           "language": "Python",
           "topics": [
             "agents",
@@ -2811,11 +2818,11 @@
             "python",
             "rag"
           ],
-          "pushed_at": "2026-04-19T01:17:04Z",
+          "pushed_at": "2026-04-19T07:26:03Z",
           "created_at": "2022-10-17T02:58:36Z",
-          "updated_at": "2026-04-19T00:51:36Z",
+          "updated_at": "2026-04-19T10:47:53Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/langchain-ai/langchain",
-          "stars_delta_24h": 38,
+          "stars_delta_24h": 82,
           "description_ko": "에이전트 엔지니어링 플랫폼"
         },
         {
@@ -2826,8 +2833,8 @@
           "description": "🔥 The API to search, scrape, and interact with the web for AI",
           "html_url": "https://github.com/firecrawl/firecrawl",
           "homepage": "https://firecrawl.dev",
-          "stargazers_count": 110625,
-          "forks_count": 7052,
+          "stargazers_count": 110694,
+          "forks_count": 7058,
           "language": "TypeScript",
           "topics": [
             "ai",
@@ -2850,11 +2857,11 @@
             "web-search",
             "webscraping"
           ],
-          "pushed_at": "2026-04-18T23:18:49Z",
+          "pushed_at": "2026-04-19T06:42:21Z",
           "created_at": "2024-04-15T21:02:29Z",
-          "updated_at": "2026-04-19T01:20:52Z",
+          "updated_at": "2026-04-19T11:07:39Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/firecrawl/firecrawl",
-          "stars_delta_24h": 110,
+          "stars_delta_24h": 179,
           "description_ko": "🔥 AI를 위한 웹 검색, 스크래핑 및 상호 작용 API"
         },
         {
@@ -2865,8 +2872,8 @@
           "description": "An open-source AI agent that brings the power of Gemini directly into your terminal.",
           "html_url": "https://github.com/google-gemini/gemini-cli",
           "homepage": "https://geminicli.com",
-          "stargazers_count": 101698,
-          "forks_count": 13209,
+          "stargazers_count": 101733,
+          "forks_count": 13218,
           "language": "TypeScript",
           "topics": [
             "ai",
@@ -2879,9 +2886,9 @@
           ],
           "pushed_at": "2026-04-19T00:33:35Z",
           "created_at": "2025-04-17T17:04:31Z",
-          "updated_at": "2026-04-19T01:10:24Z",
+          "updated_at": "2026-04-19T11:06:29Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/google-gemini/gemini-cli",
-          "stars_delta_24h": 36,
+          "stars_delta_24h": 71,
           "description_ko": "Gemini의 기능을 터미널로 직접 가져오는 오픈 소스 AI 에이전트"
         },
         {
@@ -2892,8 +2899,8 @@
           "description": "The agent that grows with you",
           "html_url": "https://github.com/NousResearch/hermes-agent",
           "homepage": "https://hermes-agent.nousresearch.com",
-          "stargazers_count": 99503,
-          "forks_count": 14083,
+          "stargazers_count": 100678,
+          "forks_count": 14311,
           "language": "Python",
           "topics": [
             "ai",
@@ -2913,11 +2920,11 @@
             "openai",
             "openclaw"
           ],
-          "pushed_at": "2026-04-19T01:18:03Z",
+          "pushed_at": "2026-04-19T10:30:37Z",
           "created_at": "2025-07-22T22:22:28Z",
-          "updated_at": "2026-04-19T01:21:12Z",
+          "updated_at": "2026-04-19T11:11:35Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/NousResearch/hermes-agent",
-          "stars_delta_24h": 1142,
+          "stars_delta_24h": 2317,
           "description_ko": "당신과 함께 성장하는 에이전트"
         },
         {
@@ -2928,8 +2935,8 @@
           "description": "🌐 Make websites accessible for AI agents. Automate tasks online with ease.",
           "html_url": "https://github.com/browser-use/browser-use",
           "homepage": "https://browser-use.com",
-          "stargazers_count": 88445,
-          "forks_count": 10142,
+          "stargazers_count": 88532,
+          "forks_count": 10156,
           "language": "Python",
           "topics": [
             "ai-agents",
@@ -2940,11 +2947,11 @@
             "playwright",
             "python"
           ],
-          "pushed_at": "2026-04-15T23:44:04Z",
+          "pushed_at": "2026-04-19T02:00:43Z",
           "created_at": "2024-10-31T16:00:56Z",
-          "updated_at": "2026-04-19T01:03:47Z",
+          "updated_at": "2026-04-19T11:06:59Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/browser-use/browser-use",
-          "stars_delta_24h": 63,
+          "stars_delta_24h": 150,
           "description_ko": "🌐 AI 에이전트가 웹사이트에 접근 가능하도록 지원, 온라인 작업 자동화"
         },
         {
@@ -2955,7 +2962,7 @@
           "description": "Daytona is a Secure and Elastic Infrastructure for Running AI-Generated Code",
           "html_url": "https://github.com/daytonaio/daytona",
           "homepage": "https://daytona.io",
-          "stargazers_count": 72406,
+          "stargazers_count": 72400,
           "forks_count": 5546,
           "language": "TypeScript",
           "topics": [
@@ -2970,48 +2977,10 @@
           ],
           "pushed_at": "2026-04-18T19:34:01Z",
           "created_at": "2024-02-06T08:21:20Z",
-          "updated_at": "2026-04-19T01:15:57Z",
+          "updated_at": "2026-04-19T10:56:25Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/daytonaio/daytona",
-          "stars_delta_24h": 2,
+          "stars_delta_24h": -4,
           "description_ko": "Daytona는 AI 생성 코드를 실행하기 위한 안전하고 탄력적인 인프라입니다"
-        },
-        {
-          "id": 979115477,
-          "full_name": "bytedance/deer-flow",
-          "name": "deer-flow",
-          "owner": "bytedance",
-          "description": "An open-source long-horizon SuperAgent harness that researches, codes, and creates. With the help of sandboxes, memories, tools, skill, subagents and message gateway, it handles different levels of tasks that could take minutes to hours.",
-          "html_url": "https://github.com/bytedance/deer-flow",
-          "homepage": "https://deerflow.tech",
-          "stargazers_count": 62571,
-          "forks_count": 8096,
-          "language": "Python",
-          "topics": [
-            "agent",
-            "agentic",
-            "agentic-framework",
-            "agentic-workflow",
-            "ai",
-            "ai-agents",
-            "deep-research",
-            "harness",
-            "langchain",
-            "langgraph",
-            "langmanus",
-            "llm",
-            "multi-agent",
-            "nodejs",
-            "podcast",
-            "python",
-            "superagent",
-            "typescript"
-          ],
-          "pushed_at": "2026-04-18T14:47:42Z",
-          "created_at": "2025-05-07T02:50:19Z",
-          "updated_at": "2026-04-19T01:15:58Z",
-          "opengraph_url": "https://opengraph.githubassets.com/1/bytedance/deer-flow",
-          "stars_delta_24h": 107,
-          "description_ko": "연구, 코딩, 생성을 수행하는 오픈 소스 SuperAgent harness입니다"
         },
         {
           "id": 1048065319,
@@ -3021,8 +2990,8 @@
           "description": "A Claude Code plugin that automatically captures everything Claude does during your coding sessions, compresses it with AI (using Claude's agent-sdk), and injects relevant context back into future sessions.",
           "html_url": "https://github.com/thedotmack/claude-mem",
           "homepage": "https://claude-mem.ai",
-          "stargazers_count": 62492,
-          "forks_count": 5217,
+          "stargazers_count": 62841,
+          "forks_count": 5258,
           "language": "TypeScript",
           "topics": [
             "ai",
@@ -3046,12 +3015,50 @@
             "sqlite",
             "supermemory"
           ],
-          "pushed_at": "2026-04-18T21:42:16Z",
+          "pushed_at": "2026-04-19T08:40:17Z",
           "created_at": "2025-08-31T20:50:03Z",
-          "updated_at": "2026-04-19T01:18:13Z",
+          "updated_at": "2026-04-19T11:09:48Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/thedotmack/claude-mem",
-          "stars_delta_24h": 502,
+          "stars_delta_24h": 851,
           "description_ko": "Claude Code 플러그인, 코딩 세션 동안 Claude의 모든 작업을 캡처하여 압축 후 관련 맥락을 주입"
+        },
+        {
+          "id": 979115477,
+          "full_name": "bytedance/deer-flow",
+          "name": "deer-flow",
+          "owner": "bytedance",
+          "description": "An open-source long-horizon SuperAgent harness that researches, codes, and creates. With the help of sandboxes, memories, tools, skill, subagents and message gateway, it handles different levels of tasks that could take minutes to hours.",
+          "html_url": "https://github.com/bytedance/deer-flow",
+          "homepage": "https://deerflow.tech",
+          "stargazers_count": 62638,
+          "forks_count": 8107,
+          "language": "Python",
+          "topics": [
+            "agent",
+            "agentic",
+            "agentic-framework",
+            "agentic-workflow",
+            "ai",
+            "ai-agents",
+            "deep-research",
+            "harness",
+            "langchain",
+            "langgraph",
+            "langmanus",
+            "llm",
+            "multi-agent",
+            "nodejs",
+            "podcast",
+            "python",
+            "superagent",
+            "typescript"
+          ],
+          "pushed_at": "2026-04-19T02:23:10Z",
+          "created_at": "2025-05-07T02:50:19Z",
+          "updated_at": "2026-04-19T11:10:29Z",
+          "opengraph_url": "https://opengraph.githubassets.com/1/bytedance/deer-flow",
+          "stars_delta_24h": 174,
+          "description_ko": "연구, 코딩, 생성을 수행하는 오픈 소스 SuperAgent harness입니다"
         },
         {
           "id": 649170660,
@@ -3061,8 +3068,8 @@
           "description": "The all-in-one AI productivity accelerator. On device and privacy first with no annoying setup or configuration.",
           "html_url": "https://github.com/Mintplex-Labs/anything-llm",
           "homepage": "https://anythingllm.com",
-          "stargazers_count": 58556,
-          "forks_count": 6336,
+          "stargazers_count": 58574,
+          "forks_count": 6339,
           "language": "JavaScript",
           "topics": [
             "ai-agents",
@@ -3087,9 +3094,9 @@
           ],
           "pushed_at": "2026-04-17T23:49:09Z",
           "created_at": "2023-06-04T02:29:14Z",
-          "updated_at": "2026-04-19T01:06:28Z",
+          "updated_at": "2026-04-19T10:44:08Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/Mintplex-Labs/anything-llm",
-          "stars_delta_24h": 16,
+          "stars_delta_24h": 34,
           "description_ko": "올인원 AI 생산성 가속기, 장치 우선 및 개인 정보 보호, 번거로운 설정이나 구성 불필요"
         }
       ]
@@ -3098,7 +3105,7 @@
       "category": "llm-prompts",
       "title": "LLM 프롬프트·워크플로우",
       "subtitle": "Prompt engineering · agentic workflows · LLM-native dev",
-      "fetched_at": "2026-04-19T01:21:43.213110+00:00",
+      "fetched_at": "2026-04-19T11:11:55.707954+00:00",
       "queries": [
         "topic:prompt-engineering pushed:>2026-04-05",
         "topic:agentic-workflow pushed:>2026-04-05",
@@ -3114,8 +3121,8 @@
           "description": "f.k.a. Awesome ChatGPT Prompts. Share, discover, and collect prompts from the community. Free and open source — self-host for your organization with complete privacy.",
           "html_url": "https://github.com/f/prompts.chat",
           "homepage": "https://prompts.chat",
-          "stargazers_count": 160047,
-          "forks_count": 20953,
+          "stargazers_count": 160075,
+          "forks_count": 20957,
           "language": "HTML",
           "topics": [
             "ai",
@@ -3137,11 +3144,11 @@
             "prompts-chat",
             "typescript"
           ],
-          "pushed_at": "2026-04-18T04:00:03Z",
+          "pushed_at": "2026-04-19T04:06:50Z",
           "created_at": "2022-12-05T13:54:13Z",
-          "updated_at": "2026-04-19T01:07:11Z",
+          "updated_at": "2026-04-19T11:05:46Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/f/prompts.chat",
-          "stars_delta_24h": 38,
+          "stars_delta_24h": 66,
           "description_ko": "f.k.a. Awesome ChatGPT Prompts로, 커뮤니티 프롬프트를 공유, 발견, 수집합니다"
         },
         {
@@ -3152,8 +3159,8 @@
           "description": "Production-ready platform for agentic workflow development.",
           "html_url": "https://github.com/langgenius/dify",
           "homepage": "https://dify.ai",
-          "stargazers_count": 138264,
-          "forks_count": 21670,
+          "stargazers_count": 138285,
+          "forks_count": 21679,
           "language": "TypeScript",
           "topics": [
             "agent",
@@ -3177,11 +3184,11 @@
             "rag",
             "workflow"
           ],
-          "pushed_at": "2026-04-18T14:44:40Z",
+          "pushed_at": "2026-04-19T10:14:44Z",
           "created_at": "2023-04-12T07:40:24Z",
-          "updated_at": "2026-04-19T01:21:12Z",
+          "updated_at": "2026-04-19T11:00:16Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/langgenius/dify",
-          "stars_delta_24h": 35,
+          "stars_delta_24h": 56,
           "description_ko": "Agentic 워크플로우 개발을 위한 Production-ready 플랫폼입니다"
         },
         {
@@ -3192,8 +3199,8 @@
           "description": "21 Lessons, Get Started Building with Generative AI ",
           "html_url": "https://github.com/microsoft/generative-ai-for-beginners",
           "homepage": "",
-          "stargazers_count": 109496,
-          "forks_count": 58759,
+          "stargazers_count": 109505,
+          "forks_count": 58760,
           "language": "Jupyter Notebook",
           "topics": [
             "ai",
@@ -3213,9 +3220,9 @@
           ],
           "pushed_at": "2026-04-16T03:44:12Z",
           "created_at": "2023-06-19T16:28:59Z",
-          "updated_at": "2026-04-19T01:09:36Z",
+          "updated_at": "2026-04-19T11:06:14Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/microsoft/generative-ai-for-beginners",
-          "stars_delta_24h": 25,
+          "stars_delta_24h": 34,
           "description_ko": "21개의 강의로, Generative AI를 활용한 빌딩을 시작하세요"
         },
         {
@@ -3226,8 +3233,8 @@
           "description": "RAGFlow is a leading open-source Retrieval-Augmented Generation (RAG) engine that fuses cutting-edge RAG with Agent capabilities to create a superior context layer for LLMs",
           "html_url": "https://github.com/infiniflow/ragflow",
           "homepage": "https://ragflow.io",
-          "stargazers_count": 78441,
-          "forks_count": 8852,
+          "stargazers_count": 78460,
+          "forks_count": 8857,
           "language": "Python",
           "topics": [
             "agent",
@@ -3253,9 +3260,9 @@
           ],
           "pushed_at": "2026-04-18T13:30:30Z",
           "created_at": "2023-12-12T06:13:13Z",
-          "updated_at": "2026-04-19T01:10:29Z",
+          "updated_at": "2026-04-19T10:42:55Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/infiniflow/ragflow",
-          "stars_delta_24h": 22,
+          "stars_delta_24h": 41,
           "description_ko": "RAGFlow는 최첨단 RAG와 Agent 기능을 융합한 오픈 소스 RAG 엔진입니다"
         },
         {
@@ -3266,7 +3273,7 @@
           "description": "Daytona is a Secure and Elastic Infrastructure for Running AI-Generated Code",
           "html_url": "https://github.com/daytonaio/daytona",
           "homepage": "https://daytona.io",
-          "stargazers_count": 72406,
+          "stargazers_count": 72400,
           "forks_count": 5546,
           "language": "TypeScript",
           "topics": [
@@ -3281,9 +3288,9 @@
           ],
           "pushed_at": "2026-04-18T19:34:01Z",
           "created_at": "2024-02-06T08:21:20Z",
-          "updated_at": "2026-04-19T01:15:57Z",
+          "updated_at": "2026-04-19T10:56:25Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/daytonaio/daytona",
-          "stars_delta_24h": 2,
+          "stars_delta_24h": -4,
           "description_ko": "Daytona는 AI 생성 코드를 실행하기 위한 안전하고 탄력적인 인프라입니다"
         },
         {
@@ -3294,8 +3301,8 @@
           "description": "An open-source long-horizon SuperAgent harness that researches, codes, and creates. With the help of sandboxes, memories, tools, skill, subagents and message gateway, it handles different levels of tasks that could take minutes to hours.",
           "html_url": "https://github.com/bytedance/deer-flow",
           "homepage": "https://deerflow.tech",
-          "stargazers_count": 62571,
-          "forks_count": 8096,
+          "stargazers_count": 62638,
+          "forks_count": 8107,
           "language": "Python",
           "topics": [
             "agent",
@@ -3317,11 +3324,11 @@
             "superagent",
             "typescript"
           ],
-          "pushed_at": "2026-04-18T14:47:42Z",
+          "pushed_at": "2026-04-19T02:23:10Z",
           "created_at": "2025-05-07T02:50:19Z",
-          "updated_at": "2026-04-19T01:15:58Z",
+          "updated_at": "2026-04-19T11:10:29Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/bytedance/deer-flow",
-          "stars_delta_24h": 107,
+          "stars_delta_24h": 174,
           "description_ko": "연구, 코딩, 생성을 수행하는 오픈 소스 SuperAgent harness입니다"
         },
         {
@@ -3332,8 +3339,8 @@
           "description": "Build AI Agents, Visually",
           "html_url": "https://github.com/FlowiseAI/Flowise",
           "homepage": "https://flowiseai.com",
-          "stargazers_count": 52045,
-          "forks_count": 24170,
+          "stargazers_count": 52052,
+          "forks_count": 24172,
           "language": "TypeScript",
           "topics": [
             "agentic-ai",
@@ -3356,10 +3363,50 @@
           ],
           "pushed_at": "2026-04-19T00:33:43Z",
           "created_at": "2023-03-31T12:23:09Z",
-          "updated_at": "2026-04-19T00:21:41Z",
+          "updated_at": "2026-04-19T07:41:56Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/FlowiseAI/Flowise",
-          "stars_delta_24h": 10,
+          "stars_delta_24h": 17,
           "description_ko": "AI Agent를 시각적으로 구축하세요"
+        },
+        {
+          "id": 1087192965,
+          "full_name": "shanraisshan/claude-code-best-practice",
+          "name": "claude-code-best-practice",
+          "owner": "shanraisshan",
+          "description": "from vibe coding to agentic engineering - practice makes claude perfect",
+          "html_url": "https://github.com/shanraisshan/claude-code-best-practice",
+          "homepage": "https://linkedin.com/in/shanraisshan",
+          "stargazers_count": 46407,
+          "forks_count": 4546,
+          "language": "HTML",
+          "topics": [
+            "agentic-ai",
+            "agentic-coding",
+            "agentic-engineering",
+            "agentic-workflow",
+            "ai",
+            "ai-agents",
+            "anthropic",
+            "best-practices",
+            "boris",
+            "claude",
+            "claude-ai",
+            "claude-code",
+            "claude-code-agents",
+            "claude-code-best-practices",
+            "claude-code-commands",
+            "claude-code-skills",
+            "context-engineering",
+            "pakistan",
+            "pakistani-developer",
+            "vibe-coding"
+          ],
+          "pushed_at": "2026-04-19T08:37:26Z",
+          "created_at": "2025-10-31T14:15:28Z",
+          "updated_at": "2026-04-19T11:11:07Z",
+          "opengraph_url": "https://opengraph.githubassets.com/1/shanraisshan/claude-code-best-practice",
+          "stars_delta_24h": 278,
+          "description_ko": "vibe 코딩에서 에이전트 엔지니어링으로 - 연습만이 Claude를 완벽하게"
         },
         {
           "id": 976921297,
@@ -3369,8 +3416,8 @@
           "description": "Extracted system prompts from ChatGPT (GPT-5.4, GPT-5.3, Codex), Claude (Opus 4.6, Sonnet 4.6, Claude Code), Gemini (3.1 Pro, 3 Flash, CLI), Grok (4.2, 4), Perplexity, and more. Updated regularly.",
           "html_url": "https://github.com/asgeirtj/system_prompts_leaks",
           "homepage": "",
-          "stargazers_count": 38554,
-          "forks_count": 6344,
+          "stargazers_count": 38576,
+          "forks_count": 6347,
           "language": null,
           "topics": [
             "ai",
@@ -3394,9 +3441,9 @@
           ],
           "pushed_at": "2026-04-18T12:59:33Z",
           "created_at": "2025-05-03T02:43:56Z",
-          "updated_at": "2026-04-19T00:43:51Z",
+          "updated_at": "2026-04-19T10:41:56Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/asgeirtj/system_prompts_leaks",
-          "stars_delta_24h": 26,
+          "stars_delta_24h": 48,
           "description_ko": "ChatGPT, Claude, Gemini, Grok 등의 시스템 프롬프트를 추출했습니다"
         },
         {
@@ -3407,8 +3454,8 @@
           "description": "🪨 why use many token when few token do trick — Claude Code skill that cuts 65% of tokens by talking like caveman",
           "html_url": "https://github.com/JuliusBrussee/caveman",
           "homepage": "https://juliusbrussee.github.io/caveman/",
-          "stargazers_count": 37905,
-          "forks_count": 1855,
+          "stargazers_count": 38288,
+          "forks_count": 1893,
           "language": "Python",
           "topics": [
             "ai",
@@ -3424,61 +3471,393 @@
           ],
           "pushed_at": "2026-04-18T10:11:39Z",
           "created_at": "2026-04-04T10:03:00Z",
-          "updated_at": "2026-04-19T01:17:08Z",
+          "updated_at": "2026-04-19T11:11:45Z",
           "opengraph_url": "https://opengraph.githubassets.com/1/JuliusBrussee/caveman",
-          "stars_delta_24h": 548,
+          "stars_delta_24h": 931,
           "description_ko": "🪨 적은 토큰으로도 충분하다면 많은 토큰을 왜 사용할까요? — Claude Code skill"
-        },
+        }
+      ]
+    },
+    {
+      "category": "korean-opensource",
+      "title": "한국 오픈소스",
+      "subtitle": "Claude Code·MCP·RAG·Agent·Vibe Coding — 한국인이 한국 시장·사용자 대상으로 만든 프로젝트",
+      "fetched_at": "2026-04-19T11:12:30.764060+00:00",
+      "queries": [
+        "topic:claude-code \"korean\" in:name,description pushed:>2026-04-05",
+        "\"한국\" in:description topic:claude-code pushed:>2026-04-05",
+        "topic:ai-coding \"korean\" in:name,description pushed:>2026-04-05",
+        "topic:enterprise-ai \"korean\" in:name,description pushed:>2026-04-05",
+        "topic:rag \"korean\" in:name,description pushed:>2026-04-05",
+        "topic:multi-agent \"korean\" in:name,description pushed:>2026-04-05",
+        "topic:mcp \"korean\" in:name,description pushed:>2026-04-05",
+        "topic:model-context-protocol \"korean\" in:name,description pushed:>2026-04-05",
+        "topic:ai-agents \"korean\" in:name,description pushed:>2026-04-05",
+        "topic:llm \"korean\" in:name,description pushed:>2026-04-05",
+        "topic:prompt-engineering \"korean\" in:name,description pushed:>2026-04-05",
+        "topic:korean topic:llm pushed:>2026-04-05",
+        "topic:korean topic:ai-agents pushed:>2026-04-05",
+        "\"한국\" in:description topic:llm pushed:>2026-04-05",
+        "\"한국어\" in:description topic:llm pushed:>2026-04-05"
+      ],
+      "total_count": 10,
+      "items": [
         {
-          "id": 995029641,
-          "full_name": "ruvnet/ruflo",
-          "name": "ruflo",
-          "owner": "ruvnet",
-          "description": "🌊 The leading agent orchestration platform for Claude. Deploy intelligent multi-agent swarms, coordinate autonomous workflows, and build conversational AI systems. Features    enterprise-grade architecture, distributed swarm intelligence, RAG integration, and native Claude Code / Codex Integration",
-          "html_url": "https://github.com/ruvnet/ruflo",
-          "homepage": "https://Cognitum.One",
-          "stargazers_count": 32332,
-          "forks_count": 3635,
+          "id": 1119492821,
+          "full_name": "chrisryugj/korean-law-mcp",
+          "name": "korean-law-mcp",
+          "owner": "chrisryugj",
+          "description": "국가법령정보MCP | 법제처 41개 API → 16개 MCP 도구. 법령·판례·조례·조약을 AI로 검색·조회·분석 + LLM 환각 방지 인용 검증 | 41 Korean legal APIs → 16 MCP tools with AI citation hallucination guard",
+          "html_url": "https://github.com/chrisryugj/korean-law-mcp",
+          "homepage": "https://www.npmjs.com/package/korean-law-mcp",
+          "stargazers_count": 1495,
+          "forks_count": 293,
           "language": "TypeScript",
           "topics": [
-            "agentic-ai",
-            "agentic-engineering",
-            "agentic-framework",
-            "agentic-rag",
-            "agentic-workflow",
-            "agents",
-            "ai-assistant",
-            "ai-tools",
-            "anthropic-claude",
-            "autonomous-agents",
-            "claude-code",
-            "claude-code-skills",
-            "codex",
-            "huggingface",
+            "api",
+            "citation-verification",
+            "claude",
+            "cli",
+            "hallucination-detection",
+            "korea",
+            "korean-law",
+            "law",
+            "legal",
+            "legal-ai",
+            "legal-rag",
+            "legal-tech",
+            "llm-hallucination",
+            "mcp",
             "mcp-server",
             "model-context-protocol",
-            "multi-agent",
-            "multi-agent-systems",
-            "swarm",
-            "swarm-intelligence"
+            "precedent",
+            "typescript"
           ],
-          "pushed_at": "2026-04-11T16:20:19Z",
-          "created_at": "2025-06-02T21:24:20Z",
-          "updated_at": "2026-04-19T01:04:01Z",
-          "opengraph_url": "https://opengraph.githubassets.com/1/ruvnet/ruflo",
-          "stars_delta_24h": 76,
-          "description_ko": "🌊 Claude를 위한 Agent 오케스트레이션 플랫폼으로, 지능형 멀티 Agent를 배포합니다"
+          "pushed_at": "2026-04-18T02:08:55Z",
+          "created_at": "2025-12-19T11:03:22Z",
+          "updated_at": "2026-04-19T10:13:11Z",
+          "opengraph_url": "https://opengraph.githubassets.com/1/chrisryugj/korean-law-mcp",
+          "description_ko": "국가법령정보MCP | 법제처 41개 API → 16개 MCP 도구. AI 법령 검색·조회·분석 + LLM 환각 방지 인용 검증"
+        },
+        {
+          "id": 1214330684,
+          "full_name": "kimlawtech/korean-privacy-terms",
+          "name": "korean-privacy-terms",
+          "owner": "kimlawtech",
+          "description": "한국 법령 기반 개인정보처리방침·이용약관 자동 생성 Claude Code 스킬. 2025.4.21 작성지침 및 2026.3 개정 법령 반영.",
+          "html_url": "https://github.com/kimlawtech/korean-privacy-terms",
+          "homepage": "https://discord.gg/qmCbMaER",
+          "stargazers_count": 48,
+          "forks_count": 10,
+          "language": "Go Template",
+          "topics": [
+            "agent-skills",
+            "claude-code",
+            "claude-skill",
+            "korean-law",
+            "legal-tech",
+            "mdx",
+            "nextjs",
+            "privacy-policy",
+            "shadcn-ui",
+            "tailwindcss",
+            "terms-of-service"
+          ],
+          "pushed_at": "2026-04-19T01:48:42Z",
+          "created_at": "2026-04-18T12:31:18Z",
+          "updated_at": "2026-04-19T10:39:03Z",
+          "opengraph_url": "https://opengraph.githubassets.com/1/kimlawtech/korean-privacy-terms",
+          "is_new_this_week": true,
+          "description_ko": "한국 법령 기반 개인정보처리방침·이용약관 자동 생성 Claude Code 스킬. 2025.4.21 작성지침 및 2026.3 개정 법령 반영"
+        },
+        {
+          "id": 1174537176,
+          "full_name": "eddmpython/dartlab",
+          "name": "dartlab",
+          "owner": "eddmpython",
+          "description": "One stock code → full company story. Korean DART + US SEC EDGAR filings as structured Python data. 2,700+ KR / 970+ US companies.",
+          "html_url": "https://github.com/eddmpython/dartlab",
+          "homepage": "https://eddmpython.github.io/dartlab",
+          "stargazers_count": 44,
+          "forks_count": 12,
+          "language": "Python",
+          "topics": [
+            "10-k",
+            "ai-analysis",
+            "company-analysis",
+            "dart",
+            "disclosure",
+            "edgar",
+            "finance",
+            "financial-analysis",
+            "financial-statements",
+            "financial-storytelling",
+            "korea",
+            "korean-stocks",
+            "llm-context",
+            "mcp",
+            "polars",
+            "python",
+            "quantitative-finance",
+            "sec",
+            "stock-analysis",
+            "xbrl"
+          ],
+          "pushed_at": "2026-04-19T09:29:34Z",
+          "created_at": "2026-03-06T14:58:20Z",
+          "updated_at": "2026-04-19T09:29:37Z",
+          "opengraph_url": "https://opengraph.githubassets.com/1/eddmpython/dartlab",
+          "description_ko": "One stock code → full company story. 한국 DART + 미국 SEC EDGAR filings as structured Python data"
+        },
+        {
+          "id": 1213849297,
+          "full_name": "chrisryugj/korean-dart-mcp",
+          "name": "korean-dart-mcp",
+          "owner": "chrisryugj",
+          "description": "OpenDART 전자공시MCP | 83개 API → 15 MCP 도구. 공시·재무·지분·XBRL + 버핏급 애널리스트 프레임(내부자 시그널·회계 리스크·퀄리티 체크리스트) + HWP/PDF 첨부 마크다운화 | 83 Korean DART disclosure APIs → 15 MCP tools with Buffett-grade analyst frames",
+          "html_url": "https://github.com/chrisryugj/korean-dart-mcp",
+          "homepage": "https://www.npmjs.com/package/korean-dart-mcp",
+          "stargazers_count": 19,
+          "forks_count": 0,
+          "language": "TypeScript",
+          "topics": [
+            "claude",
+            "cli",
+            "dart",
+            "disclosure",
+            "finance",
+            "financial-analysis",
+            "financial-statements",
+            "insider-trading",
+            "korea",
+            "korean-stocks",
+            "llm",
+            "mcp",
+            "mcp-server",
+            "model-context-protocol",
+            "opendart",
+            "typescript",
+            "xbrl"
+          ],
+          "pushed_at": "2026-04-18T21:33:21Z",
+          "created_at": "2026-04-17T20:36:12Z",
+          "updated_at": "2026-04-19T03:00:08Z",
+          "opengraph_url": "https://opengraph.githubassets.com/1/chrisryugj/korean-dart-mcp",
+          "is_new_this_week": true,
+          "description_ko": "OpenDART 전자공시MCP | 83개 API → 15 MCP 도구. 공시·재무·지분·XBRL + 버핏급 애널리스트 프레임"
+        },
+        {
+          "id": 1181345627,
+          "full_name": "kangraemin/ai-paper-digest",
+          "name": "ai-paper-digest",
+          "owner": "kangraemin",
+          "description": "Claude AI가 매일 arXiv 최신 LLM 논문을 읽고, 한국어로 요약합니다.",
+          "html_url": "https://github.com/kangraemin/ai-paper-digest",
+          "homepage": "https://ai-paper-delta.vercel.app",
+          "stargazers_count": 11,
+          "forks_count": 3,
+          "language": "TypeScript",
+          "topics": [
+            "ai-papers",
+            "ai-research",
+            "anthropic",
+            "arxiv",
+            "claude-ai",
+            "drizzle-orm",
+            "korean",
+            "llm",
+            "newsletter",
+            "nextjs",
+            "paper-digest",
+            "rag",
+            "rss",
+            "sqlite",
+            "tailwindcss"
+          ],
+          "pushed_at": "2026-04-19T10:51:49Z",
+          "created_at": "2026-03-14T02:51:46Z",
+          "updated_at": "2026-04-19T10:51:53Z",
+          "opengraph_url": "https://opengraph.githubassets.com/1/kangraemin/ai-paper-digest",
+          "description_ko": "Claude AI가 매일 arXiv 최신 LLM 논문을 읽고, 한국어로 요약합니다"
+        },
+        {
+          "id": 1086828200,
+          "full_name": "chrisryugj/lexdiff",
+          "name": "lexdiff",
+          "owner": "chrisryugj",
+          "description": "한국 법령 비교 + AI 검색 플랫폼. 법령/판례/해석례/심판례 17개 도메인을 교차 검증하는 FC-RAG 엔진. Next.js 16 · React 19 · Gemini 3 Flash.",
+          "html_url": "https://github.com/chrisryugj/lexdiff",
+          "homepage": "https://lexdiff.gomdori.app",
+          "stargazers_count": 9,
+          "forks_count": 3,
+          "language": "TypeScript",
+          "topics": [
+            "fc-rag",
+            "gemini",
+            "korean-law",
+            "law-search",
+            "legal-ai",
+            "legal-tech",
+            "legaltech-korea",
+            "llm",
+            "nextjs",
+            "precedent-search",
+            "rag",
+            "shadcn-ui",
+            "supabase",
+            "tailwindcss",
+            "typescript"
+          ],
+          "pushed_at": "2026-04-15T14:26:49Z",
+          "created_at": "2025-10-31T00:59:26Z",
+          "updated_at": "2026-04-18T01:53:19Z",
+          "opengraph_url": "https://opengraph.githubassets.com/1/chrisryugj/lexdiff",
+          "description_ko": "한국 법령 비교 + AI 검색 플랫폼. 17개 도메인을 교차 검증하는 FC-RAG 엔진. Next.js · React · Gemini"
+        },
+        {
+          "id": 1196686484,
+          "full_name": "J-nowcow/awesome-korean-agent-skills",
+          "name": "awesome-korean-agent-skills",
+          "owner": "J-nowcow",
+          "description": "🇰🇷 400+ Korean AI Coding Agent Skills — Claude Code, Gemini CLI, Codex, Cursor 스킬을 기능별로 모은 큐레이션",
+          "html_url": "https://github.com/J-nowcow/awesome-korean-agent-skills",
+          "homepage": null,
+          "stargazers_count": 8,
+          "forks_count": 3,
+          "language": null,
+          "topics": [
+            "agent-skills",
+            "agents",
+            "ai-agents",
+            "ai-coding",
+            "automation",
+            "awesome",
+            "awesome-korean",
+            "awesome-list",
+            "claude",
+            "claude-code",
+            "claude-code-skills",
+            "codex-cli",
+            "cursor-rules",
+            "developer-tools",
+            "gemini-cli",
+            "korean",
+            "productivity",
+            "prompt-engineering",
+            "skills",
+            "vibe-coding"
+          ],
+          "pushed_at": "2026-04-19T07:14:45Z",
+          "created_at": "2026-03-31T00:10:04Z",
+          "updated_at": "2026-04-18T07:03:05Z",
+          "opengraph_url": "https://opengraph.githubassets.com/1/J-nowcow/awesome-korean-agent-skills",
+          "description_ko": "🇰🇷 400+ Korean AI Coding Agent Skills — Claude Code, Gemini CLI, Codex, Cursor 스킬 큐레이션"
+        },
+        {
+          "id": 1151514608,
+          "full_name": "ai-screams/HwpForge",
+          "name": "HwpForge",
+          "owner": "ai-screams",
+          "description": "Rust library for programmatic control of Korean HWPX documents — Markdown→HWPX conversion, JSON   round-trip editing, MCP server for AI agents 🔥",
+          "html_url": "https://github.com/ai-screams/HwpForge",
+          "homepage": "https://ai-screams.github.io/HwpForge/",
+          "stargazers_count": 8,
+          "forks_count": 1,
+          "language": "Rust",
+          "topics": [
+            "ai",
+            "cli",
+            "document",
+            "hancom",
+            "hwp",
+            "hwpx",
+            "korean",
+            "markdown",
+            "mcp",
+            "model-context-protocol",
+            "rust"
+          ],
+          "pushed_at": "2026-04-14T14:57:45Z",
+          "created_at": "2026-02-06T15:05:46Z",
+          "updated_at": "2026-04-18T05:33:08Z",
+          "opengraph_url": "https://opengraph.githubassets.com/1/ai-screams/HwpForge",
+          "description_ko": "한국 HWPX 문서 제어 Rust 라이브러리 — Markdown→HWPX 변환, JSON 편집, AI 에이전트용 MCP 서버"
+        },
+        {
+          "id": 1140899007,
+          "full_name": "heripo-lab/heripo-engine",
+          "name": "heripo-engine",
+          "owner": "heripo-lab",
+          "description": "TypeScript library for extracting structured data from archaeological excavation report PDFs using Docling SDK and LLM-powered analysis",
+          "html_url": "https://github.com/heripo-lab/heripo-engine",
+          "homepage": "https://engine-demo.heripo.com",
+          "stargazers_count": 5,
+          "forks_count": 1,
+          "language": "TypeScript",
+          "topics": [
+            "ai",
+            "apple-silicon",
+            "archaeology",
+            "cultural-heritage",
+            "digital-transformation",
+            "digitization",
+            "docling",
+            "document-processing",
+            "excavation-report",
+            "korean",
+            "llm",
+            "monorepo",
+            "ocr",
+            "pdf",
+            "pdf-parser",
+            "structured-data",
+            "typescript"
+          ],
+          "pushed_at": "2026-04-17T12:52:23Z",
+          "created_at": "2026-01-23T22:41:12Z",
+          "updated_at": "2026-04-17T12:52:04Z",
+          "opengraph_url": "https://opengraph.githubassets.com/1/heripo-lab/heripo-engine",
+          "description_ko": "Docling SDK 및 LLM 기반 분석으로 고고학 발굴 보고서 PDF에서 구조화된 데이터 추출 TypeScript 라이브러리"
+        },
+        {
+          "id": 1204405925,
+          "full_name": "youngsooco/k-mail-mcp",
+          "name": "k-mail-mcp",
+          "owner": "youngsooco",
+          "description": "AI-powered unified inbox for Korean mail (Naver, Daum, and IMAP support mailing services) · MCP Plugin for Claude Desktop",
+          "html_url": "https://github.com/youngsooco/k-mail-mcp",
+          "homepage": "",
+          "stargazers_count": 4,
+          "forks_count": 0,
+          "language": "JavaScript",
+          "topics": [
+            "ai",
+            "claude",
+            "claude-desktop",
+            "daum",
+            "email",
+            "imap",
+            "korea",
+            "mcp",
+            "naver",
+            "newsletter"
+          ],
+          "pushed_at": "2026-04-16T09:55:59Z",
+          "created_at": "2026-04-08T01:30:31Z",
+          "updated_at": "2026-04-16T09:56:02Z",
+          "opengraph_url": "https://opengraph.githubassets.com/1/youngsooco/k-mail-mcp",
+          "description_ko": "AI 기반 통합 한국 메일 수신함 (Naver, Daum, IMAP 지원) · Claude Desktop용 MCP Plugin"
         }
       ]
     }
   ],
   "meta": {
-    "total_repos": 100,
-    "total_new": 1,
-    "fetch_duration_ms": 71824,
-    "rate_limit_remaining": 27,
-    "translated_kr": 2,
-    "translation_cache_hit": 98,
+    "total_repos": 110,
+    "total_new": 3,
+    "fetch_duration_ms": 108901,
+    "rate_limit_remaining": 12,
+    "translated_kr": 10,
+    "translation_cache_hit": 100,
     "translation_failed": 0,
     "translation_failed_repos": [],
     "query_mode": "v0.4-rate-safe"
