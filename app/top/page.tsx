@@ -1,5 +1,5 @@
 import { getLatestDigest, formatDateKST } from '@/lib/data';
-import { sortByCumulativeStars } from '@/lib/sort';
+import { sortByCumulativeStars, sortByKoreanQuality } from '@/lib/sort';
 import HeroSection from '@/components/HeroSection';
 import CategorySection from '@/components/CategorySection';
 
@@ -49,7 +49,10 @@ export default async function TopPage() {
       {primary && <HeroSection data={sortByCumulativeStars(primary)} />}
 
       {secondary.map((cat) => (
-        <CategorySection key={cat.category} data={sortByCumulativeStars(cat)} />
+        <CategorySection
+          key={cat.category}
+          data={cat.category === 'korean-opensource' ? sortByKoreanQuality(cat) : sortByCumulativeStars(cat)}
+        />
       ))}
     </div>
   );

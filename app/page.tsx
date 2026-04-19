@@ -1,5 +1,5 @@
 import { getLatestDigest, formatDateKST } from '@/lib/data';
-import { sortByTrendScore } from '@/lib/sort';
+import { sortByTrendScore, sortByKoreanQuality } from '@/lib/sort';
 import HeroSection from '@/components/HeroSection';
 import CategorySection from '@/components/CategorySection';
 
@@ -66,7 +66,10 @@ export default async function HomePage() {
       {primary && <HeroSection data={sortByTrendScore(primary)} />}
 
       {secondary.map((cat) => (
-        <CategorySection key={cat.category} data={sortByTrendScore(cat)} />
+        <CategorySection
+          key={cat.category}
+          data={cat.category === 'korean-opensource' ? sortByKoreanQuality(cat) : sortByTrendScore(cat)}
+        />
       ))}
     </div>
   );

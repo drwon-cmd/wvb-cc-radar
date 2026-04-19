@@ -182,7 +182,7 @@ def categories() -> list[dict]:
                 '"한국" in:description topic:llm' + suffix,
                 '"한국어" in:description topic:llm' + suffix,
             ],
-            "top_n": 10,
+            "top_n": 15,  # larger pool, UI re-ranks by Korean Quality Score
             "priority": 9,
         },
     ]
