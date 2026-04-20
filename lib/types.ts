@@ -20,6 +20,11 @@ export interface Repo {
   homepage: string | null;
   stargazers_count: number;
   stars_delta_24h?: number;
+  /** Stars gained across the weekly baseline window (≤7 days).
+   *  Actual window length is exposed in `delta_window_days`. */
+  stars_delta_7d?: number;
+  forks_delta_7d?: number;
+  delta_window_days?: number;
   forks_count: number;
   language: string | null;
   topics: string[];
@@ -52,5 +57,7 @@ export interface DailyDigest {
     total_new: number;
     fetch_duration_ms: number;
     rate_limit_remaining: number | null;
+    /** Size of the "this week" window in days (0 on first-ever run). */
+    weekly_window_days?: number;
   };
 }

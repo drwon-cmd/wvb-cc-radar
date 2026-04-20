@@ -14,6 +14,12 @@ interface Props {
 export default function RepoCard({ repo, rank, featured = false }: Props) {
   const delta = repo.stars_delta_24h;
   const deltaPositive = typeof delta === 'number' && delta > 0;
+  const weekly = repo.stars_delta_7d;
+  const weeklyWindow = repo.delta_window_days ?? 0;
+  // Surface weekly delta only when positive AND the baseline window is real.
+  // bkamp.ai leans on this as the "이번 주 +N⭐" badge — it's the signal that
+  // separates a long-tail giant from a viral newcomer.
+  const weeklyPositive = typeof weekly === 'number' && weekly > 0 && weeklyWindow > 0;
   const isWvb = isWvbStack(repo.full_name);
 
   return (
@@ -76,6 +82,18 @@ export default function RepoCard({ repo, rank, featured = false }: Props) {
         </div>
 
         <div className="flex items-center gap-2 flex-wrap mt-3">
+          {weeklyPositive && (
+            <span
+              className={cn(
+                'font-mono font-bold inline-flex items-center gap-1 rounded-sm px-2 py-0.5',
+                'bg-accent-gold-dim text-accent-gold border border-accent-gold/40',
+                featured ? 'text-sm' : 'text-xs',
+              )}
+              title={`Stars gained over the last ${weeklyWindow}d baseline`}
+            >
+              {formatDelta(weekly)}★ {weeklyWindow}d
+            </span>
+          )}
           {repo.is_new_this_week && <Badge variant="new">NEW</Badge>}
           {isWvb && <Badge variant="gold">WVB uses</Badge>}
           {repo.language && (
@@ -101,6 +119,11 @@ export default function RepoCard({ repo, rank, featured = false }: Props) {
           <span className="flex items-center gap-1">
             <GitFork className="w-3 h-3" />
             {formatStars(repo.forks_count)}
+            {typeof repo.forks_delta_7d === 'number' && repo.forks_delta_7d > 0 && weeklyWindow > 0 && (
+              <span className="text-accent-teal ml-1">
+                {formatDelta(repo.forks_delta_7d)}/{weeklyWindow}d
+              </span>
+            )}
           </span>
           <span className="ml-auto text-fg-dim">
             pushed {relativeDays(repo.pushed_at)}

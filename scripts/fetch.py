@@ -309,6 +309,48 @@ def load_prior_translations() -> tuple[dict[str, int], dict[str, str]]:
     return stars, ko
 
 
+def load_weekly_baseline() -> tuple[dict[str, dict], int]:
+    """Load the oldest snapshot within the last 7 days for weekly-delta math.
+
+    Returns ({full_name: {stars, forks}}, window_days). Prefers the snapshot
+    closest to exactly 7d ago; falls back to the oldest we have so the site
+    shows meaningful deltas even during the first week of operation (when the
+    history is shorter than 7 days).
+
+    The mini-window is the primary signal bkamp.ai-style "this week's hottest"
+    depends on; raw cumulative stars hide fresh viral momentum.
+    """
+    today = datetime.now(timezone.utc).date()
+    candidates: list[tuple[int, Path]] = []
+    for delta_days in range(7, 0, -1):
+        d = today - timedelta(days=delta_days)
+        p = DATA_DIR / f"{d.strftime('%Y-%m-%d')}.json"
+        if p.exists():
+            candidates.append((delta_days, p))
+    if not candidates:
+        return {}, 0
+    # Prefer the oldest snapshot we have (largest delta_days) so the window
+    # approximates a real "week of activity" as soon as possible.
+    delta_days, path = max(candidates, key=lambda c: c[0])
+    baseline: dict[str, dict] = {}
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            digest = json.load(f)
+        for cat in digest.get("categories", []):
+            for item in cat.get("items", []):
+                fn = item["full_name"]
+                if fn not in baseline:
+                    baseline[fn] = {
+                        "stars": item.get("stargazers_count", 0),
+                        "forks": item.get("forks_count", 0),
+                    }
+    except Exception as e:
+        print(f"[weekly] failed to read {path}: {e}", file=sys.stderr)
+        return {}, 0
+    print(f"[weekly] baseline from {path.name} ({delta_days}d window), {len(baseline)} repos")
+    return baseline, delta_days
+
+
 def is_new_this_week(created_at: str) -> bool:
     try:
         created = datetime.fromisoformat(created_at.replace("Z", "+00:00"))
@@ -467,6 +509,8 @@ def main() -> int:
     yesterday_stars, ko_cache = load_prior_translations()
     print(f"[cache] {len(yesterday_stars)} prior stars, {len(ko_cache)} cached translations")
 
+    weekly_baseline, weekly_window_days = load_weekly_baseline()
+
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     categories_result = []
     total_repos = 0
@@ -502,6 +546,11 @@ def main() -> int:
             prev = yesterday_stars.get(repo["full_name"])
             if prev is not None:
                 repo["stars_delta_24h"] = repo["stargazers_count"] - prev
+            base = weekly_baseline.get(repo["full_name"])
+            if base is not None and weekly_window_days > 0:
+                repo["stars_delta_7d"] = repo["stargazers_count"] - base["stars"]
+                repo["forks_delta_7d"] = repo["forks_count"] - base["forks"]
+                repo["delta_window_days"] = weekly_window_days
             if is_new_this_week(repo["created_at"]):
                 repo["is_new_this_week"] = True
                 total_new += 1
@@ -537,6 +586,7 @@ def main() -> int:
             "translation_failed": len(failed),
             "translation_failed_repos": failed if len(failed) <= 30 else failed[:30],
             "query_mode": "v0.4-rate-safe",
+            "weekly_window_days": weekly_window_days,
         },
     }
 
