@@ -68,7 +68,7 @@ export const CATEGORIES: CategoryConfig[] = [
   {
     id: 'korean-opensource',
     title: '한국 오픈소스',
-    subtitle: 'Claude Code·MCP·RAG·Agent·Vibe Coding — 한국인이 한국 시장·사용자 대상으로 만든 프로젝트 (KQS: 스타 + 포크×3 + 한글설명 +30 + 모멘텀 +5 + 신규 +15)',
+    subtitle: 'Claude Code·MCP·RAG·Agent·Vibe Coding — 한국인/한국팀이 만든 오픈소스 (한국어 설명 없어도 allowlist로 포함. KQS: 스타 + 포크×3 + 한글설명 +30 + 한국팀오너 +30 + 모멘텀 +5 + 신규 +15)',
     top_n: 15,
     priority: 9,
   },

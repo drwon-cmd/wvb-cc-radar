@@ -29,6 +29,8 @@ export interface Repo {
   opengraph_url: string;
   is_new_this_week?: boolean;
   wvb_uses?: boolean;
+  /** Set by fetch.py when owner appears in data/korean-owners.json. */
+  korean_owner?: boolean;
 }
 
 export interface CategoryResult {

@@ -1,0 +1,14 @@
+{
+  "_comment": "Korean GitHub owners (users/orgs) whose repos should appear in the korean-opensource category even when descriptions are English-only. Add new entries here — fetch.py picks them up on the next run; no code change needed. Use the GitHub login exactly (case-sensitive).",
+  "_usage": "fetch.py adds `user:<login> pushed:>CUTOFF` queries for each entry into the korean-opensource category. lib/sort.ts also imports this list so repos surfaced in other categories get a Korean-owner bonus in the UI ranking.",
+  "owners": [
+    { "login": "popup-studio-ai", "kind": "org",  "note": "bkit Vibecoding Kit — PDCA + Claude Code (WVB)" },
+    { "login": "Yeachan-Heo",     "kind": "user", "note": "oh-my-claudecode" },
+    { "login": "code-yeongyu",    "kind": "user", "note": "oh-my-openagent" },
+    { "login": "chrisryugj",      "kind": "user", "note": "korean-law-mcp, korean-dart-mcp" },
+    { "login": "kimlawtech",      "kind": "user", "note": "korean-privacy-terms" },
+    { "login": "kangraemin",      "kind": "user", "note": "ai-paper-digest" },
+    { "login": "NomaDamas",       "kind": "org",  "note": "k-skill" },
+    { "login": "eddmpython",      "kind": "user", "note": "dartlab" }
+  ]
+}

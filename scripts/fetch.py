@@ -30,6 +30,28 @@ ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = ROOT / "data"
 DATA_DIR.mkdir(exist_ok=True)
 
+KOREAN_OWNERS_FILE = DATA_DIR / "korean-owners.json"
+
+
+def load_korean_owners() -> list[str]:
+    """Load Korean GitHub owner logins from data/korean-owners.json.
+
+    Enables listing Korean-made repos whose descriptions have no Korean-language
+    markers (e.g. popup-studio-ai/bkit-claude-code — English desc, Korean team).
+    Failure to read returns an empty list so the main flow continues.
+    """
+    if not KOREAN_OWNERS_FILE.exists():
+        return []
+    try:
+        with open(KOREAN_OWNERS_FILE, "r", encoding="utf-8") as f:
+            raw = json.load(f)
+        owners = raw.get("owners", [])
+        logins = [o.get("login", "").strip() for o in owners if o.get("login")]
+        return [l for l in logins if l]
+    except Exception as e:
+        print(f"[korean-owners] failed to read {KOREAN_OWNERS_FILE}: {e}", file=sys.stderr)
+        return []
+
 GITHUB_API = "https://api.github.com"
 GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", "").strip()
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "").strip()
@@ -50,6 +72,11 @@ def recent_date(days: int) -> str:
 def categories() -> list[dict]:
     cutoff = recent_date(RECENT_DAYS)
     suffix = f" pushed:>{cutoff}"
+    korean_owners = load_korean_owners()
+    # GitHub search: `user:<login>` matches both users and orgs (they share
+    # the same login namespace). One query per owner, no fork/archive filter
+    # since these are curated logins we already trust.
+    korean_owner_queries = [f"user:{login}{suffix}" for login in korean_owners]
     return [
         {
             "id": "claude-code",
@@ -181,6 +208,10 @@ def categories() -> list[dict]:
                 # Hangul description catch-all
                 '"한국" in:description topic:llm' + suffix,
                 '"한국어" in:description topic:llm' + suffix,
+                # (9) Known Korean owner allowlist — covers repos with
+                # English-only descriptions from Korean teams (e.g. bkit).
+                # Entries in data/korean-owners.json.
+                *korean_owner_queries,
             ],
             "top_n": 15,  # larger pool, UI re-ranks by Korean Quality Score
             "priority": 9,
@@ -221,13 +252,14 @@ def search_repos(query: str, per_page: int) -> tuple[list[dict], dict]:
     return data.get("items", []), hdrs
 
 
-def extract_repo(item: dict) -> dict:
+def extract_repo(item: dict, korean_owners: set[str] | None = None) -> dict:
     full_name = item["full_name"]
-    return {
+    owner = item["owner"]["login"]
+    repo = {
         "id": item["id"],
         "full_name": full_name,
         "name": item["name"],
-        "owner": item["owner"]["login"],
+        "owner": owner,
         "description": item.get("description"),
         "html_url": item["html_url"],
         "homepage": item.get("homepage"),
@@ -240,6 +272,11 @@ def extract_repo(item: dict) -> dict:
         "updated_at": item["updated_at"],
         "opengraph_url": f"https://opengraph.githubassets.com/1/{full_name}",
     }
+    # Case-insensitive owner match — GitHub logins are case-insensitive in
+    # search but the raw API preserves casing (e.g. "Yeachan-Heo").
+    if korean_owners and owner.lower() in korean_owners:
+        repo["korean_owner"] = True
+    return repo
 
 
 def load_prior_translations() -> tuple[dict[str, int], dict[str, str]]:
@@ -424,6 +461,9 @@ def main() -> int:
     gm_mode = "ENABLED" if GEMINI_API_KEY else "disabled"
     print(f"[wvb-cc-radar] start | GitHub={gh_mode} | Gemini={gm_mode}")
 
+    korean_owners_set = {l.lower() for l in load_korean_owners()}
+    print(f"[korean-owners] {len(korean_owners_set)} allowlisted owners")
+
     yesterday_stars, ko_cache = load_prior_translations()
     print(f"[cache] {len(yesterday_stars)} prior stars, {len(ko_cache)} cached translations")
 
@@ -458,7 +498,7 @@ def main() -> int:
 
         processed = []
         for item in ranked:
-            repo = extract_repo(item)
+            repo = extract_repo(item, korean_owners_set)
             prev = yesterday_stars.get(repo["full_name"])
             if prev is not None:
                 repo["stars_delta_24h"] = repo["stargazers_count"] - prev

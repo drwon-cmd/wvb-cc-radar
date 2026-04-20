@@ -45,22 +45,25 @@ export function hasKoreanDescription(desc: string | null | undefined): boolean {
  * category where raw star count understates domestic value (smaller market).
  *
  * KQS = stars × 1
- *     + forks × 3                  // real-usage weight
- *     + (hasKoreanDesc ? 30 : 0)   // Korean-text description = Korea-focused
- *     + (stars_delta_24h × 5)      // recent momentum
+ *     + forks × 3                   // real-usage weight
+ *     + (hasKoreanDesc ? 30 : 0)    // Korean-text description = Korea-focused
+ *     + (korean_owner   ? 30 : 0)   // allowlisted Korean owner (data/korean-owners.json)
+ *     + (stars_delta_24h × 5)       // recent momentum
  *     + (is_new_this_week ? 15 : 0)
  *
- * Example: a repo with 19★ + Korean description + 2 forks
- *          = 19 + 6 + 30 = 55
- *          beats a repo with 44★ English-only + 1 fork = 47.
+ * `korean_owner` carries the same weight as `hasKoreanDesc` so that
+ * Korean-made repos with English-only descriptions (e.g. popup-studio-ai/
+ * bkit-claude-code) can surface alongside explicitly Korean-marked ones.
+ * Both bonuses stack when a repo has Korean text *and* an allowlisted owner.
  */
 export function koreanQualityScore(r: Repo): number {
   const stars = r.stargazers_count;
   const forks = r.forks_count ?? 0;
   const koreanDesc = hasKoreanDescription(r.description) ? 30 : 0;
+  const ownerBonus = r.korean_owner ? 30 : 0;
   const delta = (r.stars_delta_24h ?? 0) * 5;
   const newBonus = r.is_new_this_week ? 15 : 0;
-  return stars + forks * 3 + koreanDesc + delta + newBonus;
+  return stars + forks * 3 + koreanDesc + ownerBonus + delta + newBonus;
 }
 
 export function sortByKoreanQuality(cat: CategoryResult): CategoryResult {
