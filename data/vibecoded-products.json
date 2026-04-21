@@ -1,0 +1,78 @@
+{
+  "description": "Vibecoded Products allowlist — AI 시대에 만들어진 완결된 엔드유저 앱/서비스만 등재. 개발자 도구·프레임워크·라이브러리·SDK·템플릿은 제외.",
+  "criteria": [
+    "엔드유저가 설치/가입 후 즉시 쓰는 완성 제품",
+    "AI가 핵심 기능 (단순 추가 기능은 제외)",
+    "오픈소스 (MIT/Apache/GPL 등)",
+    "최소 5,000 stars (초기 시드), 이후 확장 가능",
+    "Vibe Coding 카테고리(Cursor/Bolt 등 IDE)와 겹치지 않는 순수 앱"
+  ],
+  "updated": "2026-04-22",
+  "products": [
+    {
+      "full_name": "koala73/worldmonitor",
+      "category": "intelligence-dashboard",
+      "note": "지정학·뉴스·OSINT 통합 모니터링 대시보드 (Palantir 스타일)"
+    },
+    {
+      "full_name": "open-webui/open-webui",
+      "category": "ai-chat",
+      "note": "Ollama 등 로컬 LLM을 위한 self-hosted 웹 UI"
+    },
+    {
+      "full_name": "lobehub/lobe-chat",
+      "category": "ai-chat",
+      "note": "다중 AI 모델 지원 오픈소스 채팅 플랫폼"
+    },
+    {
+      "full_name": "AppFlowy-IO/AppFlowy",
+      "category": "productivity",
+      "note": "Notion 대안 — AI 통합 프로젝트·위키·팀 관리"
+    },
+    {
+      "full_name": "Mintplex-Labs/anything-llm",
+      "category": "productivity",
+      "note": "올인원 AI 생산성 앱 — 문서·에이전트·RAG 통합"
+    },
+    {
+      "full_name": "lencx/ChatGPT",
+      "category": "ai-chat",
+      "note": "ChatGPT 데스크톱 앱 (Mac·Windows·Linux)"
+    },
+    {
+      "full_name": "janhq/jan",
+      "category": "ai-chat",
+      "note": "프라이버시 우선 데스크톱 AI 어시스턴트 (오프라인 가능)"
+    },
+    {
+      "full_name": "Bin-Huang/chatbox",
+      "category": "ai-chat",
+      "note": "다중 LLM 지원 데스크톱 AI 클라이언트"
+    },
+    {
+      "full_name": "danny-avila/LibreChat",
+      "category": "ai-chat",
+      "note": "오픈소스 ChatGPT 클론 — 다중 모델·에이전트·플러그인"
+    },
+    {
+      "full_name": "hcengineering/platform",
+      "category": "productivity",
+      "note": "Huly — AI 통합 올인원 프로젝트 관리 플랫폼"
+    },
+    {
+      "full_name": "sunner/ChatALL",
+      "category": "ai-chat",
+      "note": "여러 AI 챗봇과 동시 대화·비교 데스크톱 앱"
+    },
+    {
+      "full_name": "reorproject/reor",
+      "category": "productivity",
+      "note": "프라이빗·로컬 AI 개인 지식 관리 앱"
+    },
+    {
+      "full_name": "midday-ai/midday",
+      "category": "productivity",
+      "note": "프리랜서·1인 기업 대상 AI 재무 관리 앱"
+    }
+  ]
+}

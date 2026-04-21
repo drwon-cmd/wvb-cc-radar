@@ -31,6 +31,7 @@ DATA_DIR = ROOT / "data"
 DATA_DIR.mkdir(exist_ok=True)
 
 KOREAN_OWNERS_FILE = DATA_DIR / "korean-owners.json"
+VIBECODED_FILE = DATA_DIR / "vibecoded-products.json"
 
 
 def load_korean_owners() -> list[str]:
@@ -51,6 +52,24 @@ def load_korean_owners() -> list[str]:
     except Exception as e:
         print(f"[korean-owners] failed to read {KOREAN_OWNERS_FILE}: {e}", file=sys.stderr)
         return []
+
+
+def load_vibecoded_allowlist() -> list[str]:
+    """Load full_name list from data/vibecoded-products.json.
+
+    Vibecoded Products는 엔드유저 앱만 엄격 큐레이션하므로 allowlist 방식.
+    각 full_name(owner/repo)은 `repo:owner/repo` 쿼리로 개별 조회.
+    """
+    if not VIBECODED_FILE.exists():
+        return []
+    try:
+        with open(VIBECODED_FILE, "r", encoding="utf-8") as f:
+            raw = json.load(f)
+        return [p["full_name"] for p in raw.get("products", []) if p.get("full_name")]
+    except Exception as e:
+        print(f"[vibecoded] failed to read {VIBECODED_FILE}: {e}", file=sys.stderr)
+        return []
+
 
 GITHUB_API = "https://api.github.com"
 GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", "").strip()
@@ -73,6 +92,9 @@ def categories() -> list[dict]:
     cutoff = recent_date(RECENT_DAYS)
     suffix = f" pushed:>{cutoff}"
     korean_owners = load_korean_owners()
+    vibecoded_full_names = load_vibecoded_allowlist()
+    # Vibecoded는 엔드유저 앱 allowlist. pushed 필터 안 씀 (업데이트 주기 다양).
+    vibecoded_queries = [f"repo:{fn}" for fn in vibecoded_full_names]
     # GitHub search: `user:<login>` matches both users and orgs (they share
     # the same login namespace). One query per owner, no fork/archive filter
     # since these are curated logins we already trust.
@@ -103,6 +125,17 @@ def categories() -> list[dict]:
             "priority": 2,
         },
         {
+            "id": "vibecoded-products",
+            "title": "Vibecoded Products",
+            "subtitle": "AI 시대에 만들어진 완성된 엔드유저 앱·서비스 (프레임워크·SDK·라이브러리 제외)",
+            # Allowlist-only: data/vibecoded-products.json 의 full_name 목록을
+            # `repo:owner/name` 개별 쿼리로 정확 조회. 엄격한 수동 큐레이션으로
+            # 개발자 도구·라이브러리 유입 차단.
+            "queries": vibecoded_queries,
+            "top_n": 15,
+            "priority": 3,
+        },
+        {
             "id": "enterprise-ax",
             "title": "Enterprise AX · FDE",
             "subtitle": "Forward Deployed Engineer 모델, 기업 AI 전환 프레임워크",
@@ -112,7 +145,7 @@ def categories() -> list[dict]:
                 '"forward-deployed" in:name,description' + suffix,
             ],
             "top_n": 10,
-            "priority": 3,
+            "priority": 4,
         },
         {
             "id": "rag-kb",
@@ -124,7 +157,7 @@ def categories() -> list[dict]:
                 '"knowledge-base" in:name' + suffix,
             ],
             "top_n": 10,
-            "priority": 4,
+            "priority": 5,
         },
         {
             "id": "agent-orchestration",
@@ -136,7 +169,7 @@ def categories() -> list[dict]:
                 '"orchestrator" in:name' + suffix,
             ],
             "top_n": 10,
-            "priority": 5,
+            "priority": 6,
         },
         {
             "id": "mcp-servers",
@@ -148,7 +181,7 @@ def categories() -> list[dict]:
                 '"mcp-servers" in:name' + suffix,
             ],
             "top_n": 10,
-            "priority": 6,
+            "priority": 7,
         },
         {
             "id": "ai-agents",
@@ -161,7 +194,7 @@ def categories() -> list[dict]:
                 '"autogen" in:name' + suffix,
             ],
             "top_n": 10,
-            "priority": 7,
+            "priority": 8,
         },
         {
             "id": "llm-prompts",
@@ -173,7 +206,7 @@ def categories() -> list[dict]:
                 '"prompt-engineering" in:name' + suffix,
             ],
             "top_n": 10,
-            "priority": 8,
+            "priority": 9,
         },
         {
             "id": "korean-opensource",
@@ -214,7 +247,7 @@ def categories() -> list[dict]:
                 *korean_owner_queries,
             ],
             "top_n": 15,  # larger pool, UI re-ranks by Korean Quality Score
-            "priority": 9,
+            "priority": 10,
         },
     ]
 
@@ -250,6 +283,25 @@ def search_repos(query: str, per_page: int) -> tuple[list[dict], dict]:
     )
     data, hdrs = gh_request(url)
     return data.get("items", []), hdrs
+
+
+def get_repo_direct(full_name: str) -> tuple[dict | None, dict]:
+    """Direct repo fetch via /repos/{owner}/{name}.
+
+    GitHub Search API does NOT support `repo:owner/name` as a limiter in
+    repository search — it's only valid in issue/code search. For allowlist
+    carry-through (vibecoded-products), we hit the repo endpoint directly.
+    Returns (item, headers); item=None on 404 so callers can skip silently.
+    """
+    url = f"{GITHUB_API}/repos/{full_name}"
+    try:
+        data, hdrs = gh_request(url)
+        return data, hdrs
+    except urllib.error.HTTPError as e:
+        if e.code == 404:
+            print(f"[direct] 404 {full_name}", file=sys.stderr)
+            return None, {}
+        raise
 
 
 def extract_repo(item: dict, korean_owners: set[str] | None = None) -> dict:
@@ -520,6 +572,52 @@ def main() -> int:
     for cat in categories():
         per_query = max(cat["top_n"], 30)
         merged: dict[str, dict] = {}
+        # Allowlist categories use direct /repos fetch (search API can't
+        # constrain by full_name in repo search).
+        if cat["id"] == "vibecoded-products":
+            full_names = [q.replace("repo:", "", 1) for q in cat["queries"]]
+            print(f"[fetch] {cat['id']} ({len(full_names)} direct /repos calls)")
+            for fn in full_names:
+                try:
+                    item, hdrs = get_repo_direct(fn)
+                    rate_remaining = hdrs.get("X-RateLimit-Remaining", rate_remaining)
+                    if item:
+                        merged[item["full_name"]] = item
+                except Exception as e:
+                    print(f"    FAIL {fn}: {e}", file=sys.stderr)
+                sleep_between()
+            ranked = sorted(
+                merged.values(),
+                key=lambda i: i.get("stargazers_count", 0),
+                reverse=True,
+            )[: cat["top_n"]]
+            processed = []
+            for item in ranked:
+                repo = extract_repo(item, korean_owners_set)
+                prev = yesterday_stars.get(repo["full_name"])
+                if prev is not None:
+                    repo["stars_delta_24h"] = repo["stargazers_count"] - prev
+                base = weekly_baseline.get(repo["full_name"])
+                if base is not None and weekly_window_days > 0:
+                    repo["stars_delta_7d"] = repo["stargazers_count"] - base["stars"]
+                    repo["forks_delta_7d"] = repo["forks_count"] - base["forks"]
+                    repo["delta_window_days"] = weekly_window_days
+                if is_new_this_week(repo["created_at"]):
+                    repo["is_new_this_week"] = True
+                    total_new += 1
+                processed.append(repo)
+            categories_result.append({
+                "category": cat["id"],
+                "title": cat["title"],
+                "subtitle": cat["subtitle"],
+                "fetched_at": datetime.now(timezone.utc).isoformat(),
+                "queries": cat["queries"],
+                "total_count": len(processed),
+                "items": processed,
+            })
+            total_repos += len(processed)
+            print(f"  -> {len(merged)} merged, kept top {len(processed)}")
+            continue
         print(f"[fetch] {cat['id']} ({len(cat['queries'])} queries)")
         for q in cat["queries"]:
             try:
