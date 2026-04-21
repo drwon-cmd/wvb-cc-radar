@@ -240,7 +240,8 @@
           "pushed_at": "2026-04-21T11:45:47Z",
           "created_at": "2025-10-17T07:15:01Z",
           "updated_at": "2026-04-21T16:47:10Z",
-          "opengraph_url": "https://opengraph.githubassets.com/1/ComposioHQ/awesome-claude-skills"
+          "opengraph_url": "https://opengraph.githubassets.com/1/ComposioHQ/awesome-claude-skills",
+          "description_ko": "Claude AI 워크플로 커스터마이징을 위한 Claude Skills·리소스·도구 큐레이션 모음"
         },
         {
           "id": 1108837393,
@@ -1537,7 +1538,8 @@
           "pushed_at": "2026-04-21T16:47:08Z",
           "created_at": "2023-05-21T07:19:12Z",
           "updated_at": "2026-04-21T15:09:35Z",
-          "opengraph_url": "https://opengraph.githubassets.com/1/lobehub/lobehub"
+          "opengraph_url": "https://opengraph.githubassets.com/1/lobehub/lobehub",
+          "description_ko": "에이전트 팀원과 협업하는 작업·일상 통합 공간, 멀티에이전트 협업 지원"
         },
         {
           "id": 377496562,
@@ -1567,7 +1569,8 @@
           "pushed_at": "2026-04-08T01:36:22Z",
           "created_at": "2021-06-16T12:56:48Z",
           "updated_at": "2026-04-21T16:23:29Z",
-          "opengraph_url": "https://opengraph.githubassets.com/1/AppFlowy-IO/AppFlowy"
+          "opengraph_url": "https://opengraph.githubassets.com/1/AppFlowy-IO/AppFlowy",
+          "description_ko": "오픈소스 Notion 대안 AI 협업 워크스페이스, 프로젝트·위키·팀 관리 통합"
         },
         {
           "id": 649170660,
@@ -1642,7 +1645,8 @@
           "pushed_at": "2024-08-29T17:58:11Z",
           "created_at": "2022-12-07T09:43:02Z",
           "updated_at": "2026-04-21T15:17:47Z",
-          "opengraph_url": "https://opengraph.githubassets.com/1/lencx/ChatGPT"
+          "opengraph_url": "https://opengraph.githubassets.com/1/lencx/ChatGPT",
+          "description_ko": "ChatGPT 데스크톱 애플리케이션 (Mac·Windows·Linux 지원)"
         },
         {
           "id": 1130564872,
@@ -1669,7 +1673,8 @@
           "pushed_at": "2026-04-21T16:55:21Z",
           "created_at": "2026-01-08T17:26:06Z",
           "updated_at": "2026-04-21T16:54:46Z",
-          "opengraph_url": "https://opengraph.githubassets.com/1/koala73/worldmonitor"
+          "opengraph_url": "https://opengraph.githubassets.com/1/koala73/worldmonitor",
+          "description_ko": "실시간 글로벌 인텔리전스 대시보드, AI 뉴스 집계·지정학 모니터링 통합"
         },
         {
           "id": 679506386,
@@ -1695,7 +1700,8 @@
           "pushed_at": "2026-04-21T15:49:32Z",
           "created_at": "2023-08-17T02:17:10Z",
           "updated_at": "2026-04-21T16:28:25Z",
-          "opengraph_url": "https://opengraph.githubassets.com/1/janhq/jan"
+          "opengraph_url": "https://opengraph.githubassets.com/1/janhq/jan",
+          "description_ko": "100% 오프라인으로 컴퓨터에서 구동되는 ChatGPT 오픈소스 대안"
         },
         {
           "id": 610260322,
@@ -1724,7 +1730,8 @@
           "pushed_at": "2026-04-09T03:24:43Z",
           "created_at": "2023-03-06T12:22:15Z",
           "updated_at": "2026-04-21T16:46:40Z",
-          "opengraph_url": "https://opengraph.githubassets.com/1/chatboxai/chatbox"
+          "opengraph_url": "https://opengraph.githubassets.com/1/chatboxai/chatbox",
+          "description_ko": "강력한 AI 클라이언트"
         },
         {
           "id": 600596928,
@@ -1762,7 +1769,8 @@
           "pushed_at": "2026-04-21T15:52:41Z",
           "created_at": "2023-02-12T01:06:52Z",
           "updated_at": "2026-04-21T16:47:55Z",
-          "opengraph_url": "https://opengraph.githubassets.com/1/danny-avila/LibreChat"
+          "opengraph_url": "https://opengraph.githubassets.com/1/danny-avila/LibreChat",
+          "description_ko": "Agents·MCP·다중 모델 제공자 지원, 셀프호스팅 가능한 고급 ChatGPT 클론"
         },
         {
           "id": 392073243,
@@ -1795,7 +1803,8 @@
           "pushed_at": "2026-04-21T16:31:01Z",
           "created_at": "2021-08-02T19:39:23Z",
           "updated_at": "2026-04-21T16:31:05Z",
-          "opengraph_url": "https://opengraph.githubassets.com/1/hcengineering/platform"
+          "opengraph_url": "https://opengraph.githubassets.com/1/hcengineering/platform",
+          "description_ko": "Huly — Linear·Jira·Slack·Notion 대안 올인원 프로젝트 관리 플랫폼"
         },
         {
           "id": 625187946,
@@ -1827,7 +1836,8 @@
           "pushed_at": "2026-02-11T18:21:27Z",
           "created_at": "2023-04-08T10:34:30Z",
           "updated_at": "2026-04-21T14:06:25Z",
-          "opengraph_url": "https://opengraph.githubassets.com/1/ai-shifu/ChatALL"
+          "opengraph_url": "https://opengraph.githubassets.com/1/ai-shifu/ChatALL",
+          "description_ko": "ChatGPT·Claude·Gemini 등 여러 AI와 동시 대화하여 최적 답변 비교"
         },
         {
           "id": 693262773,
@@ -1850,7 +1860,8 @@
           "pushed_at": "2026-04-20T22:43:37Z",
           "created_at": "2023-09-18T17:12:27Z",
           "updated_at": "2026-04-21T16:54:17Z",
-          "opengraph_url": "https://opengraph.githubassets.com/1/midday-ai/midday"
+          "opengraph_url": "https://opengraph.githubassets.com/1/midday-ai/midday",
+          "description_ko": "프리랜서용 인보이스·시간 추적·재무 관리·개인 어시스턴트 통합 도구"
         },
         {
           "id": 723894467,
@@ -1880,7 +1891,8 @@
           "pushed_at": "2025-05-13T21:28:59Z",
           "created_at": "2023-11-27T01:30:44Z",
           "updated_at": "2026-04-21T16:11:07Z",
-          "opengraph_url": "https://opengraph.githubassets.com/1/reorproject/reor"
+          "opengraph_url": "https://opengraph.githubassets.com/1/reorproject/reor",
+          "description_ko": "고도 정보 사용자를 위한 프라이빗·로컬 AI 개인 지식 관리 앱"
         }
       ]
     },
@@ -4696,22 +4708,9 @@
     "fetch_duration_ms": 227516,
     "rate_limit_remaining": 17,
     "translated_kr": 0,
-    "translation_cache_hit": 116,
-    "translation_failed": 12,
-    "translation_failed_repos": [
-      "ComposioHQ/awesome-claude-skills",
-      "lobehub/lobehub",
-      "AppFlowy-IO/AppFlowy",
-      "lencx/ChatGPT",
-      "koala73/worldmonitor",
-      "janhq/jan",
-      "chatboxai/chatbox",
-      "danny-avila/LibreChat",
-      "hcengineering/platform",
-      "ai-shifu/ChatALL",
-      "midday-ai/midday",
-      "reorproject/reor"
-    ],
+    "translation_cache_hit": 128,
+    "translation_failed": 0,
+    "translation_failed_repos": [],
     "query_mode": "v0.4-rate-safe",
     "weekly_window_days": 3
   }
