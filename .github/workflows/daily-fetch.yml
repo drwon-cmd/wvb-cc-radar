@@ -2,7 +2,8 @@ name: Daily Fetch & Deploy
 
 on:
   schedule:
-    - cron: '0 0 * * *' # UTC 00:00 = KST 09:00
+    - cron: '0 0 * * *' # UTC 00:00 = KST 09:00 (primary)
+    - cron: '0 6 * * *' # UTC 06:00 = KST 15:00 (backup — GH cron often delays/skips)
   workflow_dispatch: {}
 
 permissions:
