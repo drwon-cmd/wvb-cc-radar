@@ -28,6 +28,13 @@ export async function getDigestByDate(date: string): Promise<DailyDigest | null>
   }
 }
 
+export async function getPreviousDigest(currentDate: string): Promise<DailyDigest | null> {
+  const dates = await getAllDates();
+  const idx = dates.indexOf(currentDate);
+  if (idx === -1 || idx >= dates.length - 1) return null;
+  return getDigestByDate(dates[idx + 1]);
+}
+
 export async function getAllDates(): Promise<string[]> {
   try {
     const files = await fs.readdir(DATA_DIR);

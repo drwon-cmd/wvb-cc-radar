@@ -1,13 +1,17 @@
-import { getLatestDigest, formatDateKST } from '@/lib/data';
+import { getLatestDigest, getPreviousDigest, formatDateKST } from '@/lib/data';
 import { sortByTrendScore, sortByKoreanQuality } from '@/lib/sort';
+import { computeWhatsNew } from '@/lib/diff';
 import HeroSection from '@/components/HeroSection';
 import CategorySection from '@/components/CategorySection';
+import WhatsNewSection from '@/components/WhatsNewSection';
 
 export const dynamic = 'force-static';
 export const revalidate = 300;
 
 export default async function HomePage() {
   const digest = await getLatestDigest();
+  const previous = digest ? await getPreviousDigest(digest.date) : null;
+  const whatsNew = digest ? computeWhatsNew(digest, previous) : [];
 
   if (!digest) {
     return (
@@ -42,12 +46,12 @@ export default async function HomePage() {
           </span>
         </div>
         <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-fg-primary mb-2">
-          Daily Digest
+          What&apos;s new today
         </h1>
         <p className="text-fg-muted text-sm md:text-base">
-          Trending GitHub repositories for{' '}
-          <span className="text-accent-teal">Claude Code ecosystem upgrade</span>.
-          Curated by{' '}
+          Day-over-day changes in the{' '}
+          <span className="text-accent-teal">Claude Code ecosystem</span>
+          {' '}— new entries and rank jumps surface first. Curated by{' '}
           <a
             href="https://www.wiltvb.com"
             target="_blank"
@@ -62,6 +66,10 @@ export default async function HomePage() {
           sorted by 24h trend score · generated {formatDateKST(digest.generated_at)} KST · fetch {digest.meta.fetch_duration_ms}ms
         </p>
       </div>
+
+      {previous && whatsNew.length > 0 && (
+        <WhatsNewSection entries={whatsNew} previousDate={previous.date} />
+      )}
 
       {primary && <HeroSection data={sortByTrendScore(primary)} />}
 
