@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import type { ReactNode } from 'react';
 import { Star, GitFork, ExternalLink } from 'lucide-react';
 import type { Repo } from '@/lib/types';
 import { cn, formatStars, formatDelta, relativeDays } from '@/lib/utils';
@@ -9,9 +10,15 @@ interface Props {
   repo: Repo;
   rank?: number;
   featured?: boolean;
+  /**
+   * Optional label rendered as a prominent strip at the top of the card body.
+   * Used by WhatsNewSection to surface the origin category + rank delta so
+   * viewers don't have to squint at the image overlay to understand context.
+   */
+  topLabel?: ReactNode;
 }
 
-export default function RepoCard({ repo, rank, featured = false }: Props) {
+export default function RepoCard({ repo, rank, featured = false, topLabel }: Props) {
   const delta = repo.stars_delta_24h;
   const deltaPositive = typeof delta === 'number' && delta > 0;
   const weekly = repo.stars_delta_7d;
@@ -53,6 +60,9 @@ export default function RepoCard({ repo, rank, featured = false }: Props) {
       )}
 
       <div className="p-4 md:p-5">
+        {topLabel && (
+          <div className="mb-3 pb-2 border-b border-bg-border">{topLabel}</div>
+        )}
         <div className="flex items-start justify-between gap-3 mb-2">
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2 flex-wrap mb-1">

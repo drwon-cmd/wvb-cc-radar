@@ -1,7 +1,6 @@
 import type { WhatsNewEntry } from '@/lib/diff';
 import { cn } from '@/lib/utils';
 import RepoCard from './RepoCard';
-import Badge from './Badge';
 
 interface Props {
   entries: WhatsNewEntry[];
@@ -9,15 +8,26 @@ interface Props {
   limit?: number;
 }
 
-function ChangeBadge({ change, categoryTitle }: { change: WhatsNewEntry['change']; categoryTitle: string }) {
-  return change.type === 'new' ? (
-    <Badge variant="gold">
-      NEW · #{change.todayRank} {categoryTitle}
-    </Badge>
-  ) : (
-    <Badge variant="gold">
-      #{change.fromRank} → #{change.toRank} {categoryTitle}
-    </Badge>
+/**
+ * Category + rank-delta strip rendered inside the card body (not as an image
+ * overlay). The previous top-right overlay was invisible on the featured
+ * hero because bg-accent-gold/10 washed out against bright OG preview images.
+ */
+function OriginStrip({ entry }: { entry: WhatsNewEntry }) {
+  const { change, categoryTitle } = entry;
+  const deltaText =
+    change.type === 'new'
+      ? `NEW · #${change.todayRank}`
+      : `#${change.fromRank} → #${change.toRank}`;
+  return (
+    <div className="flex items-center justify-between gap-2">
+      <span className="font-mono text-[11px] uppercase tracking-widest text-accent-gold truncate">
+        {categoryTitle}
+      </span>
+      <span className="font-mono text-[11px] font-bold text-accent-gold bg-accent-gold-dim px-2 py-0.5 rounded-sm border border-accent-gold/40 flex-shrink-0">
+        {deltaText}
+      </span>
+    </div>
   );
 }
 
@@ -59,20 +69,16 @@ export default function WhatsNewSection({ entries, previousDate, limit = 8 }: Pr
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         {hero && (
-          <div className={cn('relative', 'md:col-span-2')}>
-            <div className="absolute top-3 right-3 z-10 flex items-center gap-1">
-              <ChangeBadge change={hero.change} categoryTitle={hero.categoryTitle} />
-            </div>
-            <RepoCard repo={hero.repo} featured />
+          <div className={cn('md:col-span-2')}>
+            <RepoCard repo={hero.repo} featured topLabel={<OriginStrip entry={hero} />} />
           </div>
         )}
         {others.map((entry) => (
-          <div key={`${entry.category}-${entry.repo.full_name}`} className="relative">
-            <div className="absolute top-3 right-3 z-10 flex items-center gap-1">
-              <ChangeBadge change={entry.change} categoryTitle={entry.categoryTitle} />
-            </div>
-            <RepoCard repo={entry.repo} />
-          </div>
+          <RepoCard
+            key={`${entry.category}-${entry.repo.full_name}`}
+            repo={entry.repo}
+            topLabel={<OriginStrip entry={entry} />}
+          />
         ))}
       </div>
     </section>
