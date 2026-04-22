@@ -80,6 +80,12 @@ GEMINI_URL = (
     f"{GEMINI_MODEL}:generateContent"
 )
 
+# Claude fallback — kicks in only when Gemini batch returns all-None.
+# Uses a separate quota pool so daily Gemini exhaustion doesn't block translations.
+ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "").strip()
+CLAUDE_MODEL = "claude-haiku-4-5-20251001"
+CLAUDE_URL = "https://api.anthropic.com/v1/messages"
+
 RECENT_DAYS = 14
 
 
@@ -470,23 +476,115 @@ def gemini_translate_batch(descriptions: list[str]) -> list[str | None]:
         return [None] * len(descriptions)
 
 
+# ============================================================
+# Claude Fallback Translation
+# ============================================================
+
+def claude_translate_batch(descriptions: list[str]) -> list[str | None]:
+    """
+    Translate English → Korean via Claude Haiku 4.5.
+    Same prompt rules as Gemini. Used only when Gemini batch is all-failed
+    (daily quota exhausted / 429), so daily traffic stays minimal.
+    Returns list aligned with input (None on failure).
+    """
+    if not ANTHROPIC_API_KEY or not descriptions:
+        return [None] * len(descriptions)
+
+    numbered = "\n".join(f"{i+1}. {d}" for i, d in enumerate(descriptions))
+    prompt = (
+        "You are a technical translator. Translate the following GitHub repo "
+        "descriptions from English to natural, concise Korean. Rules:\n"
+        "- Preserve technical terms, product names, and acronyms as-is "
+        "(e.g., MCP, LLM, RAG, Claude Code, LangGraph).\n"
+        "- 1 sentence per item, under 80 Korean characters.\n"
+        "- Use 문어체 (written style), not 구어체.\n"
+        "- No period at end.\n"
+        "- If the description is already Korean or non-English, return as-is.\n"
+        "- Output strictly as a JSON array of strings in the same order. "
+        "No markdown fences, no prose before/after.\n\n"
+        f"Input ({len(descriptions)} items):\n{numbered}"
+    )
+
+    body = {
+        "model": CLAUDE_MODEL,
+        "max_tokens": 2048,
+        "temperature": 0.2,
+        "messages": [{"role": "user", "content": prompt}],
+    }
+
+    try:
+        req = urllib.request.Request(
+            CLAUDE_URL,
+            data=json.dumps(body).encode("utf-8"),
+            headers={
+                "x-api-key": ANTHROPIC_API_KEY,
+                "anthropic-version": "2023-06-01",
+                "content-type": "application/json",
+            },
+        )
+        with urllib.request.urlopen(req, timeout=60) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+        text = data["content"][0]["text"].strip()
+        # Strip accidental ```json fences if model ignored the rule
+        if text.startswith("```"):
+            text = text.split("```")[1]
+            if text.startswith("json"):
+                text = text[4:]
+            text = text.strip("` \n")
+        parsed = json.loads(text)
+        if not isinstance(parsed, list) or len(parsed) != len(descriptions):
+            print(f"[translate/claude] length mismatch {len(parsed)}/{len(descriptions)}", file=sys.stderr)
+            return [None] * len(descriptions)
+        return [str(x) if x else None for x in parsed]
+    except urllib.error.HTTPError as e:
+        body_text = e.read().decode("utf-8", errors="replace")
+        print(f"[translate/claude] HTTP {e.code}: {body_text[:300]}", file=sys.stderr)
+        return [None] * len(descriptions)
+    except Exception as e:
+        print(f"[translate/claude] error: {e}", file=sys.stderr)
+        return [None] * len(descriptions)
+
+
+def translate_batch(descriptions: list[str]) -> tuple[list[str | None], str]:
+    """Unified translation entry point. Gemini first, Claude fallback.
+
+    Returns (results, provider_used) — provider is 'gemini', 'claude', or 'none'.
+    """
+    if GEMINI_API_KEY:
+        results = gemini_translate_batch(descriptions)
+        if any(r is not None for r in results):
+            return results, "gemini"
+        # Gemini all-failed — try Claude if configured
+        if ANTHROPIC_API_KEY:
+            print("[translate] Gemini batch all-failed, falling back to Claude", file=sys.stderr)
+            claude_results = claude_translate_batch(descriptions)
+            if any(r is not None for r in claude_results):
+                return claude_results, "claude"
+            return claude_results, "claude-failed"
+        return results, "gemini-failed"
+    if ANTHROPIC_API_KEY:
+        return claude_translate_batch(descriptions), "claude"
+    return [None] * len(descriptions), "none"
+
+
 def translate_all_descriptions(
     categories_result: list[dict],
     ko_cache: dict[str, str],
     batch_size: int = 10,
     inter_batch_sleep: float = 10.0,
     retry_backoff: float = 30.0,
-) -> tuple[int, int, list[str]]:
+) -> tuple[int, int, list[str], dict[str, int]]:
     """Mutates items in-place, adding `description_ko` field.
 
-    Gemini 2.0 Flash free tier is 15 RPM. We stay well under that:
-    batch_size=10, sleep 10s → 6 req/min, ~40% of quota.
+    Uses Gemini 2.0 Flash (primary, free tier 15 RPM / 1M tok/day).
+    Falls back to Claude Haiku when Gemini batch returns all-None
+    (typically: daily quota exhaustion → HTTP 429).
 
-    Returns (translated_count, cached_count, list_of_failed_repo_names).
+    Returns (translated_count, cached_count, failed_repo_names, provider_stats).
     """
-    if not GEMINI_API_KEY:
-        print("[translate] GEMINI_API_KEY not set, skipping translations")
-        return 0, 0, []
+    if not GEMINI_API_KEY and not ANTHROPIC_API_KEY:
+        print("[translate] neither GEMINI_API_KEY nor ANTHROPIC_API_KEY set — skipping")
+        return 0, 0, [], {}
 
     todo: list[tuple[dict, str]] = []
     cached = 0
@@ -502,26 +600,32 @@ def translate_all_descriptions(
             else:
                 todo.append((item, desc))
 
+    providers_available = []
+    if GEMINI_API_KEY: providers_available.append("gemini")
+    if ANTHROPIC_API_KEY: providers_available.append("claude")
     print(
         f"[translate] {cached} cached, {len(todo)} to translate "
-        f"(batch={batch_size}, sleep={inter_batch_sleep}s, retry_after={retry_backoff}s)"
+        f"(providers={'+'.join(providers_available)}, "
+        f"batch={batch_size}, sleep={inter_batch_sleep}s, retry_after={retry_backoff}s)"
     )
 
     translated = 0
     failed_repos: list[str] = []
+    provider_stats: dict[str, int] = {"gemini": 0, "claude": 0, "none": 0}
     for i in range(0, len(todo), batch_size):
         batch = todo[i : i + batch_size]
         descriptions = [d for _, d in batch]
         batch_idx = i // batch_size + 1
 
-        results = gemini_translate_batch(descriptions)
-        if all(r is None for r in results):
+        results, provider = translate_batch(descriptions)
+        # 1-time retry after backoff if all-None AND Gemini was the only provider that tried
+        if all(r is None for r in results) and provider == "gemini-failed" and not ANTHROPIC_API_KEY:
             print(
                 f"[translate] batch {batch_idx} all-failed, retry after {retry_backoff}s",
                 file=sys.stderr,
             )
             time.sleep(retry_backoff)
-            results = gemini_translate_batch(descriptions)
+            results, provider = translate_batch(descriptions)
 
         for (item, _), ko in zip(batch, results):
             if ko:
@@ -529,16 +633,19 @@ def translate_all_descriptions(
                 translated += 1
             else:
                 failed_repos.append(item["full_name"])
+        # Tally by provider that actually produced output
+        key = provider if provider in ("gemini", "claude") else "none"
+        provider_stats[key] = provider_stats.get(key, 0) + sum(1 for r in results if r)
 
         if i + batch_size < len(todo):
             time.sleep(inter_batch_sleep)
 
     if failed_repos:
-        print(f"[translate] {len(failed_repos)} still untranslated after retry:", file=sys.stderr)
+        print(f"[translate] {len(failed_repos)} still untranslated:", file=sys.stderr)
         for fn in failed_repos[:20]:
             print(f"  - {fn}", file=sys.stderr)
 
-    return translated, cached, failed_repos
+    return translated, cached, failed_repos, provider_stats
 
 
 # ============================================================
@@ -553,7 +660,8 @@ def main() -> int:
     start = time.time()
     gh_mode = "authenticated" if GITHUB_TOKEN else "ANONYMOUS"
     gm_mode = "ENABLED" if GEMINI_API_KEY else "disabled"
-    print(f"[wvb-cc-radar] start | GitHub={gh_mode} | Gemini={gm_mode}")
+    cl_mode = "ENABLED" if ANTHROPIC_API_KEY else "disabled"
+    print(f"[wvb-cc-radar] start | GitHub={gh_mode} | Gemini={gm_mode} | Claude-fallback={cl_mode}")
 
     korean_owners_set = {l.lower() for l in load_korean_owners()}
     print(f"[korean-owners] {len(korean_owners_set)} allowlisted owners")
@@ -666,8 +774,10 @@ def main() -> int:
         total_repos += len(processed)
         print(f"  -> {len(merged)} merged, kept top {len(processed)}")
 
-    # Translate descriptions
-    translated, cached, failed = translate_all_descriptions(categories_result, ko_cache)
+    # Translate descriptions (Gemini primary, Claude fallback)
+    translated, cached, failed, provider_stats = translate_all_descriptions(
+        categories_result, ko_cache
+    )
 
     duration_ms = int((time.time() - start) * 1000)
     digest = {
@@ -683,7 +793,8 @@ def main() -> int:
             "translation_cache_hit": cached,
             "translation_failed": len(failed),
             "translation_failed_repos": failed if len(failed) <= 30 else failed[:30],
-            "query_mode": "v0.4-rate-safe",
+            "translation_providers": provider_stats,
+            "query_mode": "v0.5-claude-fallback",
             "weekly_window_days": weekly_window_days,
         },
     }
@@ -692,9 +803,10 @@ def main() -> int:
     with open(out, "w", encoding="utf-8") as f:
         json.dump(digest, f, ensure_ascii=False, indent=2)
 
+    by_provider = ", ".join(f"{k}={v}" for k, v in provider_stats.items() if v > 0)
     print(
         f"[done] {total_repos} repos, {total_new} new | "
-        f"KR: {translated} new + {cached} cached + {len(failed)} failed | {duration_ms}ms"
+        f"KR: {translated} new ({by_provider}) + {cached} cached + {len(failed)} failed | {duration_ms}ms"
     )
     print(f"[done] rate_remaining={rate_remaining}, wrote={out}")
     return 0 if not failed else 0  # non-zero only on catastrophic error, not partial translation
