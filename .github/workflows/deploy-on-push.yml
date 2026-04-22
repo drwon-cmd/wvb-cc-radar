@@ -1,0 +1,43 @@
+name: Deploy on Push
+
+# Redeploys wvb-cc-radar to Railway whenever code/config changes land on main.
+# The daily-fetch workflow handles its own redeploy after data fetches, so we
+# skip bot pushes here to avoid double-deploying the same commit.
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'data/**'
+      - 'docs/**'
+      - 'README.md'
+      - '*.pdf'
+      - '.gitignore'
+      - '.railwayignore'
+
+concurrency:
+  group: railway-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    # Skip deploys triggered by the daily-fetch bot — it redeploys itself.
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Railway CLI
+        run: npm install -g @railway/cli
+
+      - name: Redeploy to Railway
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: |
+          railway up --service ${{ secrets.RAILWAY_SERVICE_ID }} --detach --ci
