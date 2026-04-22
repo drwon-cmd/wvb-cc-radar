@@ -1,4 +1,5 @@
 import type { WhatsNewEntry } from '@/lib/diff';
+import { cn } from '@/lib/utils';
 import RepoCard from './RepoCard';
 import Badge from './Badge';
 
@@ -8,17 +9,31 @@ interface Props {
   limit?: number;
 }
 
+function ChangeBadge({ change, categoryTitle }: { change: WhatsNewEntry['change']; categoryTitle: string }) {
+  return change.type === 'new' ? (
+    <Badge variant="gold">
+      NEW · #{change.todayRank} {categoryTitle}
+    </Badge>
+  ) : (
+    <Badge variant="gold">
+      #{change.fromRank} → #{change.toRank} {categoryTitle}
+    </Badge>
+  );
+}
+
 /**
  * "What's new today" — surfaces entries that newly entered the top 10 of any
  * category OR jumped 3+ positions vs the previous digest.
  *
- * Answers the complaint "top 2 repos never change" by making the actual
- * day-over-day delta the primary view.
+ * The top-impact entry is rendered as a featured card (full-width OG image)
+ * so the visual hero reflects today's biggest movement rather than yesterday's
+ * static ranking.
  */
 export default function WhatsNewSection({ entries, previousDate, limit = 8 }: Props) {
   if (entries.length === 0) return null;
 
   const shown = entries.slice(0, limit);
+  const [hero, ...others] = shown;
   const newCount = entries.filter((e) => e.change.type === 'new').length;
   const jumpCount = entries.filter((e) => e.change.type === 'jumped').length;
 
@@ -43,18 +58,18 @@ export default function WhatsNewSection({ entries, previousDate, limit = 8 }: Pr
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        {shown.map((entry) => (
+        {hero && (
+          <div className={cn('relative', 'md:col-span-2')}>
+            <div className="absolute top-3 right-3 z-10 flex items-center gap-1">
+              <ChangeBadge change={hero.change} categoryTitle={hero.categoryTitle} />
+            </div>
+            <RepoCard repo={hero.repo} featured />
+          </div>
+        )}
+        {others.map((entry) => (
           <div key={`${entry.category}-${entry.repo.full_name}`} className="relative">
             <div className="absolute top-3 right-3 z-10 flex items-center gap-1">
-              {entry.change.type === 'new' ? (
-                <Badge variant="gold">
-                  NEW · #{entry.change.todayRank} {entry.categoryTitle}
-                </Badge>
-              ) : (
-                <Badge variant="gold">
-                  #{entry.change.fromRank} → #{entry.change.toRank} {entry.categoryTitle}
-                </Badge>
-              )}
+              <ChangeBadge change={entry.change} categoryTitle={entry.categoryTitle} />
             </div>
             <RepoCard repo={entry.repo} />
           </div>
