@@ -1,6 +1,7 @@
 import { getLatestDigest, getPreviousDigest, formatDateKST } from '@/lib/data';
 import { sortByTrendScore, sortByKoreanQuality } from '@/lib/sort';
 import { computeWhatsNew } from '@/lib/diff';
+import { ACTIVE_CATEGORY_IDS } from '@/lib/categories';
 import HeroSection from '@/components/HeroSection';
 import CategorySection from '@/components/CategorySection';
 import WhatsNewSection from '@/components/WhatsNewSection';
@@ -11,7 +12,23 @@ export const revalidate = 300;
 export default async function HomePage() {
   const digest = await getLatestDigest();
   const previous = digest ? await getPreviousDigest(digest.date) : null;
-  const whatsNew = digest ? computeWhatsNew(digest, previous) : [];
+
+  // Scrub categories that are no longer in the active config (e.g. removed
+  // enterprise-ax lingering in historical data files) before running diff/UI.
+  const filterActive = <T extends { categories: { category: string }[] }>(
+    d: T | null,
+  ): T | null =>
+    d
+      ? ({
+          ...d,
+          categories: d.categories.filter((c) =>
+            ACTIVE_CATEGORY_IDS.has(c.category),
+          ),
+        } as T)
+      : null;
+  const activeToday = filterActive(digest);
+  const activePrev = filterActive(previous);
+  const whatsNew = activeToday ? computeWhatsNew(activeToday, activePrev) : [];
 
   if (!digest) {
     return (
@@ -30,8 +47,13 @@ export default async function HomePage() {
     );
   }
 
-  const primary = digest.categories.find((c) => c.category === 'claude-code');
-  const secondary = digest.categories.filter((c) => c.category !== 'claude-code');
+  // Filter out stale categories (e.g. enterprise-ax that was removed but still
+  // lingers in historical data files until the next fetch cron runs).
+  const activeCategories = digest.categories.filter((c) =>
+    ACTIVE_CATEGORY_IDS.has(c.category),
+  );
+  const primary = activeCategories.find((c) => c.category === 'claude-code');
+  const secondary = activeCategories.filter((c) => c.category !== 'claude-code');
 
   return (
     <div>

@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getDigestByDate, getAllDates, formatDateKST } from '@/lib/data';
+import { ACTIVE_CATEGORY_IDS } from '@/lib/categories';
 import HeroSection from '@/components/HeroSection';
 import CategorySection from '@/components/CategorySection';
 
@@ -20,8 +21,11 @@ export default async function ArchiveDatePage({
   const digest = await getDigestByDate(params.date);
   if (!digest) notFound();
 
-  const primary = digest.categories.find((c) => c.category === 'claude-code');
-  const secondary = digest.categories.filter((c) => c.category !== 'claude-code');
+  const activeCategories = digest.categories.filter((c) =>
+    ACTIVE_CATEGORY_IDS.has(c.category),
+  );
+  const primary = activeCategories.find((c) => c.category === 'claude-code');
+  const secondary = activeCategories.filter((c) => c.category !== 'claude-code');
 
   return (
     <div>

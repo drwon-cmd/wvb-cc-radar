@@ -17,6 +17,18 @@ export interface WhatsNewEntry {
 const NEW_IMPACT_BASE = 100;
 const TOP_N = 10;
 const COMPARE_N = 20;
+/**
+ * Star floor for What's New eligibility. Keeps niche-category NEW entries
+ * (few dozen stars) from outranking genuine movement in the mainstream cats
+ * (claude-code, ai-agents, rag-kb) where the min is already 20k+.
+ */
+const MIN_STARS = 1000;
+/**
+ * Categories excluded from cross-category What's New pool. korean-opensource
+ * has its own popularity scale (median ~500 stars) and belongs on its own
+ * page rather than competing with global trends.
+ */
+const EXCLUDED_CATEGORIES: CategoryId[] = ['korean-opensource'];
 
 function rankMap(cat: CategoryResult): Map<string, number> {
   const sorted =
@@ -47,16 +59,19 @@ export function computeWhatsNew(
   const out: WhatsNewEntry[] = [];
 
   for (const cat of today.categories) {
+    if (EXCLUDED_CATEGORIES.includes(cat.category)) continue;
     const prevRanks = prevByCat.get(cat.category);
     if (!prevRanks) continue;
 
-    const sortedToday =
-      cat.category === 'korean-opensource' ? sortByKoreanQuality(cat) : sortByTrendScore(cat);
+    const sortedToday = sortByTrendScore(cat);
     const top = sortedToday.items.slice(0, TOP_N);
 
     top.forEach((repo, i) => {
       const todayRank = i + 1;
       const prevRank = prevRanks.get(repo.full_name);
+
+      // Star floor: skip repos below MIN_STARS regardless of category rank.
+      if ((repo.stargazers_count ?? 0) < MIN_STARS) return;
 
       if (prevRank === undefined || prevRank > COMPARE_N) {
         out.push({

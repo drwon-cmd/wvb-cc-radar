@@ -1,5 +1,6 @@
 import { getLatestDigest, formatDateKST } from '@/lib/data';
 import { sortByCumulativeStars, sortByKoreanQuality } from '@/lib/sort';
+import { ACTIVE_CATEGORY_IDS } from '@/lib/categories';
 import HeroSection from '@/components/HeroSection';
 import CategorySection from '@/components/CategorySection';
 
@@ -18,8 +19,11 @@ export default async function TopPage() {
     );
   }
 
-  const primary = digest.categories.find((c) => c.category === 'claude-code');
-  const secondary = digest.categories.filter((c) => c.category !== 'claude-code');
+  const activeCategories = digest.categories.filter((c) =>
+    ACTIVE_CATEGORY_IDS.has(c.category),
+  );
+  const primary = activeCategories.find((c) => c.category === 'claude-code');
+  const secondary = activeCategories.filter((c) => c.category !== 'claude-code');
 
   return (
     <div>

@@ -142,18 +142,6 @@ def categories() -> list[dict]:
             "priority": 3,
         },
         {
-            "id": "enterprise-ax",
-            "title": "Enterprise AX · FDE",
-            "subtitle": "Forward Deployed Engineer 모델, 기업 AI 전환 프레임워크",
-            "queries": [
-                "topic:enterprise-ai" + suffix,
-                "topic:digital-transformation" + suffix,
-                '"forward-deployed" in:name,description' + suffix,
-            ],
-            "top_n": 10,
-            "priority": 4,
-        },
-        {
             "id": "rag-kb",
             "title": "RAG · 지식 베이스",
             "subtitle": "LLM knowledge base, retrieval-augmented generation, wiki 자동화",
@@ -163,7 +151,7 @@ def categories() -> list[dict]:
                 '"knowledge-base" in:name' + suffix,
             ],
             "top_n": 10,
-            "priority": 5,
+            "priority": 4,
         },
         {
             "id": "agent-orchestration",
@@ -175,7 +163,7 @@ def categories() -> list[dict]:
                 '"orchestrator" in:name' + suffix,
             ],
             "top_n": 10,
-            "priority": 6,
+            "priority": 5,
         },
         {
             "id": "mcp-servers",
@@ -187,7 +175,7 @@ def categories() -> list[dict]:
                 '"mcp-servers" in:name' + suffix,
             ],
             "top_n": 10,
-            "priority": 7,
+            "priority": 6,
         },
         {
             "id": "ai-agents",
@@ -200,7 +188,7 @@ def categories() -> list[dict]:
                 '"autogen" in:name' + suffix,
             ],
             "top_n": 10,
-            "priority": 8,
+            "priority": 7,
         },
         {
             "id": "llm-prompts",
@@ -212,7 +200,7 @@ def categories() -> list[dict]:
                 '"prompt-engineering" in:name' + suffix,
             ],
             "top_n": 10,
-            "priority": 9,
+            "priority": 8,
         },
         {
             "id": "korean-opensource",
@@ -253,7 +241,7 @@ def categories() -> list[dict]:
                 *korean_owner_queries,
             ],
             "top_n": 15,  # larger pool, UI re-ranks by Korean Quality Score
-            "priority": 10,
+            "priority": 9,
         },
     ]
 

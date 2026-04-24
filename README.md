@@ -24,12 +24,13 @@ Curated by [Wilt Venture Builder](https://www.wiltvb.com).
 |---|---------|:---:|--------|
 | 1 | **Claude Code 생태계** | 30 (Hero) | Plugins · Skills · Sub-agents · Hooks · Workflows |
 | 2 | **Vibe Coding 도구** | 10 | Cursor·Bolt·Lovable·v0 계열 대안, AI IDE, 비개발자 코딩 |
-| 3 | **Enterprise AX · FDE** | 10 | Forward Deployed Engineer, 기업 AI 전환 프레임워크 |
+| 3 | **Vibecoded Products** | 15 | AI 시대에 만들어진 완성된 엔드유저 앱·서비스 |
 | 4 | **RAG · 지식 베이스** | 10 | LLM knowledge base, retrieval-augmented generation, wiki 자동화 |
 | 5 | **Agent Orchestration · Router** | 10 | Multi-agent coordinator, handoff patterns |
 | 6 | **MCP 서버·도구** | 10 | Model Context Protocol servers, CC-compatible |
 | 7 | **AI 에이전트 프레임워크** | 10 | LangGraph · CrewAI · AutoGen |
 | 8 | **LLM 프롬프트·워크플로우** | 10 | Prompt engineering, agentic workflows |
+| 9 | **한국 오픈소스** | 15 | 한국인/한국팀 Claude Code·MCP·RAG 프로젝트 |
 
 ## 시그널 배지
 

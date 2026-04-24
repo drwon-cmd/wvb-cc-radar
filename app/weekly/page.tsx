@@ -5,6 +5,7 @@ import {
   sortByKoreanQuality,
 } from '@/lib/sort';
 import { isoWeek, dateRangeLabel } from '@/lib/utils';
+import { ACTIVE_CATEGORY_IDS } from '@/lib/categories';
 import HeroSection from '@/components/HeroSection';
 import CategorySection from '@/components/CategorySection';
 import HotThisWeekSection from '@/components/HotThisWeekSection';
@@ -33,8 +34,11 @@ export default async function WeeklyPage() {
   const { year, week } = isoWeek(digest.date);
   const range = dateRangeLabel(digest.date, windowDays);
 
-  const primary = digest.categories.find((c) => c.category === 'claude-code');
-  const secondary = digest.categories.filter((c) => c.category !== 'claude-code');
+  const activeCategories = digest.categories.filter((c) =>
+    ACTIVE_CATEGORY_IDS.has(c.category),
+  );
+  const primary = activeCategories.find((c) => c.category === 'claude-code');
+  const secondary = activeCategories.filter((c) => c.category !== 'claude-code');
 
   return (
     <div>
@@ -81,7 +85,7 @@ export default async function WeeklyPage() {
       </div>
 
       {hasWeekly && (
-        <HotThisWeekSection categories={digest.categories} windowDays={windowDays} />
+        <HotThisWeekSection categories={activeCategories} windowDays={windowDays} />
       )}
 
       {primary && <HeroSection data={primarySort(primary)} />}
