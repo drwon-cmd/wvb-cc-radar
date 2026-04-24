@@ -115,7 +115,7 @@ def categories() -> list[dict]:
                 '"claude-code" in:name' + suffix,
                 '"bkit" in:name' + suffix,
             ],
-            "top_n": 30,
+            "top_n": 15,
             "priority": 1,
         },
         {

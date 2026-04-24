@@ -22,7 +22,7 @@ Curated by [Wilt Venture Builder](https://www.wiltvb.com).
 
 | # | 카테고리 | Top N | 포커스 |
 |---|---------|:---:|--------|
-| 1 | **Claude Code 생태계** | 30 (Hero) | Plugins · Skills · Sub-agents · Hooks · Workflows |
+| 1 | **Claude Code 생태계** | 15 (Hero) | Plugins · Skills · Sub-agents · Hooks · Workflows |
 | 2 | **Vibe Coding 도구** | 10 | Cursor·Bolt·Lovable·v0 계열 대안, AI IDE, 비개발자 코딩 |
 | 3 | **Vibecoded Products** | 15 | AI 시대에 만들어진 완성된 엔드유저 앱·서비스 |
 | 4 | **RAG · 지식 베이스** | 10 | LLM knowledge base, retrieval-augmented generation, wiki 자동화 |

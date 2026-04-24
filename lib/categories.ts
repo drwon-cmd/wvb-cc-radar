@@ -13,7 +13,7 @@ export const CATEGORIES: CategoryConfig[] = [
     id: 'claude-code',
     title: 'Claude Code 생태계',
     subtitle: 'Plugins · Skills · Sub-agents · Hooks · Workflows',
-    top_n: 30,
+    top_n: 15,
     priority: 1,
   },
   {
