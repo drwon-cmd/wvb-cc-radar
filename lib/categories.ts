@@ -34,7 +34,7 @@ export const CATEGORIES: CategoryConfig[] = [
     id: 'applications',
     title: 'Applications · 비즈니스·실생활 응용',
     subtitle: 'AI 시대 finance·trading·productivity·legal·healthcare·edtech·martech 응용 — 라이브러리가 아닌 "쓰면 가치 나오는" 도구·시스템 (search-driven + data/applications-seed.json allowlist)',
-    top_n: 15,
+    top_n: 10,
     priority: 4,
   },
   {

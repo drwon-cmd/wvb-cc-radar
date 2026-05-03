@@ -194,7 +194,7 @@ def categories() -> list[dict]:
             ],
             # Direct-fetch seed (separate field — main loop에서 별도 처리).
             "seed_queries": applications_seed_queries,
-            "top_n": 15,
+            "top_n": 10,
             "priority": 4,
         },
         {
