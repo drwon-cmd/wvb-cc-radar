@@ -2,6 +2,7 @@ export type CategoryId =
   | 'claude-code'
   | 'vibe-coding'
   | 'vibecoded-products'
+  | 'applications'
   | 'rag-kb'
   | 'agent-orchestration'
   | 'mcp-servers'

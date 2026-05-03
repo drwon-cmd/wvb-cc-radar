@@ -32,6 +32,7 @@ DATA_DIR.mkdir(exist_ok=True)
 
 KOREAN_OWNERS_FILE = DATA_DIR / "korean-owners.json"
 VIBECODED_FILE = DATA_DIR / "vibecoded-products.json"
+APPLICATIONS_SEED_FILE = DATA_DIR / "applications-seed.json"
 
 
 def load_korean_owners() -> list[str]:
@@ -51,6 +52,24 @@ def load_korean_owners() -> list[str]:
         return [l for l in logins if l]
     except Exception as e:
         print(f"[korean-owners] failed to read {KOREAN_OWNERS_FILE}: {e}", file=sys.stderr)
+        return []
+
+
+def load_applications_seed() -> list[str]:
+    """Load full_name list from data/applications-seed.json.
+
+    Applications 카테고리는 search-driven이지만 GitHub topic 미부여로 검색에
+    잡히지 않는 도메인 응용을 강제 포함하기 위해 explicit seed allowlist를
+    병행. 각 full_name은 vibecoded와 동일하게 /repos/{full_name} direct fetch.
+    """
+    if not APPLICATIONS_SEED_FILE.exists():
+        return []
+    try:
+        with open(APPLICATIONS_SEED_FILE, "r", encoding="utf-8") as f:
+            raw = json.load(f)
+        return [p["full_name"] for p in raw.get("products", []) if p.get("full_name")]
+    except Exception as e:
+        print(f"[applications-seed] failed to read {APPLICATIONS_SEED_FILE}: {e}", file=sys.stderr)
         return []
 
 
@@ -101,6 +120,8 @@ def categories() -> list[dict]:
     vibecoded_full_names = load_vibecoded_allowlist()
     # Vibecoded는 엔드유저 앱 allowlist. pushed 필터 안 씀 (업데이트 주기 다양).
     vibecoded_queries = [f"repo:{fn}" for fn in vibecoded_full_names]
+    applications_seed_names = load_applications_seed()
+    applications_seed_queries = [f"repo:{fn}" for fn in applications_seed_names]
     # GitHub search: `user:<login>` matches both users and orgs (they share
     # the same login namespace). One query per owner, no fork/archive filter
     # since these are curated logins we already trust.
@@ -140,6 +161,41 @@ def categories() -> list[dict]:
             "queries": vibecoded_queries,
             "top_n": 15,
             "priority": 3,
+        },
+        {
+            "id": "applications",
+            "title": "Applications · 비즈니스·실생활 응용",
+            "subtitle": "AI 시대 finance·trading·productivity·legal·healthcare·edtech·martech 응용 — 라이브러리가 아닌 \"쓰면 가치 나오는\" 도구·시스템",
+            # Hybrid: search-driven topic 쿼리 7개 도메인 + applications-seed.json
+            # explicit allowlist (search에 안 잡히는 항목 강제 포함). main loop의
+            # applications 분기에서 search items + seed direct fetch 둘 다 merge
+            # 후 stargazers 정렬로 top_n 선별.
+            "queries": [
+                # finance · trading
+                "topic:ai topic:finance" + suffix,
+                "topic:ai topic:trading" + suffix,
+                "topic:fintech topic:ai" + suffix,
+                # productivity · personal-assistant
+                "topic:productivity topic:ai" + suffix,
+                "topic:personal-assistant topic:ai" + suffix,
+                # legal-tech
+                "topic:legal-tech" + suffix,
+                "topic:legaltech" + suffix,
+                # healthcare · medical
+                "topic:healthcare topic:ai" + suffix,
+                "topic:medical-ai" + suffix,
+                # edtech
+                "topic:edtech topic:ai" + suffix,
+                # martech · marketing-automation
+                "topic:marketing-automation topic:ai" + suffix,
+                # creator-tools · content-creation
+                "topic:creator-tools topic:ai" + suffix,
+                "topic:content-creation topic:ai" + suffix,
+            ],
+            # Direct-fetch seed (separate field — main loop에서 별도 처리).
+            "seed_queries": applications_seed_queries,
+            "top_n": 15,
+            "priority": 4,
         },
         {
             "id": "rag-kb",
@@ -668,6 +724,67 @@ def main() -> int:
     for cat in categories():
         per_query = max(cat["top_n"], 30)
         merged: dict[str, dict] = {}
+        # Hybrid category: search-driven + explicit seed allowlist.
+        # Search items 와 direct /repos seed fetch 둘 다 merge 후 stargazers 정렬.
+        if cat["id"] == "applications":
+            # 1) Search queries (topic-based)
+            for q in cat["queries"]:
+                try:
+                    items, hdrs = search_repos(q, per_page=per_query)
+                    rate_remaining = hdrs.get("X-RateLimit-Remaining", rate_remaining)
+                except Exception as e:
+                    print(f"    FAIL search: {e}", file=sys.stderr)
+                    items = []
+                for item in items:
+                    fn = item["full_name"]
+                    if fn not in merged or item["stargazers_count"] > merged[fn]["stargazers_count"]:
+                        merged[fn] = item
+                sleep_between()
+            # 2) Seed allowlist (direct /repos)
+            seed_full_names = [q.replace("repo:", "", 1) for q in cat.get("seed_queries", [])]
+            print(f"[fetch] applications seed ({len(seed_full_names)} direct /repos calls)")
+            for fn in seed_full_names:
+                try:
+                    item, hdrs = get_repo_direct(fn)
+                    rate_remaining = hdrs.get("X-RateLimit-Remaining", rate_remaining)
+                    if item:
+                        # Seed 항목은 search에서 잡혔어도 덮어쓰기 (도메인 정보 보존 미래 확장)
+                        merged[item["full_name"]] = item
+                except Exception as e:
+                    print(f"    FAIL seed {fn}: {e}", file=sys.stderr)
+                sleep_between()
+            ranked = sorted(
+                merged.values(),
+                key=lambda i: i.get("stargazers_count", 0),
+                reverse=True,
+            )[: cat["top_n"]]
+            processed = []
+            for item in ranked:
+                repo = extract_repo(item, korean_owners_set)
+                prev = yesterday_stars.get(repo["full_name"])
+                if prev is not None:
+                    repo["stars_delta_24h"] = repo["stargazers_count"] - prev
+                base = weekly_baseline.get(repo["full_name"])
+                if base is not None and weekly_window_days > 0:
+                    repo["stars_delta_7d"] = repo["stargazers_count"] - base["stars"]
+                    repo["forks_delta_7d"] = repo["forks_count"] - base["forks"]
+                    repo["delta_window_days"] = weekly_window_days
+                if is_new_this_week(repo["created_at"]):
+                    repo["is_new_this_week"] = True
+                    total_new += 1
+                processed.append(repo)
+            categories_result.append({
+                "category": cat["id"],
+                "title": cat["title"],
+                "subtitle": cat["subtitle"],
+                "fetched_at": datetime.now(timezone.utc).isoformat(),
+                "queries": cat["queries"] + cat.get("seed_queries", []),
+                "total_count": len(processed),
+                "items": processed,
+            })
+            total_repos += len(processed)
+            print(f"  -> {len(merged)} merged ({len(seed_full_names)} from seed), kept top {len(processed)}")
+            continue
         # Allowlist categories use direct /repos fetch (search API can't
         # constrain by full_name in repo search).
         if cat["id"] == "vibecoded-products":

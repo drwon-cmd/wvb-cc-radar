@@ -1,0 +1,15 @@
+{
+  "_comment": "Applications 카테고리 explicit allowlist. GitHub topic이 없거나 search 쿼리에 잡히지 않지만 도메인 응용으로 가치 있는 repo를 강제 포함. 검색 결과와 merge 후 24h trend score로 정렬됨. 새 응용 발견 시 추가 후 daily fetch에서 자동 반영.",
+  "products": [
+    {
+      "full_name": "virattt/ai-hedge-fund",
+      "domain": "finance",
+      "note": "Multi-agent hedge fund analysis (LangGraph). SAC FMC·CEO AX 데모 풀."
+    },
+    {
+      "full_name": "virattt/dexter",
+      "domain": "finance",
+      "note": "virattt finance/agent 계열 (ai-hedge-fund와 함께 SAC/AX 데모 풀)."
+    }
+  ]
+}
