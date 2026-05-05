@@ -10,6 +10,11 @@
       "full_name": "virattt/dexter",
       "domain": "finance",
       "note": "virattt finance/agent 계열 (ai-hedge-fund와 함께 SAC/AX 데모 풀)."
+    },
+    {
+      "full_name": "public-apis/public-apis",
+      "domain": "data-catalog",
+      "note": "1500+ 무료 공개 API 카탈로그 (⭐370k+). Zero100 신사업 PoC 데이터 소스 풀, AXMOS 컨설팅 시 고객사 외부 데이터 보완 후보군, MCP 래퍼 생성 시드. GitHub topic 미부여로 search 회피되어 seed 강제 포함."
     }
   ]
 }
