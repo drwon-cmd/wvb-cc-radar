@@ -33,6 +33,7 @@ DATA_DIR.mkdir(exist_ok=True)
 KOREAN_OWNERS_FILE = DATA_DIR / "korean-owners.json"
 VIBECODED_FILE = DATA_DIR / "vibecoded-products.json"
 APPLICATIONS_SEED_FILE = DATA_DIR / "applications-seed.json"
+CLAUDE_CODE_CURATED_FILE = DATA_DIR / "claude-code-curated.json"
 
 
 def load_korean_owners() -> list[str]:
@@ -70,6 +71,26 @@ def load_applications_seed() -> list[str]:
         return [p["full_name"] for p in raw.get("products", []) if p.get("full_name")]
     except Exception as e:
         print(f"[applications-seed] failed to read {APPLICATIONS_SEED_FILE}: {e}", file=sys.stderr)
+        return []
+
+
+def load_claude_code_curated() -> list[str]:
+    """Load full_name list from data/claude-code-curated.json.
+
+    Viral Claude Code 셋업·skill·tool repo가 `topic:claude-code` 미부여 +
+    이름에 'claude-code'/'bkit' 미포함이라 search에서 누락되는 케이스 보강.
+    예: garrytan/gstack (89k stars, topic 없음, 이름이 'gstack'). 각 full_name은
+    `repo:owner/name` direct fetch로 강제 포함되며 main loop에서 search 결과와
+    merge 후 stargazers 정렬로 top_n 선별.
+    """
+    if not CLAUDE_CODE_CURATED_FILE.exists():
+        return []
+    try:
+        with open(CLAUDE_CODE_CURATED_FILE, "r", encoding="utf-8") as f:
+            raw = json.load(f)
+        return [p["full_name"] for p in raw.get("products", []) if p.get("full_name")]
+    except Exception as e:
+        print(f"[claude-code-curated] failed to read {CLAUDE_CODE_CURATED_FILE}: {e}", file=sys.stderr)
         return []
 
 
@@ -122,6 +143,8 @@ def categories() -> list[dict]:
     vibecoded_queries = [f"repo:{fn}" for fn in vibecoded_full_names]
     applications_seed_names = load_applications_seed()
     applications_seed_queries = [f"repo:{fn}" for fn in applications_seed_names]
+    claude_code_curated_names = load_claude_code_curated()
+    claude_code_seed_queries = [f"repo:{fn}" for fn in claude_code_curated_names]
     # GitHub search: `user:<login>` matches both users and orgs (they share
     # the same login namespace). One query per owner, no fork/archive filter
     # since these are curated logins we already trust.
@@ -135,7 +158,14 @@ def categories() -> list[dict]:
                 "topic:claude-code" + suffix,
                 '"claude-code" in:name' + suffix,
                 '"bkit" in:name' + suffix,
+                # Description match for viral CC setups missing topic tags
+                # (e.g. garrytan/gstack: 89k stars, no topic, name='gstack').
+                # stars:>500 floor + top_n=15 stargazers ranking filters noise.
+                '"claude code" in:description stars:>500' + suffix,
             ],
+            # Hybrid: search-driven + explicit allowlist for repos that slip
+            # through both topic and name filters. data/claude-code-curated.json.
+            "seed_queries": claude_code_seed_queries,
             "top_n": 15,
             "priority": 1,
         },
@@ -726,7 +756,9 @@ def main() -> int:
         merged: dict[str, dict] = {}
         # Hybrid category: search-driven + explicit seed allowlist.
         # Search items 와 direct /repos seed fetch 둘 다 merge 후 stargazers 정렬.
-        if cat["id"] == "applications":
+        # Trigger: any category with `seed_queries` field
+        # (currently: applications, claude-code).
+        if cat.get("seed_queries"):
             # 1) Search queries (topic-based)
             for q in cat["queries"]:
                 try:
@@ -899,7 +931,7 @@ def main() -> int:
             "translation_failed": len(failed),
             "translation_failed_repos": failed if len(failed) <= 30 else failed[:30],
             "translation_providers": provider_stats,
-            "query_mode": "v0.5-claude-fallback",
+            "query_mode": "v0.6-cc-curated",
             "weekly_window_days": weekly_window_days,
         },
     }

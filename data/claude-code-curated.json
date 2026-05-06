@@ -1,0 +1,17 @@
+{
+  "_comment": "Claude Code 생태계 explicit allowlist. GitHub topic:claude-code 미부여 + 이름에 'claude-code'/'bkit' 미포함이라 search에서 누락되는 viral CC 셋업·skill 컬렉션·tooling repo 강제 포함. fetch.py가 search 결과와 merge 후 stargazers 정렬로 top_n 선별. 새 viral repo 발견 시 이곳에 full_name 추가하면 다음 daily fetch에서 자동 반영.",
+  "criteria": [
+    "Claude Code 생태계용 셋업·skill·tool·workflow",
+    "GitHub topic이나 이름 매칭으로 search에 안 잡힘",
+    "최소 1,000 stars 또는 명백한 viral 모멘텀",
+    "오픈소스 (MIT/Apache/BSD 등)"
+  ],
+  "updated": "2026-05-06",
+  "products": [
+    {
+      "full_name": "garrytan/gstack",
+      "category": "cc-setup",
+      "note": "Garry Tan(YC President)의 Claude Code 셋업 — 23 opinionated skills + 8 tools (CEO·Designer·Eng Manager·QA·Release·Security·DevEx). MIT, ⭐89k+/56일, topic 없음. 2026-05-06 신규 등재."
+    }
+  ]
+}
