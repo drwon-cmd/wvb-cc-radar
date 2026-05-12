@@ -1,6 +1,6 @@
-import Image from 'next/image';
 import type { ReactNode } from 'react';
 import { Star, GitFork, ExternalLink } from 'lucide-react';
+import OgImage from './OgImage';
 import type { Repo } from '@/lib/types';
 import { cn, formatStars, formatDelta, relativeDays } from '@/lib/utils';
 import { isWvbStack } from '@/lib/wvb-stack';
@@ -42,13 +42,10 @@ export default function RepoCard({ repo, rank, featured = false, topLabel }: Pro
     >
       {featured && (
         <div className="relative aspect-[1200/600] bg-bg-darker overflow-hidden">
-          <Image
+          <OgImage
             src={repo.opengraph_url}
             alt={`${repo.full_name} preview`}
-            fill
-            className="object-cover opacity-90 group-hover:opacity-100 transition-opacity"
-            sizes="(max-width: 768px) 100vw, 50vw"
-            unoptimized
+            repoName={repo.full_name}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-bg-panel via-transparent to-transparent" />
           {rank !== undefined && (
