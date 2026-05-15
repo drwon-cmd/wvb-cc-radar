@@ -6,12 +6,22 @@
     "최소 1,000 stars 또는 명백한 viral 모멘텀",
     "오픈소스 (MIT/Apache/BSD 등)"
   ],
-  "updated": "2026-05-06",
+  "updated": "2026-05-15",
   "products": [
     {
       "full_name": "garrytan/gstack",
       "category": "cc-setup",
       "note": "Garry Tan(YC President)의 Claude Code 셋업 — 23 opinionated skills + 8 tools (CEO·Designer·Eng Manager·QA·Release·Security·DevEx). MIT, ⭐89k+/56일, topic 없음. 2026-05-06 신규 등재."
+    },
+    {
+      "full_name": "nexu-io/open-design",
+      "category": "cc-design",
+      "note": "Anthropic Claude Design 오픈소스 대안 — 19 Skills + 71 brand-grade design systems. CC/Codex/Cursor/Gemini CLI 지원, 로컬 데몬 + 웹 UI + Electron, Apache-2.0, ⭐33,954/11일 (delta_24h ~3000+). topic:claude-code 미부여로 search 누락. 2026-05-09 신규 등재."
+    },
+    {
+      "full_name": "msitarzewski/agency-agents",
+      "category": "cc-agents",
+      "note": "The Agency: AI Specialists Ready to Transform Your Workflow. Claude Code 전용 다수의 specialist agent personality 컬렉션 (frontend/Reddit/whimsy/QA 등). MIT, ⭐97k+. 누락 원인 4종: (1) topics 빈 배열, (2) name='agency-agents'로 cc 패턴 미매칭, (3) description에 'claude code' 미포함, (4) pushed_at=2026-04-12 (33일 정체)로 14d window 초과. 2026-05-15 신규 등재."
     }
   ]
 }

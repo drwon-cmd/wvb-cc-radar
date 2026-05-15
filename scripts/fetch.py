@@ -137,6 +137,12 @@ def recent_date(days: int) -> str:
 def categories() -> list[dict]:
     cutoff = recent_date(RECENT_DAYS)
     suffix = f" pushed:>{cutoff}"
+    # Relaxed 60d window for high-star (>5k) signal queries. Catches viral
+    # repos with monthly cadence that get filtered by the standard 14d window.
+    # Real example: msitarzewski/agency-agents (97k stars, pushed_at=2026-04-12,
+    # 33d ago, no topic, name 미매칭, description에 "claude code" 미포함) —
+    # 14d cutoff + topic/name 4중 누락으로 search에서 빠졌음 (2026-05-15 발견).
+    suffix_long = f" pushed:>{recent_date(60)}"
     korean_owners = load_korean_owners()
     vibecoded_full_names = load_vibecoded_allowlist()
     # Vibecoded는 엔드유저 앱 allowlist. pushed 필터 안 씀 (업데이트 주기 다양).
@@ -162,6 +168,18 @@ def categories() -> list[dict]:
                 # (e.g. garrytan/gstack: 89k stars, no topic, name='gstack').
                 # stars:>500 floor + top_n=15 stargazers ranking filters noise.
                 '"claude code" in:description stars:>500' + suffix,
+                # README match (60d window) — catches repos that mention
+                # Claude Code in README but not description (e.g.
+                # msitarzewski/agency-agents: 97k stars, README "Option 1:
+                # Use with Claude Code (Recommended)", description='AI agency
+                # at your fingertips'). "with claude code"가 가장 깨끗 —
+                # awesome-list/일반 Go/Mac 튜토리얼 false positive 회피하면서
+                # CC 전용 통합 코드(install.sh --tool claude-code, Use with
+                # Claude Code 등) 포착. stars:>5000 floor.
+                # 2026-05-15 검증 상위 20: agency-agents/everything-claude-code/
+                # firecrawl(CC 통합)/spec-kit/awesome-mcp-servers/skills/claude-mem/
+                # cc-switch/openspec/agent-browser 등 — 노이즈 거의 0.
+                '"with claude code" in:readme stars:>5000' + suffix_long,
             ],
             # Hybrid: search-driven + explicit allowlist for repos that slip
             # through both topic and name filters. data/claude-code-curated.json.
@@ -657,7 +675,7 @@ def translate_all_descriptions(
     Returns (translated_count, cached_count, failed_repo_names, provider_stats).
     """
     if not GEMINI_API_KEY and not ANTHROPIC_API_KEY:
-        print("[translate] neither GEMINI_API_KEY nor ANTHROPIC_API_KEY set — skipping")
+        print("[translate] neither GEMINI_API_KEY nor ANTHROPIC_API_KEY set -- skipping")
         return 0, 0, [], {}
 
     todo: list[tuple[dict, str]] = []
