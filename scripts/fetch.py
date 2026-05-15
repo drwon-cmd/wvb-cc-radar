@@ -13,6 +13,31 @@ Env:
 Rate limits:
   - GitHub Search: 30 req/min (authenticated)
   - Gemini 2.0 Flash free tier: 15 RPM, 1M tokens/day
+
+# 누락 방지 디자인 (2026-05-15 추가)
+Viral repo 가 모든 search 조건에서 빠져 누락되는 패턴을 막는 3-tier 전략:
+
+  T1 - 트렌딩 (suffix, 14d window)
+       토픽·이름·짧은 description match. "지금 뜨고 있는" 신호.
+       기존 쿼리 4종(예: claude-code).
+
+  T2 - 안정 viral (suffix_long, 60d window, stars:>5000)
+       README 매치 + 더 넓은 description 키워드. 안정기 진입한 viral repo
+       (월간 commit cadence) catch. 핵심: 높은 stars 임계로 노이즈 제거.
+
+  T3 - 영구 viral (NO pushed cutoff, stars:>20000-50000)
+       토픽 매치 + 매우 높은 stars floor. 분기간 정체된 안정 hit
+       (예: dair-ai/Prompt-Engineering-Guide 65d, nextlevelbuilder/
+       ui-ux-pro-max-skill 42d) 영구 catch. 토픽이 있어야 동작.
+
+# 4-way exclusion 패턴 (방지 대상)
+Viral repo 가 다음 4가지 조건에 모두 어긋나면 모든 T1 쿼리 누락:
+  (1) GitHub topics 미부여, (2) name pattern 미매칭,
+  (3) description 키워드 미포함, (4) pushed_at > 14d cutoff
+
+대응: T2/T3가 (1)~(3)을 우회하고, suffix_long/no-cutoff가 (4)를 우회.
+모두 빠지면 → claude-code-curated.json 또는 *-seed.json 에 명시 등록.
+실제 사례: msitarzewski/agency-agents 97k stars (2026-05-15 RCA + 시스템 fix).
 """
 from __future__ import annotations
 
@@ -161,25 +186,20 @@ def categories() -> list[dict]:
             "title": "Claude Code 생태계",
             "subtitle": "Plugins · Skills · Sub-agents · Hooks · Workflows",
             "queries": [
+                # T1 trending (14d)
                 "topic:claude-code" + suffix,
                 '"claude-code" in:name' + suffix,
                 '"bkit" in:name' + suffix,
-                # Description match for viral CC setups missing topic tags
-                # (e.g. garrytan/gstack: 89k stars, no topic, name='gstack').
-                # stars:>500 floor + top_n=15 stargazers ranking filters noise.
+                # T1 description match (viral missing topic, e.g. gstack)
                 '"claude code" in:description stars:>500' + suffix,
-                # README match (60d window) — catches repos that mention
-                # Claude Code in README but not description (e.g.
-                # msitarzewski/agency-agents: 97k stars, README "Option 1:
-                # Use with Claude Code (Recommended)", description='AI agency
-                # at your fingertips'). "with claude code"가 가장 깨끗 —
-                # awesome-list/일반 Go/Mac 튜토리얼 false positive 회피하면서
-                # CC 전용 통합 코드(install.sh --tool claude-code, Use with
-                # Claude Code 등) 포착. stars:>5000 floor.
-                # 2026-05-15 검증 상위 20: agency-agents/everything-claude-code/
-                # firecrawl(CC 통합)/spec-kit/awesome-mcp-servers/skills/claude-mem/
-                # cc-switch/openspec/agent-browser 등 — 노이즈 거의 0.
+                # T2 README match (60d) — catches "Use with Claude Code" type
+                # mentions when description has no CC keyword (msitarzewski/
+                # agency-agents 97k 사례). awesome-list 노이즈 회피 위해
+                # "with claude code" 구문 사용.
                 '"with claude code" in:readme stars:>5000' + suffix_long,
+                # T3 stable viral (NO pushed cutoff) — topic-based 안정기
+                # CC repo 영구 catch (예: ui-ux-pro-max-skill 42d 정체 78k).
+                "topic:claude-code stars:>50000",
             ],
             # Hybrid: search-driven + explicit allowlist for repos that slip
             # through both topic and name filters. data/claude-code-curated.json.
@@ -262,9 +282,12 @@ def categories() -> list[dict]:
             "title": "Agent Orchestration · Router",
             "subtitle": "Multi-agent coordinator, handoff patterns, agent routing",
             "queries": [
+                # T1 trending (14d)
                 "topic:multi-agent" + suffix,
                 "topic:agent-orchestration" + suffix,
                 '"orchestrator" in:name' + suffix,
+                # T3 stable viral — topic-based, 안정기 multi-agent 도구 catch
+                "topic:multi-agent stars:>20000",
             ],
             "top_n": 10,
             "priority": 5,
@@ -274,9 +297,16 @@ def categories() -> list[dict]:
             "title": "MCP 서버·도구",
             "subtitle": "Model Context Protocol servers & tools (CC-compatible)",
             "queries": [
+                # T1 trending (14d)
                 "topic:model-context-protocol" + suffix,
                 '"mcp-server" in:name' + suffix,
                 '"mcp-servers" in:name' + suffix,
+                # T2 README match (60d) — MCP topic 미부여 server catch.
+                # "is an MCP server" 문구가 가장 정확 (대부분 MCP server README
+                # 첫 줄에 등장). 일반 "MCP server" 매치는 노이즈 너무 많음.
+                '"is an MCP server" in:readme stars:>500' + suffix_long,
+                # T3 stable viral — MCP topic 채택률 낮아 stars:>10k floor
+                "topic:model-context-protocol stars:>10000",
             ],
             "top_n": 10,
             "priority": 6,
@@ -286,10 +316,16 @@ def categories() -> list[dict]:
             "title": "AI 에이전트 프레임워크",
             "subtitle": "LangGraph · CrewAI · AutoGen · multi-agent framework",
             "queries": [
+                # T1 trending (14d)
                 "topic:ai-agents" + suffix,
                 '"langgraph" in:name' + suffix,
                 '"crewai" in:name' + suffix,
                 '"autogen" in:name' + suffix,
+                # T2 README match (60d) — "multi-agent framework" 구문이
+                # 프레임워크 자체 식별에 가장 정확. 일반 "ai agent"는 노이즈 다수.
+                '"multi-agent framework" in:readme stars:>10000' + suffix_long,
+                # T3 stable viral — langchain/crewai/autogen 같은 정착 hit catch
+                "topic:ai-agents stars:>30000",
             ],
             "top_n": 10,
             "priority": 7,
@@ -299,9 +335,13 @@ def categories() -> list[dict]:
             "title": "LLM 프롬프트·워크플로우",
             "subtitle": "Prompt engineering · agentic workflows · LLM-native dev",
             "queries": [
+                # T1 trending (14d)
                 "topic:prompt-engineering" + suffix,
                 "topic:agentic-workflow" + suffix,
                 '"prompt-engineering" in:name' + suffix,
+                # T3 stable viral — Prompt-Engineering-Guide 같은 분기간
+                # 정체 대형 hit catch (65d 사례). topic 채택률 양호.
+                "topic:prompt-engineering stars:>20000",
             ],
             "top_n": 10,
             "priority": 8,
