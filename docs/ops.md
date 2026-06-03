@@ -142,7 +142,49 @@ gh secret set ANTHROPIC_API_KEY -R drwon-cmd/wvb-cc-radar
 
 ---
 
-## 4. Billing 안전성 점검 (분기별)
+## 4. `wvb-wiki-pull` 크론 rebase 실패 (Hermes 에이전트)
+
+### 증상
+
+Hermes 에이전트 크론잡 `wvb-wiki-pull` 응답에 아래 에러 (exit 128):
+
+```
+[wiki-pull] ERROR (exit 128): error: 리베이스로 풀하기 할 수 없습니다: 스테이징하지 않은 변경 사항이 있습니다.
+error: 커밋하거나 스태시에 넣으십시오.
+```
+
+### 원인
+
+크론이 wiki 워킹트리에서 `git pull --rebase` 를 그대로 실행하는데, 트리에
+커밋되지 않은 로컬 변경(언스테이징)이 남아 있어 rebase 가 시작 전 중단됨.
+`git pull --rebase` 는 깨끗한 워킹트리를 요구한다.
+
+### 해결
+
+크론 명령을 베어 `git pull --rebase` 대신 autostash 로 보강한
+`scripts/wiki_pull.sh` 진입점으로 교체. 이 스크립트는 pull 전에 로컬 변경을
+자동 보관(`--autostash`)했다가 rebase 후 복원하고, 충돌 시 rebase 를
+abort 하여 트리를 안정 상태로 되돌린다.
+
+Hermes 크론 명령을 다음으로 변경:
+
+```bash
+WIKI_DIR=/path/to/wvb-wiki bash /path/to/wvb-cc-radar/scripts/wiki_pull.sh
+```
+
+> 즉시 우회만 필요하면 기존 명령의 `git pull --rebase` 를
+> `git pull --rebase --autostash` 로 바꾸면 동일하게 해결된다.
+
+### 예방
+
+- wiki 워킹트리는 항상 autostash 경로로만 갱신 (베어 `pull --rebase` 금지)
+- 로컬 변경이 의도치 않게 쌓이면(에이전트가 트리에 직접 쓰는 경우 등) 원인을
+  점검. 트리를 순수 미러로만 쓸 거라면 pull 전 `git reset --hard` + `git clean`
+  방식으로 전환하는 것도 고려 (단, 로컬 변경 폐기됨 — 파괴적)
+
+---
+
+## 5. Billing 안전성 점검 (분기별)
 
 Gemini API 키가 속한 GCP 프로젝트의 결제 연결 상태 점검.
 
