@@ -43,7 +43,10 @@ from __future__ import annotations
 
 import json
 import os
+import shutil
+import subprocess
 import sys
+import tempfile
 import time
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
@@ -145,11 +148,18 @@ GEMINI_URL = (
     f"{GEMINI_MODEL}:generateContent"
 )
 
-# Claude fallback — kicks in only when Gemini batch returns all-None.
-# Uses a separate quota pool so daily Gemini exhaustion doesn't block translations.
+# Claude API fallback — kicks in only when Claude CLI + Gemini both fail.
+# Uses a separate (paid) quota pool. x-api-key = per-token billing.
 ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "").strip()
 CLAUDE_MODEL = "claude-haiku-4-5-20251001"
 CLAUDE_URL = "https://api.anthropic.com/v1/messages"
+
+# Claude CLI (Max 구독, $0) — 주 번역기 (2026-07-04 전환: 유료 API → Max 구독).
+# `claude -p`로 로그인된 Max 구독을 사용(토큰당 과금 없음). snapterminal/labor-advisor CLI 패턴.
+# 인증: 로컬 ~/.claude 로그인 또는 CI의 CLAUDE_CODE_OAUTH_TOKEN(CLI가 자동 인식). API 키 불요.
+CLAUDE_CLI = os.environ.get("CLAUDE_CLI_PATH", "claude").strip() or "claude"
+CLAUDE_CLI_MODEL = os.environ.get("CLAUDE_CLI_MODEL", "haiku").strip() or "haiku"
+USE_CLAUDE_CLI = os.environ.get("USE_CLAUDE_CLI", "1").strip().lower() not in ("0", "false", "no")
 
 RECENT_DAYS = 14
 
@@ -677,18 +687,120 @@ def claude_translate_batch(descriptions: list[str]) -> list[str | None]:
         return [None] * len(descriptions)
 
 
-def translate_batch(descriptions: list[str]) -> tuple[list[str | None], str]:
-    """Unified translation entry point. Gemini first, Claude fallback.
+# ============================================================
+# Claude CLI Translation (Max subscription, $0) — 주 번역기
+# ============================================================
 
-    Returns (results, provider_used) — provider is 'gemini', 'claude', or 'none'.
+def claude_cli_translate_batch(descriptions: list[str]) -> list[str | None]:
     """
+    Translate English → Korean via the `claude` CLI (Max 구독, $0).
+    2026-07-04 전환: 유료 API(Gemini/Anthropic) 대신 Max 구독 `claude -p` 주 사용.
+    인증: 로컬 ~/.claude 로그인 또는 CI의 CLAUDE_CODE_OAUTH_TOKEN. API 키 불요.
+    Same prompt rules as Gemini/Claude-API. Returns list aligned with input (None on failure).
+    """
+    if not USE_CLAUDE_CLI or not descriptions:
+        return [None] * len(descriptions)
+    cli_path = shutil.which(CLAUDE_CLI)
+    if cli_path is None:
+        print("[translate/claude-cli] `claude` CLI not on PATH -- skipping (fallback to paid API if configured)", file=sys.stderr)
+        return [None] * len(descriptions)
+
+    numbered = "\n".join(f"{i+1}. {d}" for i, d in enumerate(descriptions))
+    prompt = (
+        "You are a technical translator. Translate the following GitHub repo "
+        "descriptions from English to natural, concise Korean. Rules:\n"
+        "- Preserve technical terms, product names, and acronyms as-is "
+        "(e.g., MCP, LLM, RAG, Claude Code, LangGraph).\n"
+        "- 1 sentence per item, under 80 Korean characters.\n"
+        "- Use 문어체 (written style), not 구어체.\n"
+        "- No period at end.\n"
+        "- If the description is already Korean or non-English, return as-is.\n"
+        "- Output strictly as a JSON array of strings in the same order. "
+        "No markdown fences, no prose before/after.\n\n"
+        f"Input ({len(descriptions)} items):\n{numbered}"
+    )
+
+    # 빈 임시 cwd → 상위 CLAUDE.md/memory/hooks 자동 로드 차단 (cache·지연 절감).
+    with tempfile.TemporaryDirectory(prefix="cc-radar-claude-") as clean_cwd:
+        cli_args = [
+            "-p",
+            "--model", CLAUDE_CLI_MODEL,
+            "--output-format", "json",
+            "--permission-mode", "bypassPermissions",
+            "--no-session-persistence",
+        ]
+        # Windows: npm 전역 bin은 .CMD 셔임 → CreateProcess가 직접 실행 불가(WinError 2). cmd /c 경유.
+        if os.name == "nt":
+            cmd = ["cmd", "/c", cli_path, *cli_args]
+        else:
+            cmd = [cli_path, *cli_args]
+        try:
+            proc = subprocess.run(
+                cmd,
+                input=prompt,
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+                cwd=clean_cwd,
+                timeout=180,
+            )
+        except subprocess.TimeoutExpired:
+            print("[translate/claude-cli] timeout after 180s", file=sys.stderr)
+            return [None] * len(descriptions)
+        except Exception as e:
+            print(f"[translate/claude-cli] spawn error: {e}", file=sys.stderr)
+            return [None] * len(descriptions)
+
+        if proc.returncode != 0 and not proc.stdout.strip():
+            print(f"[translate/claude-cli] exit {proc.returncode}: {proc.stderr[:300]}", file=sys.stderr)
+            return [None] * len(descriptions)
+
+        # `claude -p --output-format json` → {"result": "<text>", ...}
+        try:
+            envelope = json.loads(proc.stdout.strip())
+            text = (envelope.get("result") or "").strip()
+        except Exception as e:
+            print(f"[translate/claude-cli] envelope parse failed: {e}; raw={proc.stdout[:200]}", file=sys.stderr)
+            return [None] * len(descriptions)
+
+        # result 텍스트 = JSON 배열. 우발적 ```json 펜스 제거.
+        if text.startswith("```"):
+            text = text.split("```")[1]
+            if text.startswith("json"):
+                text = text[4:]
+            text = text.strip("` \n")
+        try:
+            parsed = json.loads(text)
+        except Exception as e:
+            print(f"[translate/claude-cli] result JSON parse failed: {e}; text={text[:200]}", file=sys.stderr)
+            return [None] * len(descriptions)
+        if not isinstance(parsed, list) or len(parsed) != len(descriptions):
+            n = len(parsed) if isinstance(parsed, list) else "NA"
+            print(f"[translate/claude-cli] length mismatch {n}/{len(descriptions)}", file=sys.stderr)
+            return [None] * len(descriptions)
+        return [str(x) if x else None for x in parsed]
+
+
+def translate_batch(descriptions: list[str]) -> tuple[list[str | None], str]:
+    """Unified translation entry point.
+    우선순위: Claude CLI (Max 구독, $0) → Gemini(유료) → Anthropic API(유료) 폴백.
+
+    Returns (results, provider_used) — 'claude-cli' | 'gemini' | 'claude' | '*-failed' | 'none'.
+    """
+    # Primary: Max 구독 CLI ($0)
+    if USE_CLAUDE_CLI:
+        cli_results = claude_cli_translate_batch(descriptions)
+        if any(r is not None for r in cli_results):
+            return cli_results, "claude-cli"
+        # CLI 미가용/실패 → 아래 유료 폴백 (키 있을 때만)
+
     if GEMINI_API_KEY:
         results = gemini_translate_batch(descriptions)
         if any(r is not None for r in results):
             return results, "gemini"
-        # Gemini all-failed — try Claude if configured
+        # Gemini all-failed — try Claude API if configured
         if ANTHROPIC_API_KEY:
-            print("[translate] Gemini batch all-failed, falling back to Claude", file=sys.stderr)
+            print("[translate] Gemini batch all-failed, falling back to Claude API", file=sys.stderr)
             claude_results = claude_translate_batch(descriptions)
             if any(r is not None for r in claude_results):
                 return claude_results, "claude"
@@ -714,8 +826,8 @@ def translate_all_descriptions(
 
     Returns (translated_count, cached_count, failed_repo_names, provider_stats).
     """
-    if not GEMINI_API_KEY and not ANTHROPIC_API_KEY:
-        print("[translate] neither GEMINI_API_KEY nor ANTHROPIC_API_KEY set -- skipping")
+    if not USE_CLAUDE_CLI and not GEMINI_API_KEY and not ANTHROPIC_API_KEY:
+        print("[translate] no translator available (Claude CLI disabled, no API keys) -- skipping")
         return 0, 0, [], {}
 
     todo: list[tuple[dict, str]] = []
@@ -733,6 +845,7 @@ def translate_all_descriptions(
                 todo.append((item, desc))
 
     providers_available = []
+    if USE_CLAUDE_CLI: providers_available.append("claude-cli")
     if GEMINI_API_KEY: providers_available.append("gemini")
     if ANTHROPIC_API_KEY: providers_available.append("claude")
     print(
@@ -743,7 +856,7 @@ def translate_all_descriptions(
 
     translated = 0
     failed_repos: list[str] = []
-    provider_stats: dict[str, int] = {"gemini": 0, "claude": 0, "none": 0}
+    provider_stats: dict[str, int] = {"claude-cli": 0, "gemini": 0, "claude": 0, "none": 0}
     for i in range(0, len(todo), batch_size):
         batch = todo[i : i + batch_size]
         descriptions = [d for _, d in batch]
@@ -766,7 +879,7 @@ def translate_all_descriptions(
             else:
                 failed_repos.append(item["full_name"])
         # Tally by provider that actually produced output
-        key = provider if provider in ("gemini", "claude") else "none"
+        key = provider if provider in ("claude-cli", "gemini", "claude") else "none"
         provider_stats[key] = provider_stats.get(key, 0) + sum(1 for r in results if r)
 
         if i + batch_size < len(todo):
@@ -791,9 +904,10 @@ def sleep_between() -> None:
 def main() -> int:
     start = time.time()
     gh_mode = "authenticated" if GITHUB_TOKEN else "ANONYMOUS"
+    cli_mode = "ENABLED" if USE_CLAUDE_CLI else "disabled"
     gm_mode = "ENABLED" if GEMINI_API_KEY else "disabled"
     cl_mode = "ENABLED" if ANTHROPIC_API_KEY else "disabled"
-    print(f"[wvb-cc-radar] start | GitHub={gh_mode} | Gemini={gm_mode} | Claude-fallback={cl_mode}")
+    print(f"[wvb-cc-radar] start | GitHub={gh_mode} | Claude-CLI(Max)={cli_mode} | Gemini={gm_mode} | Claude-API-fallback={cl_mode}")
 
     korean_owners_set = {l.lower() for l in load_korean_owners()}
     print(f"[korean-owners] {len(korean_owners_set)} allowlisted owners")

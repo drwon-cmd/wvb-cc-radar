@@ -24,9 +24,22 @@ jobs:
         with:
           python-version: '3.12'
 
+      # 2026-07-04: 번역기를 Max 구독 CLI로 전환. Node + claude CLI 설치 후
+      # CLAUDE_CODE_OAUTH_TOKEN(Max 구독 토큰, `claude setup-token`으로 발급)으로 인증.
+      - name: Set up Node (Claude CLI)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Claude CLI (Max subscription translator)
+        run: npm install -g @anthropic-ai/claude-code
+
       - name: Fetch today's digest
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # 주 번역기 — Max 구독 CLI ($0). 미설정 시 CLI가 비인증으로 실패 → 아래 유료 키로 폴백.
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          # 폴백 (유료) — CLAUDE_CODE_OAUTH_TOKEN 미설정/실패 시에만 사용. 시크릿 제거 시 완전 비활성.
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: python scripts/fetch.py
