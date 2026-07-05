@@ -55,7 +55,10 @@ jobs:
             echo "changed=false" >> $GITHUB_OUTPUT
           else
             git commit -m "data: daily fetch $(date -u +%Y-%m-%d)"
-            git push
+            # 동시 실행(cron 2개 + 수동 트리거) 경합 대비 — rebase 후 push, 최대 3회 재시도
+            for attempt in 1 2 3; do
+              git pull --rebase origin main && git push && break || { echo "push retry $attempt"; sleep 5; }
+            done
             echo "changed=true" >> $GITHUB_OUTPUT
           fi
 
