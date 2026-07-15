@@ -43,3 +43,6 @@ __pycache__/
 venv/
 
 # data/ is INTENTIONALLY committed (daily snapshot history)
+
+# local tool state (gitnexus DB + WAL) - never commit
+.gitnexus/
