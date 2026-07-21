@@ -1,13 +1,16 @@
 import { getLatestDigest, getPreviousDigest, formatDateKST } from '@/lib/data';
 import { sortByTrendScore, sortByKoreanQuality } from '@/lib/sort';
 import { computeWhatsNew } from '@/lib/diff';
-import { ACTIVE_CATEGORY_IDS } from '@/lib/categories';
+import { filterActiveCategories, splitPrimarySecondary } from '@/lib/categories';
+import { getStarHistoryForDigest } from '@/lib/history';
 import HeroSection from '@/components/HeroSection';
-import CategorySection from '@/components/CategorySection';
+import CategoryNav from '@/components/CategoryNav';
+import FilterableDigest from '@/components/FilterableDigest';
 import WhatsNewSection from '@/components/WhatsNewSection';
+import EmptyState from '@/components/EmptyState';
 
 export const dynamic = 'force-static';
-export const revalidate = 300;
+export const revalidate = 3600;
 
 export default async function HomePage() {
   const digest = await getLatestDigest();
@@ -15,45 +18,37 @@ export default async function HomePage() {
 
   // Scrub categories that are no longer in the active config (e.g. removed
   // enterprise-ax lingering in historical data files) before running diff/UI.
-  const filterActive = <T extends { categories: { category: string }[] }>(
-    d: T | null,
-  ): T | null =>
-    d
-      ? ({
-          ...d,
-          categories: d.categories.filter((c) =>
-            ACTIVE_CATEGORY_IDS.has(c.category),
-          ),
-        } as T)
-      : null;
-  const activeToday = filterActive(digest);
-  const activePrev = filterActive(previous);
+  const activeToday = filterActiveCategories(digest);
+  const activePrev = filterActiveCategories(previous);
   const whatsNew = activeToday ? computeWhatsNew(activeToday, activePrev) : [];
 
-  if (!digest) {
+  if (!digest || !activeToday) {
     return (
-      <div className="py-24 text-center">
-        <div className="inline-block">
-          <span className="font-mono text-xs text-accent-teal rec-dot">● AWAITING DATA</span>
-          <h1 className="text-3xl font-bold mt-4 mb-2">No digest yet</h1>
-          <p className="text-fg-muted text-sm">
-            The first daily fetch will populate <code className="text-accent-teal">data/YYYY-MM-DD.json</code>.
-          </p>
-          <p className="text-fg-dim text-xs mt-2 font-mono">
-            Run <code>python scripts/fetch.py</code> locally or wait for the GitHub Actions cron.
-          </p>
-        </div>
-      </div>
+      <EmptyState title="No digest yet">
+        <p className="text-fg-muted text-sm">
+          The first daily fetch will populate <code className="text-accent-teal">data/YYYY-MM-DD.json</code>.
+        </p>
+        <p className="text-fg-dim text-xs mt-2 font-mono">
+          Run <code>python scripts/fetch.py</code> locally or wait for the GitHub Actions cron.
+        </p>
+      </EmptyState>
     );
   }
 
-  // Filter out stale categories (e.g. enterprise-ax that was removed but still
-  // lingers in historical data files until the next fetch cron runs).
-  const activeCategories = digest.categories.filter((c) =>
-    ACTIVE_CATEGORY_IDS.has(c.category),
+  const { primary, secondary } = splitPrimarySecondary(activeToday);
+  const sortedSecondary = secondary.map((cat) =>
+    cat.category === 'korean-opensource' ? sortByKoreanQuality(cat) : sortByTrendScore(cat),
   );
-  const primary = activeCategories.find((c) => c.category === 'claude-code');
-  const secondary = activeCategories.filter((c) => c.category !== 'claude-code');
+
+  // Sparklines are capped to the top-3 repos per category (14d window) — never
+  // fetched for every repo on the page.
+  const sparklines = await getStarHistoryForDigest(digest, { limitPerCategory: 3 });
+
+  const navItems = [
+    ...(whatsNew.length > 0 ? [{ id: 'whats-new', label: '오늘의 변화' }] : []),
+    ...(primary ? [{ id: primary.category, label: primary.title }] : []),
+    ...sortedSecondary.map((c) => ({ id: c.category, label: c.title })),
+  ];
 
   return (
     <div>
@@ -86,21 +81,22 @@ export default async function HomePage() {
         </p>
         <p className="text-fg-dim text-xs font-mono mt-2">
           sorted by 24h trend score · generated {formatDateKST(digest.generated_at)} KST · fetch {digest.meta.fetch_duration_ms}ms
+          {' '}·{' '}
+          <a href="/weekly" className="text-accent-gold hover:underline">
+            이번 주 화제 보기 →
+          </a>
         </p>
       </div>
+
+      <CategoryNav items={navItems} />
 
       {previous && whatsNew.length > 0 && (
         <WhatsNewSection entries={whatsNew} previousDate={previous.date} />
       )}
 
-      {primary && <HeroSection data={sortByTrendScore(primary)} />}
+      {primary && <HeroSection data={sortByTrendScore(primary)} sparklines={sparklines} />}
 
-      {secondary.map((cat) => (
-        <CategorySection
-          key={cat.category}
-          data={cat.category === 'korean-opensource' ? sortByKoreanQuality(cat) : sortByTrendScore(cat)}
-        />
-      ))}
+      <FilterableDigest categories={sortedSecondary} sparklines={sparklines} />
     </div>
   );
 }

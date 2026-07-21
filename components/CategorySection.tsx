@@ -1,11 +1,16 @@
 import type { CategoryResult } from '@/lib/types';
+import type { StarHistoryPoint } from '@/lib/history';
 import RepoCard from './RepoCard';
 
 interface Props {
   data: CategoryResult;
+  /** full_name -> star history, capped upstream (e.g. top-3/category). */
+  sparklines?: Record<string, StarHistoryPoint[]>;
+  /** How many leading cards receive a sparkline when `sparklines` is present. */
+  sparklineLimit?: number;
 }
 
-export default function CategorySection({ data }: Props) {
+export default function CategorySection({ data, sparklines, sparklineLimit = 3 }: Props) {
   return (
     <section id={data.category} className="mb-12">
       <div className="mb-4 pb-3 border-b border-bg-border">
@@ -23,7 +28,12 @@ export default function CategorySection({ data }: Props) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         {data.items.map((repo, i) => (
-          <RepoCard key={repo.id} repo={repo} rank={i + 1} />
+          <RepoCard
+            key={repo.id}
+            repo={repo}
+            rank={i + 1}
+            series={sparklines && i < sparklineLimit ? sparklines[repo.full_name] : undefined}
+          />
         ))}
       </div>
     </section>

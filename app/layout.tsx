@@ -1,11 +1,12 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import Header from '@/components/Header';
+import { SITE_URL, SITE_DESCRIPTION } from '@/lib/site';
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: 'wvb-cc-radar — Claude Code Ecosystem Daily Digest',
-  description:
-    'Daily digest of trending GitHub repositories for Claude Code ecosystem upgrade. Plugins, skills, sub-agents, MCP servers, and agentic workflows. Curated by WVB.',
+  description: SITE_DESCRIPTION,
   authors: [{ name: 'Wilt Venture Builder', url: 'https://www.wiltvb.com' }],
   keywords: [
     'Claude Code',
@@ -16,6 +17,11 @@ export const metadata: Metadata = {
     'vibe coding',
     'WVB',
   ],
+  alternates: {
+    types: {
+      'application/rss+xml': '/api/rss',
+    },
+  },
   openGraph: {
     title: 'wvb-cc-radar',
     description: 'Daily Claude Code ecosystem radar by WVB',

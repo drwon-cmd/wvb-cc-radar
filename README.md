@@ -14,7 +14,10 @@ Curated by [Wilt Venture Builder](https://www.wiltvb.com).
 
 - **`/` (Daily)** — 24h trend score로 정렬 (`delta_24h × 10 + stars × 0.001`). 오늘 뜨고 있는 것.
 - **`/top` (All-time)** — 누적 스타로 정렬. 안정적인 참고.
-- **`/archive/YYYY-MM-DD`** — 일자별 과거 snapshot.
+- **`/archive/YYYY-MM-DD`** — 일자별 과거 snapshot (월별 그룹핑 목록).
+- **`/compare?from=&to=`** — 임의 두 날짜 비교 (신규 진입·순위 급등).
+
+메인 페이지는 검색/언어/"WVB uses" 필터와 카테고리 바로가기 nav, top-3 카드 14일 스타 추이 스파크라인을 제공.
 
 각 레포 설명은 **Gemini 2.0 Flash로 한국어 자동 번역** (원문은 hover 툴팁 유지).
 
@@ -55,12 +58,20 @@ Curated by [Wilt Venture Builder](https://www.wiltvb.com).
   │
   ├─ Railway CLI 설치 + railway up    ← 사이트 재빌드 (Nixpacks)
   │
-  └─ scripts/check_usage.py
-       └─ Railway estimatedUsage 쿼리 → USD 추정
-          └─ $2 임계 초과 시 GitHub Issue 자동 생성 (중복 방지)
+  ├─ scripts/check_usage.py
+  │    └─ Railway estimatedUsage 쿼리 → USD 추정
+  │       └─ $2 임계 초과 시 GitHub Issue 자동 생성 (중복 방지)
+  │
+  ├─ scripts/weekly_email.py --send   ← 월요일(KST)에만. 주간 다이제스트 이메일
+  │    └─ Top Movers(7d Δ)·신규 진입·순위 급등·한국 하이라이트 → Gmail SMTP 발송
+  │       (data/.last_weekly_email 마커로 중복 발송 방지, GMAIL secret 미설정 시 skip)
+  │
+  └─ 워크플로 실패 시 → `fetch-failure` 라벨 GitHub Issue 자동 생성 (중복 방지)
 ```
 
 약 4-5분 내 사이트에 반영됨 (KST 09:05 전후).
+
+**신뢰성 가드**: GitHub API 재시도(5s/15s 백오프), 전 카테고리 절반 이상 공실 시 exit 1(Actions 실패로 표면화), 번역 폴백 전멸 시 `::warning::TRANSLATION_DEGRADED` + `meta.translation_degraded`. 오래된 스냅샷 정리는 `python scripts/prune_data.py --keep-days 365` (수동, 기본 dry-run).
 
 ## 데이터 스키마
 
@@ -140,6 +151,9 @@ npm run dev   # http://localhost:3000
 | `RAILWAY_SERVICE_ID` | 재배포 대상 서비스 |
 | `RAILWAY_ACCOUNT_TOKEN` | usage 쿼리 (account-scoped, 읽기 전용) |
 | `RAILWAY_PROJECT_ID` | usage 쿼리 대상 프로젝트 |
+| `GMAIL_USER` | 주간 이메일 발신 Gmail 주소 |
+| `GMAIL_APP_PASSWORD` | Gmail 앱 비밀번호 (계정 비밀번호 아님, 2단계 인증 필요) |
+| `DIGEST_TO` | 수신자 목록 (쉼표 구분, 미설정 시 GMAIL_USER) |
 
 ## 비용
 

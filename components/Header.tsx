@@ -30,6 +30,12 @@ export default function Header() {
             All-time
           </Link>
           <Link
+            href="/compare"
+            className="text-fg-muted hover:text-accent-teal uppercase tracking-wider text-xs"
+          >
+            비교
+          </Link>
+          <Link
             href="/archive"
             className="text-fg-muted hover:text-accent-teal uppercase tracking-wider text-xs"
           >

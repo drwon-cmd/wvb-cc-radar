@@ -1,11 +1,14 @@
 import type { CategoryResult } from '@/lib/types';
+import type { StarHistoryPoint } from '@/lib/history';
 import RepoCard from './RepoCard';
 
 interface Props {
   data: CategoryResult;
+  /** full_name -> star history, capped upstream (e.g. top-3/category). */
+  sparklines?: Record<string, StarHistoryPoint[]>;
 }
 
-export default function HeroSection({ data }: Props) {
+export default function HeroSection({ data, sparklines }: Props) {
   // Only the #1 repo gets the OG preview image. Two images on the primary
   // hero made the "top never changes" feedback worse — the second slot
   // was almost always a long-tail giant that rarely moves. Keeping one
@@ -35,14 +38,25 @@ export default function HeroSection({ data }: Props) {
           {featured.length > 0 && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               {featured.map((repo, i) => (
-                <RepoCard key={repo.id} repo={repo} rank={i + 1} featured />
+                <RepoCard
+                  key={repo.id}
+                  repo={repo}
+                  rank={i + 1}
+                  featured
+                  series={sparklines?.[repo.full_name]}
+                />
               ))}
             </div>
           )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             {rest.map((repo, i) => (
-              <RepoCard key={repo.id} repo={repo} rank={i + 2} />
+              <RepoCard
+                key={repo.id}
+                repo={repo}
+                rank={i + 2}
+                series={i < 2 ? sparklines?.[repo.full_name] : undefined}
+              />
             ))}
           </div>
         </div>

@@ -5,24 +5,21 @@ import {
   sortByKoreanQuality,
 } from '@/lib/sort';
 import { isoWeek, dateRangeLabel } from '@/lib/utils';
-import { ACTIVE_CATEGORY_IDS } from '@/lib/categories';
+import { splitPrimarySecondary } from '@/lib/categories';
 import HeroSection from '@/components/HeroSection';
+import CategoryNav from '@/components/CategoryNav';
 import CategorySection from '@/components/CategorySection';
 import HotThisWeekSection from '@/components/HotThisWeekSection';
+import EmptyState from '@/components/EmptyState';
 
 export const dynamic = 'force-static';
-export const revalidate = 300;
+export const revalidate = 3600;
 
 export default async function WeeklyPage() {
   const digest = await getLatestDigest();
 
   if (!digest) {
-    return (
-      <div className="py-24 text-center">
-        <span className="font-mono text-xs text-accent-teal rec-dot">● AWAITING DATA</span>
-        <h1 className="text-3xl font-bold mt-4 mb-2">No data yet</h1>
-      </div>
-    );
+    return <EmptyState title="No data yet" />;
   }
 
   const windowDays = digest.meta.weekly_window_days ?? 0;
@@ -34,11 +31,13 @@ export default async function WeeklyPage() {
   const { year, week } = isoWeek(digest.date);
   const range = dateRangeLabel(digest.date, windowDays);
 
-  const activeCategories = digest.categories.filter((c) =>
-    ACTIVE_CATEGORY_IDS.has(c.category),
-  );
-  const primary = activeCategories.find((c) => c.category === 'claude-code');
-  const secondary = activeCategories.filter((c) => c.category !== 'claude-code');
+  const { primary, secondary } = splitPrimarySecondary(digest);
+
+  const navItems = [
+    ...(hasWeekly ? [{ id: 'hot-this-week', label: '이번 주 화제' }] : []),
+    ...(primary ? [{ id: primary.category, label: primary.title }] : []),
+    ...secondary.map((c) => ({ id: c.category, label: c.title })),
+  ];
 
   return (
     <div>
@@ -84,8 +83,13 @@ export default async function WeeklyPage() {
         </p>
       </div>
 
+      <CategoryNav items={navItems} />
+
       {hasWeekly && (
-        <HotThisWeekSection categories={activeCategories} windowDays={windowDays} />
+        <HotThisWeekSection
+          categories={primary ? [primary, ...secondary] : secondary}
+          windowDays={windowDays}
+        />
       )}
 
       {primary && <HeroSection data={primarySort(primary)} />}

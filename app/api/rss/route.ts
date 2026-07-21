@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getLatestDigest, getAllDates } from '@/lib/data';
+import { SITE_URL } from '@/lib/site';
 
 export const dynamic = 'force-static';
 export const revalidate = 3600;
@@ -16,8 +17,7 @@ function escape(s: string): string {
 export async function GET() {
   const digest = await getLatestDigest();
   const dates = await getAllDates();
-  const siteUrl =
-    process.env.NEXT_PUBLIC_SITE_URL || 'https://wvb-cc-radar.up.railway.app';
+  const siteUrl = SITE_URL;
 
   const items: string[] = [];
 

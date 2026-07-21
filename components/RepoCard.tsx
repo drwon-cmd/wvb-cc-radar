@@ -1,7 +1,9 @@
 import type { ReactNode } from 'react';
 import { Star, GitFork, ExternalLink } from 'lucide-react';
 import OgImage from './OgImage';
+import Sparkline from './Sparkline';
 import type { Repo } from '@/lib/types';
+import type { StarHistoryPoint } from '@/lib/history';
 import { cn, formatStars, formatDelta, relativeDays } from '@/lib/utils';
 import { isWvbStack } from '@/lib/wvb-stack';
 import Badge from './Badge';
@@ -16,9 +18,16 @@ interface Props {
    * viewers don't have to squint at the image overlay to understand context.
    */
   topLabel?: ReactNode;
+  /**
+   * Optional star history series (oldest -> newest). Renders a small inline
+   * Sparkline in the stats row when present with >= 2 points. Callers cap how
+   * many cards receive this (e.g. top-3 per category) — never fetched for
+   * every repo on the page.
+   */
+  series?: StarHistoryPoint[];
 }
 
-export default function RepoCard({ repo, rank, featured = false, topLabel }: Props) {
+export default function RepoCard({ repo, rank, featured = false, topLabel, series }: Props) {
   const delta = repo.stars_delta_24h;
   const deltaPositive = typeof delta === 'number' && delta > 0;
   const weekly = repo.stars_delta_7d;
@@ -132,6 +141,11 @@ export default function RepoCard({ repo, rank, featured = false, topLabel }: Pro
               </span>
             )}
           </span>
+          {series && series.length >= 2 && (
+            <span className="hidden sm:inline-flex items-center flex-shrink-0" title="14일 스타 추이">
+              <Sparkline data={series} width={featured ? 96 : 64} height={featured ? 28 : 20} />
+            </span>
+          )}
           <span className="ml-auto text-fg-dim">
             pushed {relativeDays(repo.pushed_at)}
           </span>

@@ -15,20 +15,22 @@ export interface WhatsNewEntry {
 }
 
 const NEW_IMPACT_BASE = 100;
-const TOP_N = 10;
-const COMPARE_N = 20;
+/** Number of top-ranked entries per category considered for "new" status. */
+export const TOP_N = 10;
+/** Rank window (today vs previous digest) searched when matching a repo across days. */
+export const COMPARE_N = 20;
 /**
  * Star floor for What's New eligibility. Keeps niche-category NEW entries
  * (few dozen stars) from outranking genuine movement in the mainstream cats
  * (claude-code, ai-agents, rag-kb) where the min is already 20k+.
  */
-const MIN_STARS = 1000;
+export const MIN_STARS = 1000;
 /**
  * Categories excluded from cross-category What's New pool. korean-opensource
  * has its own popularity scale (median ~500 stars) and belongs on its own
  * page rather than competing with global trends.
  */
-const EXCLUDED_CATEGORIES: CategoryId[] = ['korean-opensource'];
+export const EXCLUDED_CATEGORIES: CategoryId[] = ['korean-opensource'];
 
 function rankMap(cat: CategoryResult): Map<string, number> {
   const sorted =

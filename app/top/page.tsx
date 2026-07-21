@@ -1,29 +1,30 @@
 import { getLatestDigest, formatDateKST } from '@/lib/data';
 import { sortByCumulativeStars, sortByKoreanQuality } from '@/lib/sort';
-import { ACTIVE_CATEGORY_IDS } from '@/lib/categories';
+import { splitPrimarySecondary } from '@/lib/categories';
 import HeroSection from '@/components/HeroSection';
-import CategorySection from '@/components/CategorySection';
+import CategoryNav from '@/components/CategoryNav';
+import FilterableDigest from '@/components/FilterableDigest';
+import EmptyState from '@/components/EmptyState';
 
 export const dynamic = 'force-static';
-export const revalidate = 300;
+export const revalidate = 3600;
 
 export default async function TopPage() {
   const digest = await getLatestDigest();
 
   if (!digest) {
-    return (
-      <div className="py-24 text-center">
-        <span className="font-mono text-xs text-accent-teal rec-dot">● AWAITING DATA</span>
-        <h1 className="text-3xl font-bold mt-4 mb-2">No data yet</h1>
-      </div>
-    );
+    return <EmptyState title="No data yet" />;
   }
 
-  const activeCategories = digest.categories.filter((c) =>
-    ACTIVE_CATEGORY_IDS.has(c.category),
+  const { primary, secondary } = splitPrimarySecondary(digest);
+  const sortedSecondary = secondary.map((cat) =>
+    cat.category === 'korean-opensource' ? sortByKoreanQuality(cat) : sortByCumulativeStars(cat),
   );
-  const primary = activeCategories.find((c) => c.category === 'claude-code');
-  const secondary = activeCategories.filter((c) => c.category !== 'claude-code');
+
+  const navItems = [
+    ...(primary ? [{ id: primary.category, label: primary.title }] : []),
+    ...sortedSecondary.map((c) => ({ id: c.category, label: c.title })),
+  ];
 
   return (
     <div>
@@ -50,14 +51,11 @@ export default async function TopPage() {
         </p>
       </div>
 
+      <CategoryNav items={navItems} />
+
       {primary && <HeroSection data={sortByCumulativeStars(primary)} />}
 
-      {secondary.map((cat) => (
-        <CategorySection
-          key={cat.category}
-          data={cat.category === 'korean-opensource' ? sortByKoreanQuality(cat) : sortByCumulativeStars(cat)}
-        />
-      ))}
+      <FilterableDigest categories={sortedSecondary} />
     </div>
   );
 }

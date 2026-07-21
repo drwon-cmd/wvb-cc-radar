@@ -1,4 +1,4 @@
-import type { CategoryId } from './types';
+import type { CategoryId, CategoryResult, DailyDigest } from './types';
 
 export interface CategoryConfig {
   id: CategoryId;
@@ -93,3 +93,39 @@ export function getCategoryById(id: CategoryId): CategoryConfig | undefined {
 export const ACTIVE_CATEGORY_IDS: ReadonlySet<string> = new Set(
   CATEGORIES.map((c) => c.id),
 );
+
+/**
+ * Scrub categories that are no longer in the active config (e.g. removed
+ * enterprise-ax lingering in historical data files) before running diff/UI.
+ * Generic + null-passthrough so it can wrap both `digest` and `previous`.
+ * Extracted from the inline `filterActive` helper duplicated in app/page.tsx.
+ */
+export function filterActiveCategories<T extends { categories: CategoryResult[] }>(
+  digest: T | null,
+): T | null {
+  return digest
+    ? ({
+        ...digest,
+        categories: digest.categories.filter((c) =>
+          ACTIVE_CATEGORY_IDS.has(c.category),
+        ),
+      } as T)
+    : null;
+}
+
+/**
+ * Split a digest's categories into the hero "primary" category
+ * (claude-code) and the remaining "secondary" categories, after scrubbing
+ * stale/inactive categories. Matches the logic duplicated in app/page.tsx
+ * and app/archive/[date]/page.tsx.
+ */
+export function splitPrimarySecondary(
+  digest: Pick<DailyDigest, 'categories'>,
+): { primary: CategoryResult | undefined; secondary: CategoryResult[] } {
+  const activeCategories = digest.categories.filter((c) =>
+    ACTIVE_CATEGORY_IDS.has(c.category),
+  );
+  const primary = activeCategories.find((c) => c.category === 'claude-code');
+  const secondary = activeCategories.filter((c) => c.category !== 'claude-code');
+  return { primary, secondary };
+}
