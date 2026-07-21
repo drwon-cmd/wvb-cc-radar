@@ -10,6 +10,10 @@ permissions:
   contents: write
   issues: write
 
+concurrency:
+  group: daily-fetch
+  cancel-in-progress: false
+
 jobs:
   fetch-deploy:
     runs-on: ubuntu-latest
@@ -31,8 +35,17 @@ jobs:
         with:
           node-version: '20'
 
+      # Pinned to exact current-latest versions (checked via `npm view <pkg> version`)
+      # for reproducible installs; cache the npm download cache so re-runs of
+      # this workflow skip re-downloading the same pinned tarballs.
+      - name: Cache npm global package downloads
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-global-claude-code-2.1.216-railway-cli-5.27.1
+
       - name: Install Claude CLI (Max subscription translator)
-        run: npm install -g @anthropic-ai/claude-code
+        run: npm install -g @anthropic-ai/claude-code@2.1.216
 
       - name: Fetch today's digest
         env:
@@ -70,7 +83,7 @@ jobs:
 
       - name: Install Railway CLI
         if: steps.commit.outputs.changed == 'true' || github.event_name == 'workflow_dispatch'
-        run: npm install -g @railway/cli
+        run: npm install -g @railway/cli@5.27.1
 
       - name: Redeploy to Railway
         if: steps.commit.outputs.changed == 'true' || github.event_name == 'workflow_dispatch'
@@ -110,4 +123,57 @@ jobs:
             echo "Created cost-alert issue"
           else
             echo "Existing cost-alert issue open (#$(gh issue list --repo drwon-cmd/wvb-cc-radar --label cost-alert --state open --json number --jq '.[0].number')), skipping"
+          fi
+
+      # 주간 이메일 다이제스트 — 월요일(KST)에만 발송. 중복 방지 마커(data/.last_weekly_email)로
+      # 백업 cron(15:00 KST) 재실행 시 재발송을 막고, primary cron이 skip되면 백업이 대신 발송한다.
+      # GMAIL secret 미설정이면 경고만 남기고 skip (워크플로 실패 아님).
+      - name: Weekly email digest (Mondays KST)
+        env:
+          GMAIL_USER: ${{ secrets.GMAIL_USER }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          DIGEST_TO: ${{ secrets.DIGEST_TO }}
+        run: |
+          if [ "$(TZ=Asia/Seoul date +%u)" != "1" ]; then
+            echo "Not Monday (KST) — skipping weekly email"
+            exit 0
+          fi
+          if [ -z "$GMAIL_APP_PASSWORD" ]; then
+            echo "::warning::GMAIL_APP_PASSWORD secret not configured — skipping weekly email"
+            exit 0
+          fi
+          today=$(TZ=Asia/Seoul date +%F)
+          last=$(cat data/.last_weekly_email 2>/dev/null || echo none)
+          if [ "$last" = "$today" ]; then
+            echo "Weekly email already sent today ($today) — skipping"
+            exit 0
+          fi
+          python scripts/weekly_email.py --send
+          echo "$today" > data/.last_weekly_email
+          git add data/.last_weekly_email
+          git commit -m "chore: weekly email sent marker $today"
+          for attempt in 1 2 3; do
+            git pull --rebase origin main && git push && break || { echo "push retry $attempt"; sleep 5; }
+          done
+
+      - name: Notify on workflow failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh label create fetch-failure --repo drwon-cmd/wvb-cc-radar --color b60205 --description "Daily fetch workflow run failed" 2>/dev/null || true
+          existing=$(gh issue list --repo drwon-cmd/wvb-cc-radar --label fetch-failure --state open --json number --jq length)
+          if [ "$existing" -eq "0" ]; then
+            gh issue create \
+              --repo drwon-cmd/wvb-cc-radar \
+              --title "🚨 daily-fetch failed $(date -u +%Y-%m-%d)" \
+              --label fetch-failure \
+              --body "The daily-fetch workflow run failed.
+
+          - Workflow run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}
+
+          Check the run logs for the failing step (fetch.py exit code, GitHub API errors, translation provider failures, or Railway deploy). Close this issue manually once addressed; new alerts are suppressed while an open fetch-failure issue exists."
+            echo "Created fetch-failure issue"
+          else
+            echo "Existing fetch-failure issue open (#$(gh issue list --repo drwon-cmd/wvb-cc-radar --label fetch-failure --state open --json number --jq '.[0].number')), skipping"
           fi

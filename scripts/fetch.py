@@ -404,6 +404,11 @@ def categories() -> list[dict]:
 # GitHub Search
 # ============================================================
 
+# Retry schedule for transient GitHub API failures: 2 retries after the
+# first attempt (5s, then 15s) — bounded total added delay of 20s/request.
+GH_RETRY_BACKOFFS = [5, 15]
+
+
 def gh_request(url: str) -> tuple[dict, dict]:
     headers = {
         "Accept": "application/vnd.github+json",
@@ -413,14 +418,39 @@ def gh_request(url: str) -> tuple[dict, dict]:
     if GITHUB_TOKEN:
         headers["Authorization"] = f"Bearer {GITHUB_TOKEN}"
     req = urllib.request.Request(url, headers=headers)
-    try:
-        with urllib.request.urlopen(req, timeout=30) as resp:
-            data = json.loads(resp.read().decode("utf-8"))
-            return data, dict(resp.headers)
-    except urllib.error.HTTPError as e:
-        body = e.read().decode("utf-8", errors="replace")
-        print(f"HTTP {e.code}: {body[:400]}", file=sys.stderr)
-        raise
+
+    attempts = len(GH_RETRY_BACKOFFS) + 1
+    for attempt in range(1, attempts + 1):
+        try:
+            with urllib.request.urlopen(req, timeout=30) as resp:
+                data = json.loads(resp.read().decode("utf-8"))
+                return data, dict(resp.headers)
+        except urllib.error.HTTPError as e:
+            body = e.read().decode("utf-8", errors="replace")
+            # 403 (rate limit) / 429 / 5xx are transient — retry with backoff.
+            # 404/422 are not retried (permanent — bad repo/query).
+            retryable = e.code == 403 or e.code == 429 or e.code >= 500
+            if not retryable or attempt > len(GH_RETRY_BACKOFFS):
+                print(f"HTTP {e.code}: {body[:400]}", file=sys.stderr)
+                raise
+            backoff = GH_RETRY_BACKOFFS[attempt - 1]
+            print(
+                f"HTTP {e.code} (attempt {attempt}/{attempts}), retrying in {backoff}s: {body[:200]}",
+                file=sys.stderr,
+            )
+            time.sleep(backoff)
+        except (urllib.error.URLError, TimeoutError) as e:
+            if attempt > len(GH_RETRY_BACKOFFS):
+                print(f"request error (final attempt {attempt}/{attempts}): {e}", file=sys.stderr)
+                raise
+            backoff = GH_RETRY_BACKOFFS[attempt - 1]
+            print(
+                f"request error (attempt {attempt}/{attempts}), retrying in {backoff}s: {e}",
+                file=sys.stderr,
+            )
+            time.sleep(backoff)
+    # Unreachable — loop always returns or raises.
+    raise RuntimeError("gh_request: exhausted retries without return or raise")
 
 
 def search_repos(query: str, per_page: int) -> tuple[list[dict], dict]:
@@ -890,6 +920,13 @@ def translate_all_descriptions(
         for fn in failed_repos[:20]:
             print(f"  - {fn}", file=sys.stderr)
 
+    # Translation-failure signal: >20 failures usually means the whole
+    # fallback chain is dead (e.g. Gemini quota exhausted + Claude CLI down),
+    # not just a few flaky items. GitHub Actions annotation format so it
+    # shows up in the workflow summary and is greppable in raw logs.
+    if len(failed_repos) > 20:
+        print(f"::warning::TRANSLATION_DEGRADED failed={len(failed_repos)}", file=sys.stderr)
+
     return translated, cached, failed_repos, provider_stats
 
 
@@ -1089,6 +1126,7 @@ def main() -> int:
     )
 
     duration_ms = int((time.time() - start) * 1000)
+    translation_degraded = len(failed) > 20
     digest = {
         "date": today,
         "generated_at": datetime.now(timezone.utc).isoformat(),
@@ -1103,6 +1141,7 @@ def main() -> int:
             "translation_failed": len(failed),
             "translation_failed_repos": failed if len(failed) <= 30 else failed[:30],
             "translation_providers": provider_stats,
+            "translation_degraded": translation_degraded,
             "query_mode": "v0.6-cc-curated",
             "weekly_window_days": weekly_window_days,
         },
@@ -1118,7 +1157,30 @@ def main() -> int:
         f"KR: {translated} new ({by_provider}) + {cached} cached + {len(failed)} failed | {duration_ms}ms"
     )
     print(f"[done] rate_remaining={rate_remaining}, wrote={out}")
-    return 0 if not failed else 0  # non-zero only on catastrophic error, not partial translation
+
+    # Exit-code decision: "broken" means the run produced data too thin to be
+    # useful, not merely imperfect. A handful of failed queries within
+    # otherwise-healthy categories is normal (rate limits, transient 5xx) and
+    # should NOT fail the run — partial data beats no data. We only fail hard
+    # when either (a) we got literally nothing, or (b) more than half of the
+    # categories came back completely empty (systemic breakage, e.g. auth
+    # dead or GitHub Search down for most of the run).
+    empty_categories = sum(1 for c in categories_result if c["total_count"] == 0)
+    total_categories = len(categories_result)
+    broken = total_repos == 0 or (
+        total_categories > 0 and empty_categories > total_categories / 2
+    )
+    print(
+        f"[done] health: total_repos={total_repos}, empty_categories={empty_categories}/{total_categories}, "
+        f"broken={broken}"
+    )
+    if broken:
+        print(
+            "[done] run considered BROKEN (0 repos fetched or >half categories empty) -- exiting 1",
+            file=sys.stderr,
+        )
+        return 1
+    return 0
 
 
 if __name__ == "__main__":

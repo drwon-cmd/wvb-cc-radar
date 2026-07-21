@@ -33,8 +33,16 @@ jobs:
         with:
           node-version: '20'
 
+      # Pinned to exact current-latest version (checked via `npm view @railway/cli version`)
+      # for reproducible installs; cache the npm download cache to speed up re-runs.
+      - name: Cache npm global package downloads
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-global-railway-cli-5.27.1
+
       - name: Install Railway CLI
-        run: npm install -g @railway/cli
+        run: npm install -g @railway/cli@5.27.1
 
       - name: Redeploy to Railway
         env:
