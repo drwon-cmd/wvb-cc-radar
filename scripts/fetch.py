@@ -163,6 +163,16 @@ USE_CLAUDE_CLI = os.environ.get("USE_CLAUDE_CLI", "1").strip().lower() not in ("
 
 RECENT_DAYS = 14
 
+# A repo created within this many days is eligible for a reserved "riser" slot
+# and for the per-category riser query. 120d is wide enough that a repo which
+# went viral two months ago is still catchable, and narrow enough that the
+# established giants (all created >1y ago) never qualify.
+RISER_CREATED_DAYS = 120
+
+# Slots appended per category ON TOP OF top_n for young repos. Kept small: the
+# point is to give newcomers a foothold, not to flood the page.
+RISER_SLOTS = 5
+
 
 def recent_date(days: int) -> str:
     d = datetime.now(timezone.utc) - timedelta(days=days)
@@ -172,6 +182,15 @@ def recent_date(days: int) -> str:
 def categories() -> list[dict]:
     cutoff = recent_date(RECENT_DAYS)
     suffix = f" pushed:>{cutoff}"
+    # Riser queries: one per search-driven category, with a LOW star floor and
+    # a created-recency bound. Every other query in this file floors at
+    # stars:>500 and up, which is why young repos never entered the pool. These
+    # are still `sort=stars&order=desc`, so they return "the biggest of the
+    # young" rather than noise. Verified live 2026-08-16 (anonymous search):
+    # each returns 116–1,237 matches, e.g. op7418/guizang-ppt-skill (24k★,
+    # created 2026-04-23) and img2threejs (11.8k★, 2026-07-15) — neither was in
+    # the tracked pool under the old selection.
+    born = f" created:>{recent_date(RISER_CREATED_DAYS)}"
     # Relaxed 60d window for high-star (>5k) signal queries. Catches viral
     # repos with monthly cadence that get filtered by the standard 14d window.
     # Real example: msitarzewski/agency-agents (97k stars, pushed_at=2026-04-12,
@@ -214,6 +233,7 @@ def categories() -> list[dict]:
             # Hybrid: search-driven + explicit allowlist for repos that slip
             # through both topic and name filters. data/claude-code-curated.json.
             "seed_queries": claude_code_seed_queries,
+            "riser_query": "topic:claude-code" + born + " stars:>30",
             "top_n": 15,
             "priority": 1,
         },
@@ -226,6 +246,7 @@ def categories() -> list[dict]:
                 "topic:ai-ide" + suffix,
                 '"ai-coding" in:name' + suffix,
             ],
+            "riser_query": "topic:ai-coding" + born + " stars:>30",
             "top_n": 10,
             "priority": 2,
         },
@@ -237,6 +258,10 @@ def categories() -> list[dict]:
             # `repo:owner/name` 개별 쿼리로 정확 조회. 엄격한 수동 큐레이션으로
             # 개발자 도구·라이브러리 유입 차단.
             "queries": vibecoded_queries,
+            # No riser slots: this category is a hand-curated allowlist, so the
+            # merged pool contains exactly what was asked for. "Young repos the
+            # star cut dropped" is meaningless here.
+            "riser_slots": 0,
             "top_n": 15,
             "priority": 3,
         },
@@ -284,6 +309,7 @@ def categories() -> list[dict]:
                 "topic:retrieval-augmented-generation" + suffix,
                 '"knowledge-base" in:name' + suffix,
             ],
+            "riser_query": "topic:rag" + born + " stars:>50",
             "top_n": 10,
             "priority": 4,
         },
@@ -299,6 +325,7 @@ def categories() -> list[dict]:
                 # T3 stable viral — topic-based, 안정기 multi-agent 도구 catch
                 "topic:multi-agent stars:>20000",
             ],
+            "riser_query": "topic:multi-agent" + born + " stars:>50",
             "top_n": 10,
             "priority": 5,
         },
@@ -318,6 +345,10 @@ def categories() -> list[dict]:
                 # T3 stable viral — MCP topic 채택률 낮아 stars:>10k floor
                 "topic:model-context-protocol stars:>10000",
             ],
+            # `topic:mcp` (not model-context-protocol) — the short topic has far
+            # wider adoption among new repos, which is exactly the population
+            # this query exists to reach. Verified 688 matches on 2026-08-16.
+            "riser_query": "topic:mcp" + born + " stars:>30",
             "top_n": 10,
             "priority": 6,
         },
@@ -337,6 +368,7 @@ def categories() -> list[dict]:
                 # T3 stable viral — langchain/crewai/autogen 같은 정착 hit catch
                 "topic:ai-agents stars:>30000",
             ],
+            "riser_query": "topic:ai-agents" + born + " stars:>50",
             "top_n": 10,
             "priority": 7,
         },
@@ -353,6 +385,7 @@ def categories() -> list[dict]:
                 # 정체 대형 hit catch (65d 사례). topic 채택률 양호.
                 "topic:prompt-engineering stars:>20000",
             ],
+            "riser_query": "topic:prompt-engineering" + born + " stars:>50",
             "top_n": 10,
             "priority": 8,
         },
@@ -587,6 +620,113 @@ def is_new_this_week(created_at: str) -> bool:
         return (datetime.now(timezone.utc) - created).days <= 7
     except Exception:
         return False
+
+
+# ============================================================
+# Selection: stars ranking + reserved riser slots
+# ============================================================
+#
+# WHY: every branch below used to be `sorted(by stars)[:top_n]`, and every
+# search query is `sort=stars&order=desc` with floors from stars:>500 up to
+# stars:>50000. The candidate pool was therefore *defined* as "the biggest
+# repos", and the site could only ever re-rank that same set. Measured on
+# 2026-08-16 over the prior 60 days: claude-code admitted 4 new repos (1 in the
+# last 30), vibecoded-products admitted 0, and claude-code's smallest tracked
+# repo had 92,384 stars. No front-end ranking change can surface a young repo
+# that was never collected — so selection has to reserve room for one.
+
+
+def is_young(item: dict, cutoff: str) -> bool:
+    """True when the repo was created on/after `cutoff` (YYYY-MM-DD)."""
+    created = (item.get("created_at") or "")[:10]
+    return bool(created) and created >= cutoff
+
+
+def select_items(merged: dict, cat: dict, riser_cutoff: str) -> tuple[list[dict], int]:
+    """Rank by stars, then append young repos the star cut would have dropped.
+
+    Returns (items, riser_count). Risers are ranked by stars among themselves,
+    so this surfaces "the biggest of the young", not random small repos.
+    """
+    by_stars = sorted(
+        merged.values(),
+        key=lambda i: i.get("stargazers_count", 0),
+        reverse=True,
+    )
+    top = by_stars[: cat["top_n"]]
+
+    slots = cat.get("riser_slots", RISER_SLOTS)
+    if slots <= 0:
+        return top, 0
+
+    chosen = {i["full_name"] for i in top}
+    risers = [
+        i
+        for i in by_stars
+        if i["full_name"] not in chosen and is_young(i, riser_cutoff)
+    ][:slots]
+    return top + risers, len(risers)
+
+
+def merge_riser_query(
+    merged: dict,
+    cat: dict,
+    per_query: int,
+    rate_remaining,
+):
+    """Run this category's `riser_query` (if any) and merge results in place.
+
+    Failures are non-fatal and logged: risers are an enrichment, and a category
+    must still publish its established repos if this one query errors out.
+    Returns the (possibly updated) rate-limit remaining value.
+    """
+    q = cat.get("riser_query")
+    if not q:
+        return rate_remaining
+    try:
+        items, hdrs = search_repos(q, per_page=per_query)
+        rate_remaining = hdrs.get("X-RateLimit-Remaining", rate_remaining)
+    except Exception as e:
+        print(f"    FAIL riser [{cat['id']}]: {e}", file=sys.stderr)
+        return rate_remaining
+    added = 0
+    for item in items:
+        fn = item["full_name"]
+        if fn not in merged:
+            merged[fn] = item
+            added += 1
+        elif item["stargazers_count"] > merged[fn]["stargazers_count"]:
+            merged[fn] = item
+    print(f"    riser: +{added} new candidates from {len(items)} hits")
+    sleep_between()
+    return rate_remaining
+
+
+def attach_deltas(
+    repo: dict,
+    yesterday_stars: dict,
+    weekly_baseline: dict,
+    weekly_window_days: int,
+) -> bool:
+    """Attach 24h/7d deltas in place. Returns True if new-this-week.
+
+    Extracted from three byte-identical copies (the hybrid, allowlist and
+    standard search branches) so a change like this one lands in all of them.
+    """
+    prev = yesterday_stars.get(repo["full_name"])
+    if prev is not None:
+        repo["stars_delta_24h"] = repo["stargazers_count"] - prev
+
+    base = weekly_baseline.get(repo["full_name"])
+    if base is not None and weekly_window_days > 0:
+        repo["stars_delta_7d"] = repo["stargazers_count"] - base["stars"]
+        repo["forks_delta_7d"] = repo["forks_count"] - base["forks"]
+        repo["delta_window_days"] = weekly_window_days
+
+    if is_new_this_week(repo["created_at"]):
+        repo["is_new_this_week"] = True
+        return True
+    return False
 
 
 # ============================================================
@@ -959,6 +1099,8 @@ def main() -> int:
     total_repos = 0
     total_new = 0
     rate_remaining = None
+    riser_cutoff = recent_date(RISER_CREATED_DAYS)
+    total_risers = 0
 
     for cat in categories():
         per_query = max(cat["top_n"], 30)
@@ -994,24 +1136,19 @@ def main() -> int:
                 except Exception as e:
                     print(f"    FAIL seed {fn}: {e}", file=sys.stderr)
                 sleep_between()
-            ranked = sorted(
-                merged.values(),
-                key=lambda i: i.get("stargazers_count", 0),
-                reverse=True,
-            )[: cat["top_n"]]
+
+            # 3) Riser query — low star floor + created-recency, so young repos
+            #    can enter a pool otherwise floored at stars:>500 and up.
+            rate_remaining = merge_riser_query(merged, cat, per_query, rate_remaining)
+
+            ranked, riser_n = select_items(merged, cat, riser_cutoff)
+            total_risers += riser_n
             processed = []
             for item in ranked:
                 repo = extract_repo(item, korean_owners_set)
-                prev = yesterday_stars.get(repo["full_name"])
-                if prev is not None:
-                    repo["stars_delta_24h"] = repo["stargazers_count"] - prev
-                base = weekly_baseline.get(repo["full_name"])
-                if base is not None and weekly_window_days > 0:
-                    repo["stars_delta_7d"] = repo["stargazers_count"] - base["stars"]
-                    repo["forks_delta_7d"] = repo["forks_count"] - base["forks"]
-                    repo["delta_window_days"] = weekly_window_days
-                if is_new_this_week(repo["created_at"]):
-                    repo["is_new_this_week"] = True
+                if attach_deltas(
+                    repo, yesterday_stars, weekly_baseline, weekly_window_days
+                ):
                     total_new += 1
                 processed.append(repo)
             categories_result.append({
@@ -1040,24 +1177,17 @@ def main() -> int:
                 except Exception as e:
                     print(f"    FAIL {fn}: {e}", file=sys.stderr)
                 sleep_between()
-            ranked = sorted(
-                merged.values(),
-                key=lambda i: i.get("stargazers_count", 0),
-                reverse=True,
-            )[: cat["top_n"]]
+            # Allowlist category: `riser_slots: 0` makes select_items a plain
+            # stars cut here, but it goes through the same path so the three
+            # branches cannot drift apart again.
+            ranked, riser_n = select_items(merged, cat, riser_cutoff)
+            total_risers += riser_n
             processed = []
             for item in ranked:
                 repo = extract_repo(item, korean_owners_set)
-                prev = yesterday_stars.get(repo["full_name"])
-                if prev is not None:
-                    repo["stars_delta_24h"] = repo["stargazers_count"] - prev
-                base = weekly_baseline.get(repo["full_name"])
-                if base is not None and weekly_window_days > 0:
-                    repo["stars_delta_7d"] = repo["stargazers_count"] - base["stars"]
-                    repo["forks_delta_7d"] = repo["forks_count"] - base["forks"]
-                    repo["delta_window_days"] = weekly_window_days
-                if is_new_this_week(repo["created_at"]):
-                    repo["is_new_this_week"] = True
+                if attach_deltas(
+                    repo, yesterday_stars, weekly_baseline, weekly_window_days
+                ):
                     total_new += 1
                 processed.append(repo)
             categories_result.append({
@@ -1086,25 +1216,19 @@ def main() -> int:
                     merged[fn] = item
             sleep_between()
 
-        ranked = sorted(
-            merged.values(),
-            key=lambda i: i.get("stargazers_count", 0),
-            reverse=True,
-        )[: cat["top_n"]]
+        # Riser query — low star floor + created-recency, so young repos can
+        # enter a pool otherwise floored at stars:>500 and up.
+        rate_remaining = merge_riser_query(merged, cat, per_query, rate_remaining)
+
+        ranked, riser_n = select_items(merged, cat, riser_cutoff)
+        total_risers += riser_n
 
         processed = []
         for item in ranked:
             repo = extract_repo(item, korean_owners_set)
-            prev = yesterday_stars.get(repo["full_name"])
-            if prev is not None:
-                repo["stars_delta_24h"] = repo["stargazers_count"] - prev
-            base = weekly_baseline.get(repo["full_name"])
-            if base is not None and weekly_window_days > 0:
-                repo["stars_delta_7d"] = repo["stargazers_count"] - base["stars"]
-                repo["forks_delta_7d"] = repo["forks_count"] - base["forks"]
-                repo["delta_window_days"] = weekly_window_days
-            if is_new_this_week(repo["created_at"]):
-                repo["is_new_this_week"] = True
+            if attach_deltas(
+                repo, yesterday_stars, weekly_baseline, weekly_window_days
+            ):
                 total_new += 1
             processed.append(repo)
 
@@ -1136,6 +1260,10 @@ def main() -> int:
             "total_new": total_new,
             "fetch_duration_ms": duration_ms,
             "rate_limit_remaining": int(rate_remaining) if rate_remaining else None,
+            # How many repos got in via a reserved riser slot rather than the
+            # stars cut. If this trends to 0, the riser queries have stopped
+            # finding anything the main queries miss.
+            "total_risers": total_risers,
             "translated_kr": translated,
             "translation_cache_hit": cached,
             "translation_failed": len(failed),

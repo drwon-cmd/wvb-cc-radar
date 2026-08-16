@@ -16,6 +16,18 @@ export function formatDelta(d: number | undefined): string {
   return d > 0 ? `+${d}` : `${d}`;
 }
 
+/**
+ * Render a surge ratio from lib/steady.ts as a multiplier.
+ * 1.0 = growing at its own usual pace, so the interesting range starts just
+ * above 1. Large values are rounded hard because "545.3x" reads as noise.
+ */
+export function formatSurge(x: number): string {
+  if (!Number.isFinite(x)) return '—';
+  if (x >= 100) return `${Math.round(x)}x`;
+  if (x >= 10) return `${x.toFixed(0)}x`;
+  return `${x.toFixed(1)}x`;
+}
+
 export function relativeDays(iso: string): string {
   try {
     const then = new Date(iso);

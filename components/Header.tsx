@@ -24,6 +24,12 @@ export default function Header() {
             Weekly
           </Link>
           <Link
+            href="/steady"
+            className="text-fg-muted hover:text-accent-gold uppercase tracking-wider text-xs"
+          >
+            Steady
+          </Link>
+          <Link
             href="/top"
             className="text-fg-muted hover:text-accent-gold uppercase tracking-wider text-xs"
           >

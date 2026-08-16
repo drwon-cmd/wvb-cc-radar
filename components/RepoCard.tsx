@@ -4,7 +4,8 @@ import OgImage from './OgImage';
 import Sparkline from './Sparkline';
 import type { Repo } from '@/lib/types';
 import type { StarHistoryPoint } from '@/lib/history';
-import { cn, formatStars, formatDelta, relativeDays } from '@/lib/utils';
+import type { RepoSignal } from '@/lib/steady';
+import { cn, formatStars, formatDelta, relativeDays, formatSurge } from '@/lib/utils';
 import { isWvbStack } from '@/lib/wvb-stack';
 import Badge from './Badge';
 
@@ -25,9 +26,22 @@ interface Props {
    * every repo on the page.
    */
   series?: StarHistoryPoint[];
+  /**
+   * Steady/surge classification for this repo, from lib/steady.ts. Optional so
+   * surfaces that predate the split (archive, compare, what's-new) render
+   * unchanged.
+   */
+  signal?: RepoSignal;
 }
 
-export default function RepoCard({ repo, rank, featured = false, topLabel, series }: Props) {
+export default function RepoCard({
+  repo,
+  rank,
+  featured = false,
+  topLabel,
+  series,
+  signal,
+}: Props) {
   const delta = repo.stars_delta_24h;
   const deltaPositive = typeof delta === 'number' && delta > 0;
   const weekly = repo.stars_delta_7d;
@@ -37,6 +51,9 @@ export default function RepoCard({ repo, rank, featured = false, topLabel, serie
   // separates a long-tail giant from a viral newcomer.
   const weeklyPositive = typeof weekly === 'number' && weekly > 0 && weeklyWindow > 0;
   const isWvb = isWvbStack(repo.full_name);
+  // Only call out acceleration that is actually above the repo's own normal —
+  // a 0.7x "surge" is noise, not a signal.
+  const showSurge = signal !== undefined && signal.surge >= 1.15;
 
   return (
     <a
@@ -98,6 +115,28 @@ export default function RepoCard({ repo, rank, featured = false, topLabel, serie
         </div>
 
         <div className="flex items-center gap-2 flex-wrap mt-3">
+          {showSurge && (
+            <Badge
+              variant="surge"
+              className={featured ? 'text-xs' : undefined}
+              title={
+                signal!.baselineRate !== null
+                  ? `자체 28일 평균(${Math.round(signal!.baselineRate)}★/일) 대비 ${formatSurge(signal!.surge)}`
+                  : `기준선 없음 — 신규 유입 후 첫 측정`
+              }
+            >
+              ▲ {formatSurge(signal!.surge)}
+            </Badge>
+          )}
+          {signal?.riser && <Badge variant="teal">RISER</Badge>}
+          {signal?.steady && (
+            <Badge
+              variant="steady"
+              title={`최근 60일 중 ${signal.tenure}일 카테고리 상위 5위 유지`}
+            >
+              STEADY {signal.tenure}d
+            </Badge>
+          )}
           {weeklyPositive && (
             <span
               className={cn(

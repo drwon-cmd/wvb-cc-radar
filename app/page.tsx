@@ -1,8 +1,17 @@
 import { getLatestDigest, getPreviousDigest, formatDateKST } from '@/lib/data';
-import { sortByTrendScore, sortByKoreanQuality } from '@/lib/sort';
 import { computeWhatsNew } from '@/lib/diff';
 import { filterActiveCategories, splitPrimarySecondary } from '@/lib/categories';
 import { getStarHistoryForDigest } from '@/lib/history';
+import {
+  getStatsIndex,
+  partitionSteady,
+  sortBySurge24h,
+  buildSignals,
+  STEADY_WINDOW_DAYS,
+  STEADY_TOP_N,
+  STEADY_MIN_DAYS,
+  BASELINE_DAYS,
+} from '@/lib/steady';
 import HeroSection from '@/components/HeroSection';
 import CategoryNav from '@/components/CategoryNav';
 import FilterableDigest from '@/components/FilterableDigest';
@@ -36,17 +45,41 @@ export default async function HomePage() {
   }
 
   const { primary, secondary } = splitPrimarySecondary(activeToday);
-  const sortedSecondary = secondary.map((cat) =>
-    cat.category === 'korean-opensource' ? sortByKoreanQuality(cat) : sortByTrendScore(cat),
+
+  // Perennial leaders move to /steady. What's left is ranked by how hard each
+  // repo is accelerating against its OWN 28-day baseline, so a 2k-star repo
+  // that doubled outranks a 200k-star repo posting its usual daily gain.
+  const stats = await getStatsIndex();
+  const risingPrimary = primary ? partitionSteady(primary, stats).rising : undefined;
+  const risingSecondary = secondary.map((cat) => partitionSteady(cat, stats).rising);
+
+  const sortedPrimary = risingPrimary
+    ? sortBySurge24h(risingPrimary, stats)
+    : undefined;
+  const sortedSecondary = risingSecondary.map((cat) => sortBySurge24h(cat, stats));
+
+  const steadyCount =
+    (primary ? primary.items.length - (risingPrimary?.items.length ?? 0) : 0) +
+    secondary.reduce(
+      (sum, cat, i) => sum + (cat.items.length - risingSecondary[i].items.length),
+      0,
+    );
+
+  const signals = buildSignals(
+    [...(sortedPrimary ? [sortedPrimary] : []), ...sortedSecondary],
+    stats,
+    'daily',
   );
 
   // Sparklines are capped to the top-3 repos per category (14d window) — never
   // fetched for every repo on the page.
   const sparklines = await getStarHistoryForDigest(digest, { limitPerCategory: 3 });
 
+  const emptyHint = `상위 ${STEADY_TOP_N}위를 ${STEADY_WINDOW_DAYS}일 중 ${STEADY_MIN_DAYS}일 이상 지킨 레포는 스테디셀러로 분류돼 이 목록에서 빠집니다.`;
+
   const navItems = [
     ...(whatsNew.length > 0 ? [{ id: 'whats-new', label: '오늘의 변화' }] : []),
-    ...(primary ? [{ id: primary.category, label: primary.title }] : []),
+    ...(sortedPrimary ? [{ id: sortedPrimary.category, label: sortedPrimary.title }] : []),
     ...sortedSecondary.map((c) => ({ id: c.category, label: c.title })),
   ];
 
@@ -63,12 +96,12 @@ export default async function HomePage() {
           </span>
         </div>
         <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-fg-primary mb-2">
-          What&apos;s new today
+          오늘 급상승
         </h1>
         <p className="text-fg-muted text-sm md:text-base">
-          Day-over-day changes in the{' '}
-          <span className="text-accent-teal">Claude Code ecosystem</span>
-          {' '}— new entries and rank jumps surface first. Curated by{' '}
+          각 레포의{' '}
+          <span className="text-accent-teal">자체 {BASELINE_DAYS}일 평균 대비 가속도</span>
+          로 순위를 매깁니다 — 덩치가 아니라 &ldquo;평소보다 얼마나 빨라졌나&rdquo;가 기준입니다. Curated by{' '}
           <a
             href="https://www.wiltvb.com"
             target="_blank"
@@ -80,12 +113,21 @@ export default async function HomePage() {
           .
         </p>
         <p className="text-fg-dim text-xs font-mono mt-2">
-          sorted by 24h trend score · generated {formatDateKST(digest.generated_at)} KST · fetch {digest.meta.fetch_duration_ms}ms
+          sorted by 24h surge vs own {BASELINE_DAYS}d baseline · generated{' '}
+          {formatDateKST(digest.generated_at)} KST · fetch {digest.meta.fetch_duration_ms}ms
           {' '}·{' '}
           <a href="/weekly" className="text-accent-gold hover:underline">
-            이번 주 화제 보기 →
+            이번 주 신규 인기 →
           </a>
         </p>
+        {steadyCount > 0 && (
+          <p className="text-fg-dim text-xs font-mono mt-1">
+            스테디셀러 {steadyCount}개는 이 목록에서 제외됐습니다 ·{' '}
+            <a href="/steady" className="text-accent-gold hover:underline">
+              스테디셀러 보기 →
+            </a>
+          </p>
+        )}
       </div>
 
       <CategoryNav items={navItems} />
@@ -94,9 +136,22 @@ export default async function HomePage() {
         <WhatsNewSection entries={whatsNew} previousDate={previous.date} />
       )}
 
-      {primary && <HeroSection data={sortByTrendScore(primary)} sparklines={sparklines} />}
+      {sortedPrimary && (
+        <HeroSection
+          data={sortedPrimary}
+          sparklines={sparklines}
+          signals={signals}
+          emptyHint={emptyHint}
+          eyebrow="RISING"
+        />
+      )}
 
-      <FilterableDigest categories={sortedSecondary} sparklines={sparklines} />
+      <FilterableDigest
+        categories={sortedSecondary}
+        sparklines={sparklines}
+        signals={signals}
+        emptyHint={emptyHint}
+      />
     </div>
   );
 }

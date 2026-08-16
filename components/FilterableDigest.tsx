@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react';
 import type { CategoryResult } from '@/lib/types';
 import type { StarHistoryPoint } from '@/lib/history';
+import type { RepoSignal } from '@/lib/steady';
 import { isWvbStack } from '@/lib/wvb-stack';
 import FilterBar from './FilterBar';
 import CategorySection from './CategorySection';
@@ -13,6 +14,11 @@ interface Props {
    * above this, per the simpler split — see app/page.tsx). */
   categories: CategoryResult[];
   sparklines?: Record<string, StarHistoryPoint[]>;
+  /** full_name -> steady/surge classification (lib/steady.ts). Plain object so
+   *  it serializes across the server/client boundary. */
+  signals?: Record<string, RepoSignal>;
+  /** Passed through to each CategorySection's empty state. */
+  emptyHint?: string;
 }
 
 /**
@@ -20,7 +26,12 @@ interface Props {
  * of categories. Reuses CategorySection/RepoCard as-is (they have no
  * server-only imports, so they bundle fine inside this 'use client' tree).
  */
-export default function FilterableDigest({ categories, sparklines }: Props) {
+export default function FilterableDigest({
+  categories,
+  sparklines,
+  signals,
+  emptyHint,
+}: Props) {
   const [search, setSearch] = useState('');
   const [language, setLanguage] = useState('');
   const [wvbOnly, setWvbOnly] = useState(false);
@@ -70,7 +81,13 @@ export default function FilterableDigest({ categories, sparklines }: Props) {
         <EmptyState title="일치하는 레포가 없습니다" compact />
       ) : (
         filtered.map((cat) => (
-          <CategorySection key={cat.category} data={cat} sparklines={sparklines} />
+          <CategorySection
+            key={cat.category}
+            data={cat}
+            sparklines={sparklines}
+            signals={signals}
+            emptyHint={emptyHint}
+          />
         ))
       )}
     </div>

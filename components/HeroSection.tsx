@@ -1,14 +1,28 @@
 import type { CategoryResult } from '@/lib/types';
 import type { StarHistoryPoint } from '@/lib/history';
+import type { RepoSignal } from '@/lib/steady';
 import RepoCard from './RepoCard';
+import EmptyState from './EmptyState';
 
 interface Props {
   data: CategoryResult;
   /** full_name -> star history, capped upstream (e.g. top-3/category). */
   sparklines?: Record<string, StarHistoryPoint[]>;
+  /** full_name -> steady/surge classification (lib/steady.ts). */
+  signals?: Record<string, RepoSignal>;
+  /** Shown in place of the grid when the category has no items left. */
+  emptyHint?: string;
+  /** Overrides the "PRIMARY" eyebrow label. */
+  eyebrow?: string;
 }
 
-export default function HeroSection({ data, sparklines }: Props) {
+export default function HeroSection({
+  data,
+  sparklines,
+  signals,
+  emptyHint,
+  eyebrow = 'PRIMARY',
+}: Props) {
   // Only the #1 repo gets the OG preview image. Two images on the primary
   // hero made the "top never changes" feedback worse — the second slot
   // was almost always a long-tail giant that rarely moves. Keeping one
@@ -25,7 +39,7 @@ export default function HeroSection({ data, sparklines }: Props) {
               <div className="flex items-center gap-2 mb-2">
                 <span className="w-1 h-5 bg-accent-teal shadow-teal-glow" />
                 <span className="font-mono text-xs text-accent-teal uppercase tracking-widest">
-                  PRIMARY · {data.total_count} repos
+                  {eyebrow} · {data.total_count} repos
                 </span>
               </div>
               <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-fg-primary">
@@ -34,6 +48,14 @@ export default function HeroSection({ data, sparklines }: Props) {
               <p className="text-fg-muted mt-1 text-sm font-mono">{data.subtitle}</p>
             </div>
           </div>
+
+          {data.items.length === 0 && (
+            <EmptyState title="이번 구간에 새로 오른 레포가 없습니다" compact>
+              {emptyHint && (
+                <p className="text-fg-dim text-xs font-mono">{emptyHint}</p>
+              )}
+            </EmptyState>
+          )}
 
           {featured.length > 0 && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -44,6 +66,7 @@ export default function HeroSection({ data, sparklines }: Props) {
                   rank={i + 1}
                   featured
                   series={sparklines?.[repo.full_name]}
+                  signal={signals?.[repo.full_name]}
                 />
               ))}
             </div>
@@ -56,6 +79,7 @@ export default function HeroSection({ data, sparklines }: Props) {
                 repo={repo}
                 rank={i + 2}
                 series={i < 2 ? sparklines?.[repo.full_name] : undefined}
+                signal={signals?.[repo.full_name]}
               />
             ))}
           </div>

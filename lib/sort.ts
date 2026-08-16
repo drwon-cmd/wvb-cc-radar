@@ -73,46 +73,13 @@ export function sortByKoreanQuality(cat: CategoryResult): CategoryResult {
   };
 }
 
-/**
- * Weekly delta score — mirrors bkamp.ai-style "가장 핫한 레포" ranking.
+/*
+ * REMOVED 2026-08-16: weeklyDeltaScore / sortByWeeklyDelta /
+ * weeklyEngagementScore / sortByWeeklyEngagement.
  *
- *   score = stars_delta_7d × 1 + stars × 0.0005
- *
- * Cumulative-star tie-breaker is tiny (0.0005) so a viral newcomer with +500
- * this week outranks a 100k-star giant that gained +2. Repos without a weekly
- * delta (no baseline in data/) fall back to cumulative rank.
+ * All four ranked by ABSOLUTE weekly delta, which is the size bias that made
+ * /weekly show the same repos as / every day (mattpocock/skills held a top-5
+ * slot 30/30 days on both). The weekly page and the cross-category headline
+ * now rank by surge against each repo's own trailing baseline — see
+ * lib/steady.ts `surge7d` / `sortBySurge7d`.
  */
-export function weeklyDeltaScore(r: Repo): number {
-  const delta = r.stars_delta_7d ?? r.stars_delta_24h ?? 0;
-  return delta + r.stargazers_count * 0.0005;
-}
-
-export function sortByWeeklyDelta(cat: CategoryResult): CategoryResult {
-  return {
-    ...cat,
-    items: [...cat.items].sort((a, b) => weeklyDeltaScore(b) - weeklyDeltaScore(a)),
-  };
-}
-
-/**
- * Weekly engagement score — what bkamp.ai calls "이번 주 진짜 화제였던" section.
- * Captures repos with real community traction, not just a star-bot spike.
- *
- *   score = stars_delta_7d + forks_delta_7d × 3 + (is_new_this_week ? 5 : 0)
- *
- * Forks weighted 3× because a fork is a stronger "I'm using this" signal than
- * a star. New-this-week bonus surfaces genuinely fresh momentum.
- */
-export function weeklyEngagementScore(r: Repo): number {
-  const s = r.stars_delta_7d ?? 0;
-  const f = (r.forks_delta_7d ?? 0) * 3;
-  const n = r.is_new_this_week ? 5 : 0;
-  return s + f + n;
-}
-
-export function sortByWeeklyEngagement(cat: CategoryResult): CategoryResult {
-  return {
-    ...cat,
-    items: [...cat.items].sort((a, b) => weeklyEngagementScore(b) - weeklyEngagementScore(a)),
-  };
-}
