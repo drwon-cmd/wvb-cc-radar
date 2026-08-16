@@ -23,13 +23,17 @@ Env:
                            (required to send; https://myaccount.google.com/apppasswords)
   DIGEST_TO             - comma-separated recipient list (default: GMAIL_USER)
 
-GitHub Actions wiring (runs every Monday 09:00 KST = 00:00 UTC):
+Actual wiring: this script is invoked from the "Weekly email digest (Saturdays KST)"
+step in .github/workflows/daily-fetch.yml, which runs daily and gates on
+`TZ=Asia/Seoul date +%u` = 6 (Saturday). There is no standalone weekly workflow.
+
+Standalone equivalent, if it is ever split out (Saturday 09:00 KST = 00:00 UTC):
 
   # .github/workflows/weekly-digest.yml
   name: Weekly Digest Email
   on:
     schedule:
-      - cron: "0 0 * * 1"   # Monday 00:00 UTC = 09:00 KST
+      - cron: "0 0 * * 6"   # Saturday 00:00 UTC = 09:00 KST
     workflow_dispatch: {}
   jobs:
     send:

@@ -125,17 +125,17 @@ jobs:
             echo "Existing cost-alert issue open (#$(gh issue list --repo drwon-cmd/wvb-cc-radar --label cost-alert --state open --json number --jq '.[0].number')), skipping"
           fi
 
-      # 주간 이메일 다이제스트 — 월요일(KST)에만 발송. 중복 방지 마커(data/.last_weekly_email)로
+      # 주간 이메일 다이제스트 — 토요일(KST)에만 발송. 중복 방지 마커(data/.last_weekly_email)로
       # 백업 cron(15:00 KST) 재실행 시 재발송을 막고, primary cron이 skip되면 백업이 대신 발송한다.
       # GMAIL secret 미설정이면 경고만 남기고 skip (워크플로 실패 아님).
-      - name: Weekly email digest (Mondays KST)
+      - name: Weekly email digest (Saturdays KST)
         env:
           GMAIL_USER: ${{ secrets.GMAIL_USER }}
           GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
           DIGEST_TO: ${{ secrets.DIGEST_TO }}
         run: |
-          if [ "$(TZ=Asia/Seoul date +%u)" != "1" ]; then
-            echo "Not Monday (KST) — skipping weekly email"
+          if [ "$(TZ=Asia/Seoul date +%u)" != "6" ]; then
+            echo "Not Saturday (KST) — skipping weekly email"
             exit 0
           fi
           if [ -z "$GMAIL_APP_PASSWORD" ]; then

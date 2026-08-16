@@ -62,7 +62,7 @@ Curated by [Wilt Venture Builder](https://www.wiltvb.com).
   │    └─ Railway estimatedUsage 쿼리 → USD 추정
   │       └─ $2 임계 초과 시 GitHub Issue 자동 생성 (중복 방지)
   │
-  ├─ scripts/weekly_email.py --send   ← 월요일(KST)에만. 주간 다이제스트 이메일
+  ├─ scripts/weekly_email.py --send   ← 토요일(KST) 오전에만. 주간 다이제스트 이메일
   │    └─ Top Movers(7d Δ)·신규 진입·순위 급등·한국 하이라이트 → Gmail SMTP 발송
   │       (data/.last_weekly_email 마커로 중복 발송 방지, GMAIL secret 미설정 시 skip)
   │
