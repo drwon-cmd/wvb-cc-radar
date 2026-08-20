@@ -196,12 +196,28 @@ export function statsFor(index: StatsIndex, repo: Repo): RepoStats {
   return index.repos.get(repo.full_name) ?? EMPTY_STATS;
 }
 
+/**
+ * PRECOMPUTED-FIRST
+ * ----------------
+ * scripts/fetch.py writes `steady_days` / `is_steady` / `surge_24h` /
+ * `surge_7d` / `is_riser` into every repo of the daily digest, and the email
+ * digest reads those same fields. Preferring them here is what keeps the site
+ * and the email agreeing about what is "top" on a given day — the two used to
+ * derive their own rankings and disagreed.
+ *
+ * The local computation below remains the fallback for the 121 historical
+ * digests written before those fields existed (archive pages still render
+ * them), so both paths must stay equivalent. Verified equal on 2026-08-16:
+ * both classify 41 steady sellers on the same digest.
+ */
+
 /** Days this repo held a top-STEADY_TOP_N slot in the given category. */
 export function tenureIn(
   index: StatsIndex,
   category: CategoryId | string,
   repo: Repo,
 ): number {
+  if (typeof repo.steady_days === 'number') return repo.steady_days;
   return index.tenure.get(tenureKey(category, repo.full_name)) ?? 0;
 }
 
@@ -211,11 +227,16 @@ export function isSteady(
   category: CategoryId | string,
   repo: Repo,
 ): boolean {
+  if (typeof repo.is_steady === 'boolean') return repo.is_steady;
+  if (typeof repo.steady_days === 'number') {
+    return repo.steady_days >= STEADY_MIN_DAYS;
+  }
   return tenureIn(index, category, repo) >= STEADY_MIN_DAYS;
 }
 
 /** Newcomer to the tracked pool — entered within the last RISER_MAX_AGE_DAYS. */
 export function isRiser(index: StatsIndex, repo: Repo): boolean {
+  if (typeof repo.is_riser === 'boolean') return repo.is_riser;
   const s = statsFor(index, repo);
   return (
     s.firstSeen !== null &&
@@ -239,6 +260,7 @@ export function isRiser(index: StatsIndex, repo: Repo): boolean {
  * which is the correct read: all of its growth is new.
  */
 export function surge24h(repo: Repo, s: RepoStats): number {
+  if (typeof repo.surge_24h === 'number') return repo.surge_24h;
   const delta = repo.stars_delta_24h ?? 0;
   const base = s.baselineDailyRate ?? 0;
   return (delta + SURGE_SHRINK_K) / (base + SURGE_SHRINK_K);
@@ -246,6 +268,7 @@ export function surge24h(repo: Repo, s: RepoStats): number {
 
 /** Weekly analogue of `surge24h`, on a 7-day scale. */
 export function surge7d(repo: Repo, s: RepoStats): number {
+  if (typeof repo.surge_7d === 'number') return repo.surge_7d;
   const delta = repo.stars_delta_7d ?? repo.stars_delta_24h ?? 0;
   const base = s.baselineWeeklyRate ?? 0;
   const k = SURGE_SHRINK_K * 7;

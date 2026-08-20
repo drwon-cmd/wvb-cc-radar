@@ -125,33 +125,41 @@ jobs:
             echo "Existing cost-alert issue open (#$(gh issue list --repo drwon-cmd/wvb-cc-radar --label cost-alert --state open --json number --jq '.[0].number')), skipping"
           fi
 
-      # 주간 이메일 다이제스트 — 토요일(KST)에만 발송. 중복 방지 마커(data/.last_weekly_email)로
-      # 백업 cron(15:00 KST) 재실행 시 재발송을 막고, primary cron이 skip되면 백업이 대신 발송한다.
+      # 이메일 다이제스트 — 화요일·토요일(KST) 주 2회 발송 (토→화 3일, 화→토 4일).
+      # 2026-08-16 주 1회(토)에서 변경. 실측 근거: 일간 전환은 Top-10 중 하루 평균
+      # 1.5개만 교체돼 85%가 전날과 동일했고, 신규 레포 공급도 60일 중 22일(37%)에
+      # 그쳐 매일 보낼 재료가 없었다. 주 2회가 공급량과 균형이 맞는 지점.
+      #
+      # 중복 방지 마커(data/.last_weekly_email)로 백업 cron(15:00 KST) 재실행 시
+      # 재발송을 막고, primary cron이 skip되면 백업이 대신 발송한다. 이 마커는
+      # weekly_email.py 가 비교 기준선(직전 발송일)으로도 읽으므로 반드시 발송
+      # 성공 후에만 갱신되어야 한다.
       # GMAIL secret 미설정이면 경고만 남기고 skip (워크플로 실패 아님).
-      - name: Weekly email digest (Saturdays KST)
+      - name: Email digest (Tue + Sat KST)
         env:
           GMAIL_USER: ${{ secrets.GMAIL_USER }}
           GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
           DIGEST_TO: ${{ secrets.DIGEST_TO }}
         run: |
-          if [ "$(TZ=Asia/Seoul date +%u)" != "6" ]; then
-            echo "Not Saturday (KST) — skipping weekly email"
+          dow=$(TZ=Asia/Seoul date +%u)   # 1=Mon .. 7=Sun
+          if [ "$dow" != "2" ] && [ "$dow" != "6" ]; then
+            echo "Not Tue/Sat (KST, dow=$dow) — skipping digest email"
             exit 0
           fi
           if [ -z "$GMAIL_APP_PASSWORD" ]; then
-            echo "::warning::GMAIL_APP_PASSWORD secret not configured — skipping weekly email"
+            echo "::warning::GMAIL_APP_PASSWORD secret not configured — skipping digest email"
             exit 0
           fi
           today=$(TZ=Asia/Seoul date +%F)
           last=$(cat data/.last_weekly_email 2>/dev/null || echo none)
           if [ "$last" = "$today" ]; then
-            echo "Weekly email already sent today ($today) — skipping"
+            echo "Digest email already sent today ($today) — skipping"
             exit 0
           fi
           python scripts/weekly_email.py --send
           echo "$today" > data/.last_weekly_email
           git add data/.last_weekly_email
-          git commit -m "chore: weekly email sent marker $today"
+          git commit -m "chore: digest email sent marker $today"
           for attempt in 1 2 3; do
             git pull --rebase origin main && git push && break || { echo "push retry $attempt"; sleep 5; }
           done

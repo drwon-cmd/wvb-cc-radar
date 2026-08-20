@@ -34,6 +34,18 @@ export interface Repo {
   updated_at: string;
   opengraph_url: string;
   is_new_this_week?: boolean;
+  /**
+   * Steady/surge signals precomputed by scripts/fetch.py — the single source
+   * of truth shared with the email digest. Optional because the 121 historical
+   * digests predate them; lib/steady.ts falls back to computing its own when
+   * they are absent.
+   */
+  steady_days?: number;
+  is_steady?: boolean;
+  is_riser?: boolean;
+  surge_24h?: number;
+  surge_7d?: number;
+  baseline_daily_rate?: number;
   wvb_uses?: boolean;
   /** Set by fetch.py when owner appears in data/korean-owners.json. */
   korean_owner?: boolean;

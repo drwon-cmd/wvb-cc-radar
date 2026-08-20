@@ -43,6 +43,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -733,6 +734,176 @@ def attach_deltas(
 # Gemini Translation
 # ============================================================
 
+# ============================================================
+# Steady-seller / surge signals  (SINGLE SOURCE OF TRUTH)
+# ============================================================
+#
+# These fields are written into every repo in the daily JSON so that BOTH
+# consumers read the same numbers:
+#   - the site  (lib/steady.ts prefers these fields, falling back to its own
+#     computation only for historical files written before this existed)
+#   - the email (scripts/weekly_email.py reads them directly)
+#
+# Before this, the site ranked by surge-vs-own-baseline while the email still
+# ranked by absolute delta, so the two disagreed about what was "top" on the
+# same day. Keeping one implementation here is the fix — a second copy of the
+# formula in another language is exactly how that drift happened.
+#
+# Constants MUST stay in sync with lib/steady.ts. If you change one, change
+# both and re-run scripts/check_parity.py.
+
+STEADY_WINDOW_DAYS = 60   # lookback for the steady classification
+STEADY_TOP_N = 5          # "held the top" = ranked this high within its category
+STEADY_MIN_DAYS = 40      # days in top-N required to be classed steady
+BASELINE_DAYS = 28        # each repo's own trailing growth baseline
+SURGE_SHRINK_K = 25       # shrinkage so 0->4 stars/day isn't an infinite ratio
+RISER_MAX_AGE_DAYS = 21   # first seen this recently => still a newcomer
+
+
+def history_dates(limit: int, exclude: str) -> list[str]:
+    """Dated snapshots in DATA_DIR, newest first, excluding `exclude`."""
+    out = []
+    for p in DATA_DIR.iterdir():
+        if not p.is_file():
+            continue
+        m = re.match(r"^(\d{4}-\d{2}-\d{2})\.json$", p.name)
+        if m and m.group(1) != exclude:
+            out.append(m.group(1))
+    out.sort(reverse=True)
+    return out[:limit]
+
+
+def attach_steady_signals(categories_result: list[dict], today: str) -> dict:
+    """Attach steady/surge fields to every repo in place.
+
+    Adds per repo: steady_days, is_steady, surge_24h, surge_7d, is_riser,
+    baseline_daily_rate. Returns a summary dict for digest meta.
+
+    Classification is PER CATEGORY: a repo can be a fixture in one bucket and a
+    newcomer in another, and there is no cross-category dedup upstream.
+    """
+    need = STEADY_WINDOW_DAYS + BASELINE_DAYS + 8
+    hist = history_dates(need, exclude=today)
+    all_dates = [today] + hist  # newest first, index 0 = today
+
+    # stars per repo per date, and tenure per (category, repo)
+    stars_by: dict[str, dict[str, int]] = {}
+    tenure: dict[tuple[str, str], int] = {}
+    first_seen: dict[str, str] = {}
+
+    def ingest(date: str, cats: list[dict]) -> None:
+        for cat in cats:
+            cat_id = cat.get("category") or cat.get("id")
+            items = cat.get("items", [])
+            ranked = sorted(
+                items, key=lambda r: r.get("stargazers_count", 0), reverse=True
+            )
+            for i, r in enumerate(ranked):
+                fn = r["full_name"]
+                if i + 1 <= STEADY_TOP_N:
+                    key = (cat_id, fn)
+                    tenure[key] = tenure.get(key, 0) + 1
+                stars_by.setdefault(fn, {}).setdefault(
+                    date, r.get("stargazers_count", 0)
+                )
+
+    # Oldest -> newest so first_seen is genuinely the first sighting.
+    window = list(reversed(all_dates[:STEADY_WINDOW_DAYS]))
+    for date in window:
+        if date == today:
+            ingest(date, categories_result)
+        else:
+            p = DATA_DIR / f"{date}.json"
+            try:
+                with open(p, "r", encoding="utf-8") as f:
+                    ingest(date, json.load(f).get("categories", []))
+            except Exception:
+                continue  # gap day — skip rather than count it against a repo
+        for fn in stars_by:
+            if date in stars_by[fn] and fn not in first_seen:
+                first_seen[fn] = date
+
+    # Baselines also need days beyond the steady window; read those too.
+    for date in all_dates[STEADY_WINDOW_DAYS:]:
+        p = DATA_DIR / f"{date}.json"
+        try:
+            with open(p, "r", encoding="utf-8") as f:
+                for cat in json.load(f).get("categories", []):
+                    for r in cat.get("items", []):
+                        stars_by.setdefault(r["full_name"], {}).setdefault(
+                            date, r.get("stargazers_count", 0)
+                        )
+        except Exception:
+            continue
+
+    def at(fn: str, idx: int):
+        if idx >= len(all_dates):
+            return None
+        return stars_by.get(fn, {}).get(all_dates[idx])
+
+    # Baseline ends yesterday (daily) / 7d ago (weekly) so today's spike does
+    # not contaminate the thing it is measured against.
+    d_end_i, d_start_i = 1, 1 + BASELINE_DAYS
+    w_end_i, w_start_i = 7, 7 + BASELINE_DAYS
+
+    window_len = len(window)
+    steady_count = 0
+    riser_count = 0
+
+    for cat in categories_result:
+        cat_id = cat["category"]
+        for r in cat["items"]:
+            fn = r["full_name"]
+
+            days = tenure.get((cat_id, fn), 0)
+            r["steady_days"] = days
+            if days >= STEADY_MIN_DAYS:
+                r["is_steady"] = True
+                steady_count += 1
+
+            de, ds = at(fn, d_end_i), at(fn, d_start_i)
+            base_d = max(0.0, (de - ds) / BASELINE_DAYS) if (de is not None and ds is not None) else None
+            we, ws = at(fn, w_end_i), at(fn, w_start_i)
+            base_w = max(0.0, (we - ws) / (BASELINE_DAYS / 7)) if (we is not None and ws is not None) else None
+
+            if base_d is not None:
+                r["baseline_daily_rate"] = round(base_d, 2)
+
+            d24 = r.get("stars_delta_24h") or 0
+            r["surge_24h"] = round(
+                (d24 + SURGE_SHRINK_K) / ((base_d or 0.0) + SURGE_SHRINK_K), 3
+            )
+            d7 = r.get("stars_delta_7d")
+            if d7 is None:
+                d7 = d24
+            k7 = SURGE_SHRINK_K * 7
+            r["surge_7d"] = round((d7 + k7) / ((base_w or 0.0) + k7), 3)
+
+            seen = first_seen.get(fn)
+            if seen:
+                age = window_len - window.index(seen) if seen in window else window_len
+                if age <= RISER_MAX_AGE_DAYS and age < window_len:
+                    r["is_riser"] = True
+                    riser_count += 1
+
+    print(
+        f"[steady] {steady_count} steady, {riser_count} risers "
+        f"(window {window_len}d, {len(stars_by)} repos in history)"
+    )
+    return {
+        "steady_count": steady_count,
+        "riser_flagged": riser_count,
+        "window_days": window_len,
+        "config": {
+            "window": STEADY_WINDOW_DAYS,
+            "top_n": STEADY_TOP_N,
+            "min_days": STEADY_MIN_DAYS,
+            "baseline_days": BASELINE_DAYS,
+            "k": SURGE_SHRINK_K,
+        },
+    }
+
+
 def gemini_translate_batch(descriptions: list[str]) -> list[str | None]:
     """
     Translate English descriptions to natural Korean via Gemini 2.0 Flash.
@@ -1244,6 +1415,10 @@ def main() -> int:
         total_repos += len(processed)
         print(f"  -> {len(merged)} merged, kept top {len(processed)}")
 
+    # Steady/surge signals — computed here so the site and the email rank by
+    # the same numbers instead of each deriving their own.
+    steady_meta = attach_steady_signals(categories_result, today)
+
     # Translate descriptions (Gemini primary, Claude fallback)
     translated, cached, failed, provider_stats = translate_all_descriptions(
         categories_result, ko_cache
@@ -1264,6 +1439,9 @@ def main() -> int:
             # stars cut. If this trends to 0, the riser queries have stopped
             # finding anything the main queries miss.
             "total_risers": total_risers,
+            # Steady/surge summary + the constants used, so a consumer can tell
+            # which config produced these fields.
+            "steady": steady_meta,
             "translated_kr": translated,
             "translation_cache_hit": cached,
             "translation_failed": len(failed),

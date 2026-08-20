@@ -1,9 +1,14 @@
 """
-Weekly Korean-language email digest for wvb-cc-radar.
+Korean-language email digest for wvb-cc-radar (Tue + Sat KST, 2x/week).
 
-Ports the ranking logic in lib/sort.ts + lib/diff.ts to Python (stdlib only)
-and renders a self-contained HTML email summarizing the week's top movers,
-new entrants, rank jumps, and Korean-opensource highlights for 원대표.
+Renders a self-contained HTML email summarizing top movers, new entrants,
+rank jumps, and Korean-opensource highlights for 원대표.
+
+Ranking is NOT computed here. scripts/fetch.py writes surge_24h / surge_7d /
+is_steady / is_riser into each daily digest, and both this script and the site
+(lib/steady.ts) read those fields, so the email and the site always agree about
+what is top. Digests written before 2026-08-16 lack the fields and fall back to
+the old absolute-delta ordering.
 
 Usage:
   python scripts/weekly_email.py --dry-run [--out PATH] [--date YYYY-MM-DD]
@@ -23,17 +28,22 @@ Env:
                            (required to send; https://myaccount.google.com/apppasswords)
   DIGEST_TO             - comma-separated recipient list (default: GMAIL_USER)
 
-Actual wiring: this script is invoked from the "Weekly email digest (Saturdays KST)"
+Actual wiring: this script is invoked from the "Email digest (Tue + Sat KST)"
 step in .github/workflows/daily-fetch.yml, which runs daily and gates on
-`TZ=Asia/Seoul date +%u` = 6 (Saturday). There is no standalone weekly workflow.
+`TZ=Asia/Seoul date +%u` in (2, 6). There is no standalone digest workflow.
 
-Standalone equivalent, if it is ever split out (Saturday 09:00 KST = 00:00 UTC):
+The comparison baseline is the previous send date, read from
+data/.last_weekly_email (written by that workflow step after a successful
+send), NOT a fixed 7-day lookback — otherwise consecutive issues on a Tue/Sat
+cadence would both compare against a week-old snapshot and repeat themselves.
 
-  # .github/workflows/weekly-digest.yml
-  name: Weekly Digest Email
+Standalone equivalent, if it is ever split out (Tue + Sat 09:00 KST = 00:00 UTC):
+
+  # .github/workflows/digest-email.yml
+  name: Digest Email
   on:
     schedule:
-      - cron: "0 0 * * 6"   # Saturday 00:00 UTC = 09:00 KST
+      - cron: "0 0 * * 2,6"   # Tue + Sat 00:00 UTC = 09:00 KST
     workflow_dispatch: {}
   jobs:
     send:
@@ -43,15 +53,15 @@ Standalone equivalent, if it is ever split out (Saturday 09:00 KST = 00:00 UTC):
         - uses: actions/setup-python@v5
           with:
             python-version: "3.12"
-        - name: Send weekly digest
+        - name: Send digest
           env:
             GMAIL_USER: ${{ secrets.GMAIL_USER }}
             GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
             DIGEST_TO: ${{ secrets.DIGEST_TO }}
           run: python scripts/weekly_email.py --send
 
-Rate limits / cost: Gmail SMTP is free (well under the 500 msgs/day cap for
-a single weekly send). No paid API involved.
+Rate limits / cost: Gmail SMTP is free (well under the 500 msgs/day cap at
+2 sends/week). No paid API involved.
 """
 from __future__ import annotations
 
@@ -81,6 +91,25 @@ COMPARE_N = 20
 JUMP_TOP_N = 10
 JUMP_MIN_GAP = 3
 KOREAN_TOP_N = 5
+
+# Cadence: Tue + Sat (KST), i.e. 3- and 4-day gaps. Used only as the fallback
+# window when no previous-send marker exists; the real baseline is the last
+# send date recorded in SENT_MARKER by the workflow.
+DEFAULT_LOOKBACK_DAYS = 4
+SENT_MARKER = DATA_DIR / ".last_weekly_email"
+
+
+def last_send_date():
+    """Date of the previous issue, from the marker the workflow writes.
+
+    Returns a `date` or None. None on first run, unreadable marker, or garbage
+    contents — callers fall back to DEFAULT_LOOKBACK_DAYS.
+    """
+    try:
+        raw = SENT_MARKER.read_text(encoding="utf-8").strip()
+        return datetime.strptime(raw, "%Y-%m-%d").date()
+    except Exception:
+        return None
 
 
 # ============================================================
@@ -135,8 +164,14 @@ def pick_current_and_baseline(override_date: str | None) -> tuple[dict, str, dic
     if not older:
         return current, current_date, None, None
 
-    # Prefer the snapshot closest to (but not after) 7 days before current.
-    target = current_dt - timedelta(days=7)
+    # Baseline = the day we last wrote to readers, so each issue covers exactly
+    # "what changed since you last heard from us". A fixed 7-day lookback was
+    # correct only while the cadence was weekly; on a Tue/Sat schedule it would
+    # compare against a week-old snapshot every time and re-report the same
+    # movement in consecutive issues.
+    target = last_send_date() or (current_dt - timedelta(days=DEFAULT_LOOKBACK_DAYS))
+    if target >= current_dt:
+        target = current_dt - timedelta(days=DEFAULT_LOOKBACK_DAYS)
 
     def distance(d: str) -> int:
         return abs((datetime.strptime(d, "%Y-%m-%d").date() - target).days)
@@ -150,7 +185,78 @@ def pick_current_and_baseline(override_date: str | None) -> tuple[dict, str, dic
 # Ranking (ported from lib/sort.ts)
 # ============================================================
 
+# NOTE ON RANKING (changed 2026-08-16)
+# ------------------------------------
+# This file used to rank by absolute delta (`trend_score` = delta_24h*10 +
+# stars*0.001, and `stars_delta_7d` for movers). The site moved to surge —
+# growth measured against each repo's OWN trailing baseline — and started
+# filing perennial leaders under /steady. That left the email and the site
+# disagreeing about what was "top" on the same day: the email kept leading with
+# the same large repos the site had just moved out of its momentum pages.
+#
+# The scores are now read from fields that scripts/fetch.py writes into the
+# daily digest (`surge_24h`, `surge_7d`, `is_steady`, `steady_days`). Neither
+# this file nor lib/steady.ts re-derives them, so they cannot drift apart
+# again. Digests written before 2026-08-16 lack the fields; the helpers below
+# degrade to the old behaviour rather than crash on those.
+
+
+def fmt_surge(x: float) -> str:
+    """Render a surge ratio the way the site's badge does (lib/utils.ts)."""
+    if x >= 100:
+        return f"{round(x)}x"
+    if x >= 10:
+        return f"{x:.0f}x"
+    return f"{x:.1f}x"
+
+
+def metric_label(r: dict, period: str = "주") -> str:
+    """Right-hand metric on a repo row.
+
+    Must show what the row was RANKED by, otherwise the list looks broken: a
+    riser can top the list on surge while its 7-day delta is still 0 (no
+    baseline yet), which read as "+0 / 주" at #1 before this.
+    """
+    if isinstance(r.get("surge_24h"), (int, float)):
+        s = surge_7d(r) if isinstance(r.get("surge_7d"), (int, float)) else surge_24h(r)
+        parts = [f"▲ {fmt_surge(s)}"]
+        d7 = r.get("stars_delta_7d")
+        d24 = r.get("stars_delta_24h")
+        if isinstance(d7, int) and d7 > 0:
+            parts.append(f"{fmt_delta(d7)} / {period}")
+        elif isinstance(d24, int) and d24 > 0:
+            parts.append(f"{fmt_delta(d24)} / 24h")
+        return " · ".join(parts)
+    return f"{fmt_delta(r.get('stars_delta_7d'))} / {period}"
+
+
+def surge_24h(r: dict) -> float:
+    """Acceleration vs this repo's own 28d daily average. 1.0 = usual pace."""
+    v = r.get("surge_24h")
+    return float(v) if isinstance(v, (int, float)) else 1.0
+
+
+def surge_7d(r: dict) -> float:
+    v = r.get("surge_7d")
+    return float(v) if isinstance(v, (int, float)) else 1.0
+
+
+def is_steady(r: dict) -> bool:
+    """Perennial leader — lives on /steady, excluded from momentum sections."""
+    return bool(r.get("is_steady"))
+
+
+def has_surge_fields(current: dict) -> bool:
+    """True when the digest carries fetch.py's precomputed signals."""
+    for cat in current.get("categories", []):
+        for r in cat.get("items", []):
+            return "surge_24h" in r
+    return False
+
+
 def trend_score(r: dict) -> float:
+    """Legacy absolute-delta score. Retained ONLY as the fallback ordering for
+    pre-2026-08-16 digests, which carry no surge fields."""
     delta = r.get("stars_delta_24h") or 0
     return delta * 10 + r.get("stargazers_count", 0) * 0.001
 
@@ -172,9 +278,20 @@ def _has_korean(desc: str | None) -> bool:
 
 
 def rank_map(cat: dict) -> dict[str, int]:
-    """1-indexed rank per full_name, mirroring lib/diff.ts rankMap()."""
-    score_fn = korean_quality_score if cat.get("category") == "korean-opensource" else trend_score
-    sorted_items = sorted(cat.get("items", []), key=score_fn, reverse=True)
+    """1-indexed rank per full_name, matching how the site orders the page.
+
+    Steady sellers are ranked too (they still hold positions in the raw
+    category); the sections that must exclude them do so explicitly.
+    """
+    items = cat.get("items", [])
+    has_surge = any("surge_24h" in r for r in items)
+    if has_surge:
+        score_fn = surge_24h
+    elif cat.get("category") == "korean-opensource":
+        score_fn = korean_quality_score
+    else:
+        score_fn = trend_score
+    sorted_items = sorted(items, key=score_fn, reverse=True)
     return {r["full_name"]: i + 1 for i, r in enumerate(sorted_items)}
 
 
@@ -194,14 +311,39 @@ def dedup_by_full_name(current: dict) -> list[dict]:
 
 
 def compute_top_movers(current: dict) -> list[dict]:
+    """Fastest accelerating repos, steady sellers excluded.
+
+    The star floor is dropped when surge fields are available: surge already
+    normalises for size, and a 1,000-star floor would re-introduce exactly the
+    bias this ranking exists to remove (it would cut the small newcomers that
+    the riser pipeline was added to surface).
+    """
+    if has_surge_fields(current):
+        pool = [r for r in dedup_by_full_name(current) if not is_steady(r)]
+        pool.sort(key=surge_7d, reverse=True)
+        return pool[:TOP_N_MOVERS]
     pool = [r for r in dedup_by_full_name(current) if r.get("stargazers_count", 0) >= MIN_STARS_MOVERS]
     pool.sort(key=lambda r: r.get("stars_delta_7d") or 0, reverse=True)
     return pool[:TOP_N_MOVERS]
 
 
 def compute_new_entries(current: dict) -> list[dict]:
-    pool = [r for r in dedup_by_full_name(current) if r.get("is_new_this_week")]
-    pool.sort(key=lambda r: r.get("stargazers_count", 0), reverse=True)
+    """Genuinely new to the digest: created in the last 7 days, or newly
+    admitted to the tracked pool via a riser slot (`is_riser`).
+
+    Before the riser pipeline this could only ever show repos that GitHub
+    itself considered brand new, which on most days is 0-1 items.
+    """
+    pool = [
+        r for r in dedup_by_full_name(current)
+        if r.get("is_new_this_week") or r.get("is_riser")
+    ]
+    # Newest-feeling first: real new repos ahead of merely-newly-tracked ones,
+    # then by how hard each is currently moving.
+    pool.sort(
+        key=lambda r: (bool(r.get("is_new_this_week")), surge_24h(r)),
+        reverse=True,
+    )
     return pool[:TOP_N_NEW]
 
 
@@ -226,12 +368,20 @@ def compute_rank_jumps(current: dict, baseline: dict | None) -> list[dict]:
         if prev_ranks is None:
             continue
 
-        sorted_items = sorted(cat.get("items", []), key=trend_score, reverse=True)
+        items = cat.get("items", [])
+        if any("surge_24h" in r for r in items):
+            # Rank within the same pool the site shows: steady sellers out.
+            pool = [r for r in items if not is_steady(r)]
+            sorted_items = sorted(pool, key=surge_24h, reverse=True)
+            star_floor = 0  # surge already normalises for size
+        else:
+            sorted_items = sorted(items, key=trend_score, reverse=True)
+            star_floor = MIN_STARS_JUMPS
         top = sorted_items[:JUMP_TOP_N]
 
         for i, repo in enumerate(top):
             today_rank = i + 1
-            if repo.get("stargazers_count", 0) < MIN_STARS_JUMPS:
+            if repo.get("stargazers_count", 0) < star_floor:
                 continue
             prev_rank = prev_ranks.get(repo["full_name"])
             if prev_rank is None or prev_rank > COMPARE_N:
@@ -254,6 +404,14 @@ def compute_korean_highlights(current: dict) -> list[dict]:
     for cat in current.get("categories", []):
         if cat.get("category") == "korean-opensource":
             items = list(cat.get("items", []))
+            if any("surge_7d" in r for r in items):
+                # Korean repos are small in absolute terms (median ~1.7k stars),
+                # so an absolute-delta sort here always returned the same few
+                # largest ones. Surge lets a 300-star project that doubled beat
+                # a 60k-star project that grew 1%.
+                pool = [r for r in items if not is_steady(r)]
+                pool.sort(key=surge_7d, reverse=True)
+                return pool[:KOREAN_TOP_N]
             items.sort(key=lambda r: r.get("stars_delta_7d") or 0, reverse=True)
             return items[:KOREAN_TOP_N]
     return []
@@ -364,14 +522,14 @@ def render_html(digest: WeeklyDigest) -> str:
 
     if digest.top_movers:
         rows = "".join(
-            render_repo_row(r, f"{fmt_delta(r.get('stars_delta_7d'))} / 주")
+            render_repo_row(r, metric_label(r))
             for r in digest.top_movers
         )
-        sections.append(render_section("이번 주 급상승 Top Movers", "주간 스타 증가량 기준 상위 10개", rows))
+        sections.append(render_section("급상승 Top Movers", f"각 레포 자체 28일 평균 대비 가속도 상위 {TOP_N_MOVERS}개 · 스테디셀러 제외", rows))
 
     if digest.new_entries:
         rows = "".join(render_repo_row(r, "NEW") for r in digest.new_entries)
-        sections.append(render_section("신규 진입", "지난 7일 내 생성된 레포 중 스타 상위 10개", rows))
+        sections.append(render_section("신규 진입", f"새로 생성됐거나 이번에 처음 추적 대상이 된 레포 상위 {TOP_N_NEW}개", rows))
 
     if digest.rank_jumps:
         rows = "".join(
@@ -385,18 +543,18 @@ def render_html(digest: WeeklyDigest) -> str:
 
     if digest.korean_highlights:
         rows = "".join(
-            render_repo_row(r, f"{fmt_delta(r.get('stars_delta_7d'))} / 주")
+            render_repo_row(r, metric_label(r))
             for r in digest.korean_highlights
         )
-        sections.append(render_section("한국 오픈소스 하이라이트", "한국 오픈소스 카테고리 주간 스타 증가량 상위 5개", rows))
+        sections.append(render_section("한국 오픈소스 하이라이트", f"한국 오픈소스 중 자체 평균 대비 가속도 상위 {KOREAN_TOP_N}개", rows))
 
     if not sections:
         sections.append(
             render_section(
-                "이번 주 소식 없음",
+                "이번 회차 소식 없음",
                 "",
                 f"""<tr><td style="padding:16px 0;color:{COLORS['muted']};font-size:13px;">
-                이번 주는 급상승·신규 진입·순위 급등 항목이 없었습니다.</td></tr>""",
+                이번 구간에는 급상승·신규 진입·순위 급등 항목이 없었습니다.</td></tr>""",
             )
         )
 
@@ -418,7 +576,7 @@ def render_html(digest: WeeklyDigest) -> str:
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WVB CC Radar 주간 다이제스트</title>
+<title>WVB CC Radar 다이제스트</title>
 </head>
 <body style="margin:0;padding:0;background:{COLORS['bg']};font-family:'Segoe UI',Helvetica,Arial,sans-serif;">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:{COLORS['bg']};padding:24px 0;">
@@ -428,7 +586,7 @@ def render_html(digest: WeeklyDigest) -> str:
         <tr>
           <td style="background:{COLORS['text']};padding:24px;">
             <div style="color:#ffffff;font-size:20px;font-weight:700;">WVB CC Radar</div>
-            <div style="color:#c7c9e0;font-size:13px;margin-top:4px;">주간 다이제스트 — {current_label} 주</div>
+            <div style="color:#c7c9e0;font-size:13px;margin-top:4px;">다이제스트 — {current_label}</div>
           </td>
         </tr>
         <tr>
@@ -459,7 +617,7 @@ def render_html(digest: WeeklyDigest) -> str:
 
 def render_text(digest: WeeklyDigest) -> str:
     """Plaintext fallback part for the MIME multipart email."""
-    lines = [f"WVB CC Radar 주간 다이제스트 — {date_to_kst_label(digest.current_date)} 주", ""]
+    lines = [f"WVB CC Radar 다이제스트 — {date_to_kst_label(digest.current_date)}", ""]
 
     def block(title: str, items: list[str]) -> None:
         if not items:
@@ -469,8 +627,8 @@ def render_text(digest: WeeklyDigest) -> str:
         lines.append("")
 
     block(
-        "[이번 주 급상승]",
-        [f"{r['full_name']} ({fmt_delta(r.get('stars_delta_7d'))}, ★{fmt_num(r.get('stargazers_count'))})" for r in digest.top_movers],
+        "[급상승]",
+        [f"{r['full_name']} ({metric_label(r)}, ★{fmt_num(r.get('stargazers_count'))})" for r in digest.top_movers],
     )
     block(
         "[신규 진입]",
@@ -482,7 +640,7 @@ def render_text(digest: WeeklyDigest) -> str:
     )
     block(
         "[한국 오픈소스 하이라이트]",
-        [f"{r['full_name']} ({fmt_delta(r.get('stars_delta_7d'))})" for r in digest.korean_highlights],
+        [f"{r['full_name']} ({metric_label(r)})" for r in digest.korean_highlights],
     )
 
     lines.append(f"자세히 보기: {SITE_URL}")
@@ -493,8 +651,8 @@ def render_subject(digest: WeeklyDigest) -> str:
     label = date_to_kst_label(digest.current_date)
     if digest.top_movers:
         top_name = digest.top_movers[0]["full_name"]
-        return f"[CC Radar] 주간 다이제스트 — {label} 주 (Top: {top_name})"
-    return f"[CC Radar] 주간 다이제스트 — {label} 주"
+        return f"[CC Radar] 다이제스트 — {label} (Top: {top_name})"
+    return f"[CC Radar] 다이제스트 — {label}"
 
 
 # ============================================================
@@ -540,7 +698,7 @@ def send_email(subject: str, html_body: str, text_body: str) -> None:
 # ============================================================
 
 def default_out_path() -> Path:
-    return Path(tempfile.gettempdir()) / "cc-radar-weekly-preview.html"
+    return Path(tempfile.gettempdir()) / "cc-radar-digest-preview.html"
 
 
 def print_summary(digest: WeeklyDigest, out_path: Path | None) -> None:
@@ -552,7 +710,7 @@ def print_summary(digest: WeeklyDigest, out_path: Path | None) -> None:
     if top3:
         print("[weekly_email] top 3 movers:")
         for r in top3:
-            print(f"  - {r['full_name']}: {fmt_delta(r.get('stars_delta_7d'))} (★{fmt_num(r.get('stargazers_count'))})")
+            print(f"  - {r['full_name']}: {metric_label(r)} (★{fmt_num(r.get('stargazers_count'))})")
     else:
         print("[weekly_email] top 3 movers: (none)")
     if out_path is not None:
@@ -576,7 +734,16 @@ def main() -> int:
     should_send = args.send or (not args.dry_run and bool(os.environ.get("GMAIL_APP_PASSWORD", "").strip()))
 
     current, current_date, baseline, baseline_date = pick_current_and_baseline(args.date)
-    window_days = current.get("meta", {}).get("weekly_window_days")
+    # Actual span this issue covers = current - baseline. Previously this read
+    # meta.weekly_window_days, which is fetch.py's fixed 7d delta window and
+    # says nothing about how long it has been since the last issue.
+    if baseline_date:
+        window_days = (
+            datetime.strptime(current_date, "%Y-%m-%d").date()
+            - datetime.strptime(baseline_date, "%Y-%m-%d").date()
+        ).days
+    else:
+        window_days = None
     digest = WeeklyDigest(current, current_date, baseline_date, window_days)
 
     html_body = render_html(digest)
