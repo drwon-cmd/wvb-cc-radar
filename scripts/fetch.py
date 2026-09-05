@@ -42,6 +42,7 @@ Viral repo 가 다음 4가지 조건에 모두 어긋나면 모든 T1 쿼리 누
 from __future__ import annotations
 
 import json
+import math
 import os
 import re
 import shutil
@@ -203,6 +204,18 @@ SURGE_SLOTS = 3
 # has a few days of below-cut history — that is the first time the right
 # population becomes measurable at all.
 SURGE_MIN_DELTA = 100
+
+# Size damping for the surge ranking. Candidates are ordered by
+# delta / sqrt(stars + SURGE_SIZE_C), not by raw delta. Raw delta hands every
+# slot to the biggest repos below the cut: 60k stars gaining 400/day (0.7%)
+# outranks 5k stars gaining 150/day (3%), which is backwards for a page whose
+# own ranking is growth relative to each repo's baseline. A pure ratio
+# (delta / stars) overshoots the other way and lets a 200-star repo on +100
+# push out everything larger. sqrt is the compromise between the two, and the
+# +C keeps the smallest repos from dominating on tiny denominators. This is a
+# judgment call, not a measurement — revisit alongside SURGE_MIN_DELTA once
+# meta.pool_stars carries enough below-cut history to compare orderings.
+SURGE_SIZE_C = 1000
 
 # How many repos per category get written to the pool ledger (meta.pool_stars).
 # The ledger breaks a bootstrap loop: a repo needs a prior star count to show a
@@ -747,11 +760,12 @@ def pick_surges(
 ) -> list[dict]:
     """Repos below the cut that gained the most stars since the last run.
 
-    Ranked by absolute delta, not by ratio: a ratio favours tiny repos where a
-    handful of stars is a large percentage, which is noise. SURGE_MIN_DELTA
-    keeps large-but-flat repos out. A repo with no baseline entry is skipped
-    rather than treated as delta=stars, which would hand every slot to whatever
-    first appeared in the pool today.
+    Ranked by delta / sqrt(stars + SURGE_SIZE_C) — see that constant for why
+    neither raw delta nor a pure ratio is right. SURGE_MIN_DELTA is still
+    applied to the RAW delta first, as a noise floor; the normalisation only
+    decides the order among repos that cleared it. A repo with no baseline
+    entry is skipped rather than treated as delta=stars, which would hand every
+    slot to whatever first appeared in the pool today.
     """
     if not baseline or slots <= 0:
         return []
@@ -765,10 +779,11 @@ def pick_surges(
             continue
         delta = item.get("stargazers_count", 0) - prev
         if delta >= SURGE_MIN_DELTA:
-            candidates.append((delta, item))
+            score = delta / math.sqrt(item.get("stargazers_count", 0) + SURGE_SIZE_C)
+            candidates.append((score, delta, item))
     candidates.sort(key=lambda c: c[0], reverse=True)
     picked = []
-    for delta, item in candidates[:slots]:
+    for score, delta, item in candidates[:slots]:
         # Read back by extract_repo. Underscore-prefixed so it is obviously not
         # a GitHub API field on the raw search item we are borrowing.
         item["_entry_reason"] = "surge"

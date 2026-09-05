@@ -128,7 +128,12 @@ export default function RepoCard({
               ▲ {formatSurge(signal!.surge)}
             </Badge>
           )}
-          {signal?.riser && <Badge variant="teal">RISER</Badge>}
+          {/* A surge admit is by definition NOT new to GitHub (often months old); RISER would misread. */}
+          {signal?.surgeEntry ? (
+            <Badge variant="gold">SURGE</Badge>
+          ) : (
+            signal?.riser && <Badge variant="teal">RISER</Badge>
+          )}
           {signal?.steady && (
             <Badge
               variant="steady"

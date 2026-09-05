@@ -280,6 +280,13 @@ export interface RepoSignal {
   surge: number;
   steady: boolean;
   riser: boolean;
+  /**
+   * Admitted below the stars cut via a surge slot (fetch.py pick_surges), not
+   * because it is new to the tracked pool. Distinct from `riser`: a repo can
+   * be old (created months ago) and still be a surge admit, so the two must
+   * never both read true for the same repo in a way that lets RISER win.
+   */
+  surgeEntry: boolean;
   /** Days held a top-5 slot, in the category this signal was built for. */
   tenure: number;
   /** Stars/day (daily mode) or stars/week (weekly mode); null if unknown. */
@@ -309,6 +316,7 @@ export function buildSignals(
         surge: mode === 'daily' ? surge24h(repo, s) : surge7d(repo, s),
         steady: isSteady(index, cat.category, repo),
         riser: isRiser(index, repo),
+        surgeEntry: repo.entry_reason === 'surge',
         tenure: tenureIn(index, cat.category, repo),
         baselineRate:
           mode === 'daily' ? s.baselineDailyRate : s.baselineWeeklyRate,

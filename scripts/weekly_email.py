@@ -528,7 +528,10 @@ def render_html(digest: WeeklyDigest) -> str:
         sections.append(render_section("급상승 Top Movers", f"각 레포 자체 28일 평균 대비 가속도 상위 {TOP_N_MOVERS}개 · 스테디셀러 제외", rows))
 
     if digest.new_entries:
-        rows = "".join(render_repo_row(r, "NEW") for r in digest.new_entries)
+        rows = "".join(
+            render_repo_row(r, "SURGE" if r.get("entry_reason") == "surge" else "NEW")
+            for r in digest.new_entries
+        )
         sections.append(render_section("신규 진입", f"새로 생성됐거나 이번에 처음 추적 대상이 된 레포 상위 {TOP_N_NEW}개", rows))
 
     if digest.rank_jumps:
