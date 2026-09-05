@@ -174,6 +174,43 @@ RISER_CREATED_DAYS = 120
 # point is to give newcomers a foothold, not to flood the page.
 RISER_SLOTS = 5
 
+# Slots appended per category for repos that are climbing fast RIGHT NOW,
+# regardless of age. Risers answer "too young to have accumulated stars";
+# these answer "mid-pack in cumulative stars but moving faster than the repos
+# above it". Both exist because the pool is selected by cumulative stars while
+# the site ranks by 24h trend — a repo could gain 1,500 stars/day forever and
+# never be collected. Real case that motivated this (2026-09-05):
+# diegosouzapw/OmniRoute, 61,291 stars, topic:claude-code, returned by the
+# category's own search query at rank 23/27, dropped by a top_n cut whose
+# boundary that day sat at 94,102 stars, and ineligible for a riser slot
+# because it was created 204 days ago.
+SURGE_SLOTS = 3
+
+# Minimum stars-since-last-run for a surge slot. This is a NOISE FLOOR, not a
+# ranking: candidates are sorted by delta and capped at SURGE_SLOTS, so the
+# floor only binds when fewer than SURGE_SLOTS repos clear it. Setting it high
+# therefore does not raise quality, it just leaves slots empty.
+#
+# Measured over the 7 days to 2026-09-05 across every PUBLISHED repo (n=1,086):
+# p50=+30, p75=+103, p90=+349, p95=+539. Deliberately NOT using p90 here: that
+# sample is the published set, which is by definition the largest repos in each
+# pool, so its deltas run systematically higher than those of the below-cut
+# population this floor actually governs. Applying a published-derived p90 to
+# below-cut candidates is a sampling mismatch that would strand the slots.
+#
+# 100 (just under the published p75) clears the p50 churn while staying low
+# enough to be a filter rather than a gate. RE-TUNE THIS once meta.pool_stars
+# has a few days of below-cut history — that is the first time the right
+# population becomes measurable at all.
+SURGE_MIN_DELTA = 100
+
+# How many repos per category get written to the pool ledger (meta.pool_stars).
+# The ledger breaks a bootstrap loop: a repo needs a prior star count to show a
+# delta, but only *published* repos were ever recorded, so an uncollected repo
+# could never demonstrate the delta that would have collected it. 60 covers the
+# published set (top_n + slots) plus roughly 40 below the cut.
+POOL_LEDGER_TOP = 60
+
 
 def recent_date(days: int) -> str:
     d = datetime.now(timezone.utc) - timedelta(days=days)
@@ -259,10 +296,11 @@ def categories() -> list[dict]:
             # `repo:owner/name` 개별 쿼리로 정확 조회. 엄격한 수동 큐레이션으로
             # 개발자 도구·라이브러리 유입 차단.
             "queries": vibecoded_queries,
-            # No riser slots: this category is a hand-curated allowlist, so the
-            # merged pool contains exactly what was asked for. "Young repos the
-            # star cut dropped" is meaningless here.
+            # No riser or surge slots: this category is a hand-curated
+            # allowlist, so the merged pool contains exactly what was asked for.
+            # "Repos the star cut dropped" is meaningless here.
             "riser_slots": 0,
+            "surge_slots": 0,
             "top_n": 15,
             "priority": 3,
         },
@@ -540,6 +578,12 @@ def extract_repo(item: dict, korean_owners: set[str] | None = None) -> dict:
     # search but the raw API preserves casing (e.g. "Yeachan-Heo").
     if korean_owners and owner.lower() in korean_owners:
         repo["korean_owner"] = True
+    # Stamped by pick_surges. Carried through so the site and the digest can
+    # say WHY a repo below the stars cut is on the page.
+    if item.get("_entry_reason"):
+        repo["entry_reason"] = item["_entry_reason"]
+    if item.get("_surge_delta") is not None:
+        repo["surge_entry_delta"] = item["_surge_delta"]
     return repo
 
 
@@ -615,6 +659,58 @@ def load_weekly_baseline() -> tuple[dict[str, dict], int]:
     return baseline, delta_days
 
 
+def load_pool_baseline() -> dict[str, int]:
+    """Yesterday's pool ledger: {full_name: stars} for every repo we CONSIDERED.
+
+    Distinct from the star map in load_prior_translations(), which only covers
+    repos that were actually published. That distinction is the whole point: a
+    repo below the stars cut left no trace, so it could never show the delta
+    that would have lifted it above the cut.
+
+    Returns {} when yesterday's snapshot predates this ledger. That disables
+    surge slots for the run instead of inventing a baseline, so the first run
+    after deploy behaves exactly like the old code and the second run onward
+    has real numbers.
+    """
+    yesterday = (datetime.now(timezone.utc) - timedelta(days=1)).strftime("%Y-%m-%d")
+    path = DATA_DIR / f"{yesterday}.json"
+    if not path.exists():
+        print("[pool] no yesterday snapshot; surge slots disabled this run")
+        return {}
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            digest = json.load(f)
+        raw = digest.get("meta", {}).get("pool_stars") or {}
+        pool = {k: int(v) for k, v in raw.items()}
+    except Exception as e:
+        print(f"[pool] failed to read {path.name}: {e}", file=sys.stderr)
+        return {}
+    if not pool:
+        print(f"[pool] {path.name} has no pool_stars; surge slots disabled this run")
+    else:
+        print(f"[pool] baseline from {path.name}, {len(pool)} repos")
+    return pool
+
+
+def record_pool(ledger: dict[str, int], merged: dict) -> None:
+    """Record the top of this category's candidate pool into `ledger` in place.
+
+    Capped at POOL_LEDGER_TOP per category and keyed by full_name, so the
+    categories that overlap (a repo can match claude-code and ai-agents both)
+    collapse to one entry rather than inflating the file.
+    """
+    ranked = sorted(
+        merged.values(),
+        key=lambda i: i.get("stargazers_count", 0),
+        reverse=True,
+    )
+    for item in ranked[:POOL_LEDGER_TOP]:
+        fn = item["full_name"]
+        stars = item.get("stargazers_count", 0)
+        if stars > ledger.get(fn, -1):
+            ledger[fn] = stars
+
+
 def is_new_this_week(created_at: str) -> bool:
     try:
         created = datetime.fromisoformat(created_at.replace("Z", "+00:00"))
@@ -643,11 +739,59 @@ def is_young(item: dict, cutoff: str) -> bool:
     return bool(created) and created >= cutoff
 
 
-def select_items(merged: dict, cat: dict, riser_cutoff: str) -> tuple[list[dict], int]:
-    """Rank by stars, then append young repos the star cut would have dropped.
+def pick_surges(
+    by_stars: list[dict],
+    chosen: set[str],
+    baseline: dict[str, int],
+    slots: int,
+) -> list[dict]:
+    """Repos below the cut that gained the most stars since the last run.
 
-    Returns (items, riser_count). Risers are ranked by stars among themselves,
-    so this surfaces "the biggest of the young", not random small repos.
+    Ranked by absolute delta, not by ratio: a ratio favours tiny repos where a
+    handful of stars is a large percentage, which is noise. SURGE_MIN_DELTA
+    keeps large-but-flat repos out. A repo with no baseline entry is skipped
+    rather than treated as delta=stars, which would hand every slot to whatever
+    first appeared in the pool today.
+    """
+    if not baseline or slots <= 0:
+        return []
+    candidates = []
+    for item in by_stars:
+        fn = item["full_name"]
+        if fn in chosen:
+            continue
+        prev = baseline.get(fn)
+        if prev is None:
+            continue
+        delta = item.get("stargazers_count", 0) - prev
+        if delta >= SURGE_MIN_DELTA:
+            candidates.append((delta, item))
+    candidates.sort(key=lambda c: c[0], reverse=True)
+    picked = []
+    for delta, item in candidates[:slots]:
+        # Read back by extract_repo. Underscore-prefixed so it is obviously not
+        # a GitHub API field on the raw search item we are borrowing.
+        item["_entry_reason"] = "surge"
+        item["_surge_delta"] = delta
+        picked.append(item)
+    return picked
+
+
+def select_items(
+    merged: dict,
+    cat: dict,
+    riser_cutoff: str,
+    baseline: dict[str, int] | None = None,
+) -> tuple[list[dict], int, int]:
+    """Rank by stars, then append repos the star cut would have dropped.
+
+    Two kinds get appended, for two different failure modes of a stars cut:
+      - risers: created recently, so they have not had time to accumulate.
+      - surges: any age, but climbing faster than the repos ranked above them.
+
+    Returns (items, riser_count, surge_count). Both kinds are ranked among
+    themselves, so this surfaces "the biggest of the young" and "the fastest of
+    the passed-over" rather than random small repos.
     """
     by_stars = sorted(
         merged.values(),
@@ -657,16 +801,24 @@ def select_items(merged: dict, cat: dict, riser_cutoff: str) -> tuple[list[dict]
     top = by_stars[: cat["top_n"]]
 
     slots = cat.get("riser_slots", RISER_SLOTS)
-    if slots <= 0:
-        return top, 0
+    surge_slots = cat.get("surge_slots", SURGE_SLOTS)
+    if slots <= 0 and surge_slots <= 0:
+        return top, 0, 0
 
     chosen = {i["full_name"] for i in top}
-    risers = [
-        i
-        for i in by_stars
-        if i["full_name"] not in chosen and is_young(i, riser_cutoff)
-    ][:slots]
-    return top + risers, len(risers)
+    risers = (
+        [
+            i
+            for i in by_stars
+            if i["full_name"] not in chosen and is_young(i, riser_cutoff)
+        ][:slots]
+        if slots > 0
+        else []
+    )
+    chosen.update(i["full_name"] for i in risers)
+
+    surges = pick_surges(by_stars, chosen, baseline or {}, surge_slots)
+    return top + risers + surges, len(risers), len(surges)
 
 
 def merge_riser_query(
@@ -1263,6 +1415,16 @@ def main() -> int:
     yesterday_stars, ko_cache = load_prior_translations()
     print(f"[cache] {len(yesterday_stars)} prior stars, {len(ko_cache)} cached translations")
 
+    # Widen the 24h baseline from "repos published yesterday" to "repos we
+    # considered yesterday". Without this a surge admit would land on the page
+    # with no stars_delta_24h at all and sort to the bottom of a trend-ranked
+    # site — published but invisible, which is the bug we are fixing. Published
+    # values win on conflict; they are the same numbers, and this keeps the old
+    # behaviour exactly intact for everything that was already on the page.
+    pool_baseline = load_pool_baseline()
+    yesterday_stars = {**pool_baseline, **yesterday_stars}
+    print(f"[cache] baseline widened to {len(yesterday_stars)} repos")
+
     weekly_baseline, weekly_window_days = load_weekly_baseline()
 
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
@@ -1272,6 +1434,9 @@ def main() -> int:
     rate_remaining = None
     riser_cutoff = recent_date(RISER_CREATED_DAYS)
     total_risers = 0
+    total_surges = 0
+    # Written to meta.pool_stars for tomorrow's run to read back.
+    pool_ledger: dict[str, int] = {}
 
     for cat in categories():
         per_query = max(cat["top_n"], 30)
@@ -1312,8 +1477,12 @@ def main() -> int:
             #    can enter a pool otherwise floored at stars:>500 and up.
             rate_remaining = merge_riser_query(merged, cat, per_query, rate_remaining)
 
-            ranked, riser_n = select_items(merged, cat, riser_cutoff)
+            record_pool(pool_ledger, merged)
+            ranked, riser_n, surge_n = select_items(
+                merged, cat, riser_cutoff, yesterday_stars
+            )
             total_risers += riser_n
+            total_surges += surge_n
             processed = []
             for item in ranked:
                 repo = extract_repo(item, korean_owners_set)
@@ -1348,11 +1517,15 @@ def main() -> int:
                 except Exception as e:
                     print(f"    FAIL {fn}: {e}", file=sys.stderr)
                 sleep_between()
-            # Allowlist category: `riser_slots: 0` makes select_items a plain
-            # stars cut here, but it goes through the same path so the three
-            # branches cannot drift apart again.
-            ranked, riser_n = select_items(merged, cat, riser_cutoff)
+            # Allowlist category: `riser_slots: 0` + `surge_slots: 0` make
+            # select_items a plain stars cut here, but it goes through the same
+            # path so the three branches cannot drift apart again.
+            record_pool(pool_ledger, merged)
+            ranked, riser_n, surge_n = select_items(
+                merged, cat, riser_cutoff, yesterday_stars
+            )
             total_risers += riser_n
+            total_surges += surge_n
             processed = []
             for item in ranked:
                 repo = extract_repo(item, korean_owners_set)
@@ -1391,8 +1564,12 @@ def main() -> int:
         # enter a pool otherwise floored at stars:>500 and up.
         rate_remaining = merge_riser_query(merged, cat, per_query, rate_remaining)
 
-        ranked, riser_n = select_items(merged, cat, riser_cutoff)
+        record_pool(pool_ledger, merged)
+        ranked, riser_n, surge_n = select_items(
+            merged, cat, riser_cutoff, yesterday_stars
+        )
         total_risers += riser_n
+        total_surges += surge_n
 
         processed = []
         for item in ranked:
@@ -1439,6 +1616,14 @@ def main() -> int:
             # stars cut. If this trends to 0, the riser queries have stopped
             # finding anything the main queries miss.
             "total_risers": total_risers,
+            # How many got in on 24h movement rather than cumulative stars. 0 on
+            # the first run after deploy (no ledger yet) is expected, not a bug.
+            "total_surges": total_surges,
+            # Candidate-pool ledger: every repo we CONSIDERED today, not just
+            # the ones we published. Tomorrow's run reads this back as the 24h
+            # baseline so a repo below the cut can demonstrate movement. See
+            # load_pool_baseline().
+            "pool_stars": pool_ledger,
             # Steady/surge summary + the constants used, so a consumer can tell
             # which config produced these fields.
             "steady": steady_meta,

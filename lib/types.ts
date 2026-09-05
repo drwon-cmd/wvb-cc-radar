@@ -49,6 +49,17 @@ export interface Repo {
   wvb_uses?: boolean;
   /** Set by fetch.py when owner appears in data/korean-owners.json. */
   korean_owner?: boolean;
+  /**
+   * Why this repo is on the page despite ranking below its category's stars
+   * cut. Absent for the great majority, which got in on cumulative stars.
+   * 'surge' means fetch.py spent one of its SURGE_SLOTS on it because it was
+   * the fastest mover among the passed-over — see pick_surges() there.
+   */
+  entry_reason?: 'surge';
+  /** Stars gained since the previous run, as measured at the moment the surge
+   *  slot was awarded. Distinct from stars_delta_24h, which is recomputed for
+   *  every repo afterwards; this one records what actually won the slot. */
+  surge_entry_delta?: number;
 }
 
 export interface CategoryResult {
@@ -72,5 +83,14 @@ export interface DailyDigest {
     rate_limit_remaining: number | null;
     /** Size of the "this week" window in days (0 on first-ever run). */
     weekly_window_days?: number;
+    /** How many repos got a SURGE_SLOTS seat on 24h movement rather than on
+     *  cumulative stars. 0 is expected on the first run after this shipped,
+     *  because pool_stars did not exist yet to compare against. */
+    total_surges?: number;
+    /** {full_name: stars} for every repo fetch.py CONSIDERED, not just those
+     *  it published — the baseline the next run needs to spot a below-cut repo
+     *  that is climbing. Absent in snapshots written before 2026-09-05.
+     *  Bookkeeping for the fetcher; the site does not read it. */
+    pool_stars?: Record<string, number>;
   };
 }
