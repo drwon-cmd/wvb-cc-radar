@@ -938,8 +938,30 @@ def attach_steady_signals(categories_result: list[dict], today: str) -> dict:
     hist = history_dates(need, exclude=today)
     all_dates = [today] + hist  # newest first, index 0 = today
 
-    # stars per repo per date, and tenure per (category, repo)
+    # Star history feeding the baseline math. TWO sources, and they are kept
+    # strictly separate downstream:
+    #   - published items -> star history AND tenure (steady) AND first_seen
+    #     (riser). What was actually on the page.
+    #   - meta.pool_stars -> star history ONLY. What we merely considered.
+    #
+    # The separation is the whole point. Letting the ledger reach `tenure` would
+    # class a repo that was never on the page as a steady fixture; letting it
+    # reach `first_seen` would redefine "new to the tracked pool" as "new to the
+    # candidate pool" and silently reclassify every existing riser. Baselines
+    # are the one place the ledger belongs, and they are the place that was
+    # broken: a repo below the stars cut left no recorded history at all, so
+    # base_d came out None, the surge denominator collapsed to SURGE_SHRINK_K,
+    # and the repo entered the digest at a ratio of 15-20 against an established
+    # repo's ~1.0. Measured on the 2026-09-05 digest: all 10 of the top 10 by
+    # surge_24h were repos with no baseline (max 22.56), while the median among
+    # repos that HAD one was 0.715. The email ranks on this field, so those
+    # ratios are what led the newsletter.
+    #
+    # This is inert until snapshots carrying pool_stars accumulate — the first
+    # one is written the day this ships — and it corrects itself over the
+    # BASELINE_DAYS window as they do.
     stars_by: dict[str, dict[str, int]] = {}
+    published_on: dict[str, set[str]] = {}
     tenure: dict[tuple[str, str], int] = {}
     first_seen: dict[str, str] = {}
 
@@ -955,24 +977,41 @@ def attach_steady_signals(categories_result: list[dict], today: str) -> dict:
                 if i + 1 <= STEADY_TOP_N:
                     key = (cat_id, fn)
                     tenure[key] = tenure.get(key, 0) + 1
+                published_on.setdefault(fn, set()).add(date)
                 stars_by.setdefault(fn, {}).setdefault(
                     date, r.get("stargazers_count", 0)
                 )
+
+    def ingest_ledger(date: str, digest: dict) -> None:
+        """That day's candidate pool into the star history and NOTHING else.
+
+        setdefault, so a published value already recorded for the same date
+        wins. They come from the same run and agree, but the published one is
+        the number that was actually shown.
+        """
+        for fn, stars in (digest.get("meta", {}).get("pool_stars") or {}).items():
+            stars_by.setdefault(fn, {}).setdefault(date, stars)
 
     # Oldest -> newest so first_seen is genuinely the first sighting.
     window = list(reversed(all_dates[:STEADY_WINDOW_DAYS]))
     for date in window:
         if date == today:
+            # Today's ledger is deliberately not ingested: `at()` is only ever
+            # called with indices 1, 7, 29 and 35, never 0, so today's pool
+            # cannot reach the baseline math anyway.
             ingest(date, categories_result)
         else:
             p = DATA_DIR / f"{date}.json"
             try:
                 with open(p, "r", encoding="utf-8") as f:
-                    ingest(date, json.load(f).get("categories", []))
+                    digest = json.load(f)
+                ingest(date, digest.get("categories", []))
+                ingest_ledger(date, digest)
             except Exception:
                 continue  # gap day — skip rather than count it against a repo
-        for fn in stars_by:
-            if date in stars_by[fn] and fn not in first_seen:
+        # Published sightings only — see the note above on first_seen.
+        for fn in published_on:
+            if date in published_on[fn] and fn not in first_seen:
                 first_seen[fn] = date
 
     # Baselines also need days beyond the steady window; read those too.
@@ -980,11 +1019,13 @@ def attach_steady_signals(categories_result: list[dict], today: str) -> dict:
         p = DATA_DIR / f"{date}.json"
         try:
             with open(p, "r", encoding="utf-8") as f:
-                for cat in json.load(f).get("categories", []):
-                    for r in cat.get("items", []):
-                        stars_by.setdefault(r["full_name"], {}).setdefault(
-                            date, r.get("stargazers_count", 0)
-                        )
+                digest = json.load(f)
+            for cat in digest.get("categories", []):
+                for r in cat.get("items", []):
+                    stars_by.setdefault(r["full_name"], {}).setdefault(
+                        date, r.get("stargazers_count", 0)
+                    )
+            ingest_ledger(date, digest)
         except Exception:
             continue
 
