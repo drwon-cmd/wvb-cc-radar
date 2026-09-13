@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start -p ${PORT:-3000}",
     "lint": "next lint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "node --test tests/digest-store.test.cjs"
   },
   "dependencies": {
     "next": "14.2.35",

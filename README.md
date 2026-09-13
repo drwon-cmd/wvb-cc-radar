@@ -194,3 +194,6 @@ gh workflow run daily-fetch.yml --repo drwon-cmd/wvb-cc-radar
 ## 라이선스
 
 Internal (WVB). GitHub public API 데이터 사용. 사이트 공개 접근 가능.
+
+### Snapshot reader verification
+Run npm test and npm run build before deploying. The reader validates calendar dates and filename agreement, and skips unreadable snapshots when selecting the latest or previous digest. Tests use isolated temporary files and do not modify production snapshots.
