@@ -153,14 +153,14 @@ GEMINI_URL = (
 # Claude API fallback — kicks in only when Claude CLI + Gemini both fail.
 # Uses a separate (paid) quota pool. x-api-key = per-token billing.
 ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "").strip()
-CLAUDE_MODEL = "claude-haiku-4-5-20251001"
+CLAUDE_MODEL = "claude-haiku-5-5"
 CLAUDE_URL = "https://api.anthropic.com/v1/messages"
 
 # Claude CLI (Max 구독, $0) — 주 번역기 (2026-07-04 전환: 유료 API → Max 구독).
 # `claude -p`로 로그인된 Max 구독을 사용(토큰당 과금 없음). snapterminal/labor-advisor CLI 패턴.
 # 인증: 로컬 ~/.claude 로그인 또는 CI의 CLAUDE_CODE_OAUTH_TOKEN(CLI가 자동 인식). API 키 불요.
 CLAUDE_CLI = os.environ.get("CLAUDE_CLI_PATH", "claude").strip() or "claude"
-CLAUDE_CLI_MODEL = os.environ.get("CLAUDE_CLI_MODEL", "haiku").strip() or "haiku"
+CLAUDE_CLI_MODEL = os.environ.get("CLAUDE_CLI_MODEL", "claude-haiku-5-5").strip() or "claude-haiku-5-5"
 USE_CLAUDE_CLI = os.environ.get("USE_CLAUDE_CLI", "1").strip().lower() not in ("0", "false", "no")
 
 RECENT_DAYS = 14
@@ -1173,7 +1173,7 @@ def gemini_translate_batch(descriptions: list[str]) -> list[str | None]:
 
 def claude_translate_batch(descriptions: list[str]) -> list[str | None]:
     """
-    Translate English → Korean via Claude Haiku 4.5.
+    Translate English → Korean via Claude Haiku 5.5.
     Same prompt rules as Gemini. Used only when Gemini batch is all-failed
     (daily quota exhausted / 429), so daily traffic stays minimal.
     Returns list aligned with input (None on failure).
