@@ -92,7 +92,7 @@ jobs:
         run: |
           railway up --service ${{ secrets.RAILWAY_SERVICE_ID }} --detach --ci
 
-      # exit 0=정상, 1=비용 초과(이슈 알림), 2=토큰·API 오류(맨 끝 단계에서 run 실패).
+      # exit 0=정상, 1=비용 초과(이슈 알림), 2=토큰·API 오류(맨 끝 단계에서 run 실패), 3=API 응답 지연(경고만).
       # 2를 비용 알림과 섞으면 토큰 만료가 알림 없이 묻힌다 (2026-10-24 계정 토큰 무효).
       - name: Check Railway usage
         id: usage
@@ -171,8 +171,13 @@ jobs:
           done
 
       # 수집·배포·메일이 끝난 뒤에 실패시켜, 토큰 문제로 본업이 막히지 않게 한다.
+      # exit 3 = Railway API 응답 지연(재시도 3회 후). 수집·배포는 이미 끝났으므로 경고만 남긴다 (2026-11-24/25 timeout).
+      - name: Warn on transient usage check failure
+        if: steps.usage.outputs.code == '3'
+        run: echo "::warning::Railway usage API did not respond after 3 attempts (timeout/5xx). Fetch and deploy succeeded; usage not checked this run."
+
       - name: Fail on usage check error
-        if: steps.usage.outputs.code != '0' && steps.usage.outputs.code != '1'
+        if: steps.usage.outputs.code != '0' && steps.usage.outputs.code != '1' && steps.usage.outputs.code != '3'
         run: |
           echo "::error::Railway usage check failed (exit ${{ steps.usage.outputs.code }}): token or API error. Renew RAILWAY_ACCOUNT_TOKEN at https://railway.com/account/tokens"
           exit 1

@@ -23,7 +23,8 @@ Railway pricing (Hobby/Pro, 2024):
 Exit codes:
   0 - normal
   1 - above threshold (for workflow to emit a warning)
-  2 - API error
+  2 - token / config / API error (needs a human: renew token etc.)
+  3 - Railway API unreachable after retries (timeout, 5xx) - transient
 
 Env vars:
   RAILWAY_ACCOUNT_TOKEN (required)
@@ -34,7 +35,9 @@ from __future__ import annotations
 
 import json
 import os
+import socket
 import sys
+import time
 import urllib.request
 import urllib.error
 
@@ -70,7 +73,15 @@ def estimate_usd(measurement: str, value: float) -> float:
     return 0.0
 
 
-def graphql(query: str) -> dict:
+class TransientError(Exception):
+    """Railway API did not answer in time or returned 5xx/429."""
+
+
+TIMEOUT_S = 45
+RETRY_WAITS_S = (10, 30)  # 3 attempts total
+
+
+def _post_once(query: str) -> dict:
     req = urllib.request.Request(
         API,
         data=json.dumps({"query": query}).encode("utf-8"),
@@ -81,12 +92,30 @@ def graphql(query: str) -> dict:
         },
     )
     try:
-        with urllib.request.urlopen(req, timeout=20) as resp:
+        with urllib.request.urlopen(req, timeout=TIMEOUT_S) as resp:
             return json.loads(resp.read().decode("utf-8"))
     except urllib.error.HTTPError as e:
         body = e.read().decode("utf-8", errors="replace")
         print(f"[error] HTTP {e.code}: {body[:300]}", file=sys.stderr)
+        if e.code >= 500 or e.code == 429:
+            raise TransientError(f"HTTP {e.code}") from e
         raise
+    except (TimeoutError, socket.timeout, urllib.error.URLError) as e:
+        raise TransientError(str(e)) from e
+
+
+def graphql(query: str) -> dict:
+    # Railway's API timed out on 2026-11-24/25 runs while deploy succeeded;
+    # retry so a slow API does not fail the whole workflow.
+    for attempt, wait in enumerate((*RETRY_WAITS_S, None), start=1):
+        try:
+            return _post_once(query)
+        except TransientError as e:
+            if wait is None:
+                raise
+            print(f"[warn] attempt {attempt} failed ({e}); retrying in {wait}s", file=sys.stderr)
+            time.sleep(wait)
+    raise AssertionError("unreachable")
 
 
 def main() -> int:
@@ -108,6 +137,9 @@ def main() -> int:
     """
     try:
         data = graphql(query)
+    except TransientError as e:
+        print(f"[error] Railway API unreachable after retries: {e}", file=sys.stderr)
+        return 3
     except Exception as e:
         print(f"[error] GraphQL call failed: {e}", file=sys.stderr)
         return 2
